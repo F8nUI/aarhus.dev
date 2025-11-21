@@ -1,0 +1,12 @@
+---
+import Layout from '@layouts/Layout.astro'
+import type { GetStaticPaths } from 'astro'
+
+export const getStaticPaths = (() => {
+  return [{ params: { organizer: 'swift-aarhus' } }]
+}) satisfies GetStaticPaths
+---
+
+<Layout>
+  <p>Organizer</p>
+</Layout>

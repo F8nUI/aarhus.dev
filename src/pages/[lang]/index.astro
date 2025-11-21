@@ -1,0 +1,23 @@
+---
+import EventsList from '@components/EventsList.astro'
+import Layout from '@layouts/Layout.astro'
+import { getEvents } from '@lib/event'
+
+export async function getStaticPaths() {
+  const events = await getEvents()
+  let languages = events.flatMap((e) => e.id.split('/')[0]).filter((lang) => lang)
+  languages = [...new Set(languages)]
+
+  return languages.map((lang) => ({
+    params: { lang },
+    props: { language: lang },
+  }))
+}
+
+const { language } = Astro.props
+const events = (await getEvents()).filter((e) => e.language == language)
+---
+
+<Layout {language}>
+  <EventsList {language} />
+</Layout>
