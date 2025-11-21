@@ -1,0 +1,61 @@
+---
+import Option from './Option.astro'
+
+interface Props {
+  selectedLanguage: string
+  languages: string[]
+}
+
+const { selectedLanguage, languages } = Astro.props
+
+const sortedLanguages = [selectedLanguage, ...languages.filter((l) => l != selectedLanguage)]
+---
+
+<el-select id="select" name="selected" value={selectedLanguage} class="block">
+  <button
+    type="button"
+    class="grid w-full cursor-default grid-cols-1 pr-2 text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600"
+  >
+    <el-selectedcontent class="col-start-1 row-start-1 flex items-center gap-3 pr-6">
+      <span class="block">Select ...</span>
+    </el-selectedcontent>
+    <svg
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      data-slot="icon"
+      aria-hidden="true"
+      class="col-start-1 row-start-1 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+    >
+      <path
+        d="M5.22 10.22a.75.75 0 0 1 1.06 0L8 11.94l1.72-1.72a.75.75 0 1 1 1.06 1.06l-2.25 2.25a.75.75 0 0 1-1.06 0l-2.25-2.25a.75.75 0 0 1 0-1.06ZM10.78 5.78a.75.75 0 0 1-1.06 0L8 4.06 6.28 5.78a.75.75 0 0 1-1.06-1.06l2.25-2.25a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1 0 1.06Z"
+        clip-rule="evenodd"
+        fill-rule="evenodd"></path>
+    </svg>
+  </button>
+  <el-options
+    anchor="bottom start"
+    popover
+    class="min-w-(--button-width) -ml-2 -mt-10 w-fit overflow-auto rounded-md bg-white shadow-lg outline-1 outline-black/5 [--anchor-gap:--spacing(1)] data-leave:transition data-leave:transition-discrete data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0"
+  >
+    {
+      sortedLanguages.map((language) => (
+        <el-option
+          value={language}
+          class="group/option relative block cursor-default py-2 pl-2 pr-8 text-gray-900 select-none focus:bg-indigo-600 focus:text-white focus:outline-hidden"
+        >
+          <Option {language} />
+        </el-option>
+      ))
+    }
+  </el-options>
+</el-select>
+<script>
+  const select = document.getElementById('select')
+  const selectedLanguage = (select as HTMLElement).getAttribute('value')
+  select?.addEventListener('change', () => {
+    const currentLanguageId = select.querySelector('el-selectedcontent div div')?.id
+    if (currentLanguageId && currentLanguageId != selectedLanguage) {
+      window.location.assign(`/${currentLanguageId}`)
+    }
+  })
+</script>

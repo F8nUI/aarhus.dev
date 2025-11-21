@@ -1,17 +1,14 @@
 ---
-import { getCollection } from 'astro:content'
 import Layout from '@layouts/Layout.astro'
-import { getEntry, render } from 'astro:content'
 import { getEvents, getLanguages } from '@lib/event'
-import EventsList from '@components/EventsList.astro'
+import Events from '@components/Events.astro'
 
-const events = await getEvents()
 const languages = await getLanguages()
 ---
 
 <Layout>
   <div class="">
-    <div class="flex space-x-2">
+    <!-- <div class="flex space-x-2">
       {
         languages.map((language) => (
           <a class="hover:underline" href={language}>
@@ -19,7 +16,7 @@ const languages = await getLanguages()
           </a>
         ))
       }
-    </div>
-    <EventsList />
+    </div> -->
+    <Events />
   </div>
 </Layout>

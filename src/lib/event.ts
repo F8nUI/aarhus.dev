@@ -1,11 +1,6 @@
-import { getCollection, type CollectionEntry } from 'astro:content'
+import { getCollection } from 'astro:content'
 
-type Event = CollectionEntry<'events'> & {
-  language: string
-  eventId: string
-}
-
-export async function getEvents(): Promise<Event[]> {
+export async function getEvents(): Promise<ADEvent[]> {
   const events = await getCollection('events')
 
   return events

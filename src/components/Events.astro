@@ -1,5 +1,7 @@
 ---
 import { getEvents } from '@lib/event'
+import EventList from './EventList'
+import Event from './Event.astro'
 
 interface Props {
   language?: string
@@ -15,13 +17,4 @@ const events = (await getEvents()).filter((e) => {
 })
 ---
 
-<div class="flex flex-col">
-  {
-    events.map((event) => (
-      <a href={event.id} class="hover:underline">
-        <span>{event.data.title}</span>
-        <span class="opacity-50">@ {event.data.venue.title}</span>
-      </a>
-    ))
-  }
-</div>
+<EventList client:load events={events} />

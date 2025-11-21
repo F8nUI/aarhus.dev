@@ -1,12 +1,16 @@
 ---
 import { getCollection } from 'astro:content'
 import '../styles/global.css'
+import LanguagePicker from '@components/LanguagePicker/LanguagePicker.astro'
+import { getLanguages } from '@lib/event'
 
 // const languages = getCollection('events')
 interface Props {
   language?: string
 }
 const { language } = Astro.props
+
+const languages = await getLanguages()
 
 /*
 Click on "logo" -> home
@@ -20,19 +24,32 @@ Click on language (on event page) -> home with language filter
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    <script is:inline src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"
+    ></script>
     <title>Astro</title>
   </head>
   <body class="p-4 font-mono text-xl">
-    <nav class="pb-2 border-b border-gray-100 mb-2 flex space-x-2">
+    <nav class="pb-2 border-b border-gray-100 mb-2 flex space-x-2 items-center">
       <a class="hover:opacity-50" href="/">aarhus.dev</a>
       {
         language && (
-          <a class="hover:opacity-50" href={'/' + language}>
-            {language}
-          </a>
+          <>
+            <span>/</span>
+            <LanguagePicker selectedLanguage={language} languages={languages} />
+          </>
         )
       }
-      <span>%</span>
+      {
+        !language && (
+          <div class="flex ml-5 space-x-2 opacity-25">
+            {languages.map((language) => (
+              <a class="hover:underline" href={language}>
+                {language}
+              </a>
+            ))}
+          </div>
+        )
+      }
     </nav>
     <slot />
   </body>

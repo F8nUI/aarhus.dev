@@ -1,5 +1,5 @@
 ---
-import EventsList from '@components/EventsList.astro'
+import Events from '@components/Events.astro'
 import Layout from '@layouts/Layout.astro'
 import { getEvents } from '@lib/event'
 
@@ -19,5 +19,5 @@ const events = (await getEvents()).filter((e) => e.language == language)
 ---
 
 <Layout {language}>
-  <EventsList {language} />
+  <Events {language} />
 </Layout>
