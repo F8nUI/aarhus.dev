@@ -40,6 +40,9 @@ export default function EventHeader({ event, isEventPage, languageBadge }: Secti
             .filter((v) => v)
             .join(' ')}
         >
+          {languageBadge && (
+            <Badge color={getLanguageColor(event.language)}>{event.language}</Badge>
+          )}
           <span
             class={['text-nowrap', !isEventPage && 'group-hover:underline']
               .filter((c) => c)
@@ -47,11 +50,6 @@ export default function EventHeader({ event, isEventPage, languageBadge }: Secti
           >
             {event.data.title}
           </span>
-          {languageBadge && (
-            <Badge color={getLanguageColor(event.language)} className="max-layout:flex hidden">
-              {event.language}
-            </Badge>
-          )}
           <div class="space-x-2 items-center layout:flex hidden">
             <Organizer isVisible={!isEventPage} />
           </div>
@@ -78,13 +76,6 @@ export default function EventHeader({ event, isEventPage, languageBadge }: Secti
           </div>
         )}
       </div>
-      {languageBadge && (
-        <div class="absolute layout:flex hidden -left-2 top-0 pointer-events-none">
-          <Badge color={getLanguageColor(event.language)} className="absolute right-0 flex top-0.5">
-            {event.language}
-          </Badge>
-        </div>
-      )}
     </div>
   )
 }
