@@ -26,6 +26,9 @@ const events = defineCollection({
     title: z.string(),
     subtitle: z.string().optional(),
     date: z.date(),
+    startTime: z.string(),
+    endDate: z.date().optional(),
+    endTime: z.string(),
     organizer: reference('organizers'),
     venue: z.object({
       title: z.string(),

@@ -2,8 +2,9 @@
 organizer: 'swift-aarhus'
 title: "Swift Developers Meetup #10"
 # subtitle: "" //optional
-date: 2025-11-24T17:00:00Z
-endDate: 2025-11-24T20:00:00Z
+date: 2025-11-24
+startTime: 17:00
+endTime: 20:00
 venue: 
   title: 'Undervisningslokale 1(U1), Dokk1'
   address: 'Hack Kampmanns Pl.2, Aarhus C'

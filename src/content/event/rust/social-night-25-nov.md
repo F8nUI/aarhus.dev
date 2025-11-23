@@ -1,8 +1,9 @@
 ---
 organizer: 'rust-aarhus'
 title: "Social Night"
-date: 2025-11-20T18:00:00Z
-endDate: 2025-11-20T21:00:00Z
+date: 2025-11-20
+startTime: 18:00
+endTime: 21:00
 venue: 
   title: 'Markedshallen Nicolinehus'
   address: 'Nicoline Kochs Plads 31, Aarhus Ø'
