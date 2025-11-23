@@ -15,7 +15,6 @@ export async function getStaticPaths() {
 }
 
 const { language } = Astro.props
-const events = (await getEvents()).filter((e) => e.language == language)
 ---
 
 <Layout {language}>

@@ -1,16 +1,23 @@
+import EventHeader from './EventHeader'
+
 interface EventListProps {
   events: ADEvent[]
+  filteringByLanguage: boolean
 }
 
-export default function EventList({ events }: EventListProps) {
+export default function EventList({ events, filteringByLanguage }: EventListProps) {
   const { now, today, upcoming, past } = groupEvents(events)
 
   return (
-    <div>
-      {now.length > 0 && <Section title="Happening right now" events={now} />}
-      {today.length > 0 && <Section title="Today" events={today} />}
-      <Section title="Upcoming Events" events={upcoming} />
-      <Section title="Past Events" events={past} />
+    <div class="flex flex-col space-y-8">
+      <Section title="Happening right now" filteringByLanguage={filteringByLanguage} events={now} />
+      <Section title="Today" filteringByLanguage={filteringByLanguage} events={today} />
+      <Section
+        title="Upcoming Events"
+        filteringByLanguage={filteringByLanguage}
+        events={upcoming}
+      />
+      <Section title="Past Events" filteringByLanguage={filteringByLanguage} events={past} />
     </div>
   )
 }
@@ -18,22 +25,26 @@ export default function EventList({ events }: EventListProps) {
 interface SectionProps {
   title: string
   events: ADEvent[]
+  filteringByLanguage: boolean
 }
 
-const Section = ({ title, events }: SectionProps) => {
+const Section = ({ title, events, filteringByLanguage }: SectionProps) => {
   return (
-    <section class="flex flex-col">
-      <h2 class="text-sm opacity-50">{title}</h2>
-      {events.map((event) => (
-        <a class="hover:underline" href={event.id}>
-          <div class="flex space-x-2">
-            <p>{event.data.title}</p>
-            <p class="opacity-30">by {event.organizer.data.name}</p>
-            <p>{event.startDateFormatted}</p>
-          </div>
-        </a>
-      ))}
-    </section>
+    events.length > 0 && (
+      <section class="flex flex-col space-y-2">
+        <h2 class="text-sm opacity-50 relative flex items-center space-x-2">
+          <span class="text-nowrap">{title}</span>
+          <span class="h-px w-full bg-gray-300"></span>
+        </h2>
+        <div class="flex flex-col space-y-2">
+          {events.map((event) => (
+            <a class="no-underline! relative group" href={event.id}>
+              <EventHeader isEventPage={false} event={event} languageBadge={!filteringByLanguage} />
+            </a>
+          ))}
+        </div>
+      </section>
+    )
   )
 }
 
@@ -74,6 +85,8 @@ function groupEvents(events: ADEvent[]): {
       result.upcoming.push(event)
     }
   }
+
+  result.upcoming.sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
 
   return result
 }

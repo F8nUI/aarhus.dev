@@ -4,18 +4,12 @@ import '../styles/global.css'
 import LanguagePicker from '@components/LanguagePicker/LanguagePicker.astro'
 import { getLanguages } from '@lib/event'
 
-// const languages = getCollection('events')
 interface Props {
   language?: string
 }
 const { language } = Astro.props
 
 const languages = await getLanguages()
-
-/*
-Click on "logo" -> home
-Click on language (on event page) -> home with language filter
-*/
 ---
 
 <html lang="en">
@@ -28,9 +22,9 @@ Click on language (on event page) -> home with language filter
     ></script>
     <title>Astro</title>
   </head>
-  <body class="p-4 font-mono text-xl">
-    <nav class="pb-2 border-b border-gray-100 mb-2 flex space-x-2 items-center">
-      <a class="hover:opacity-50" href="/">aarhus.dev</a>
+  <body class="p-4 font-mono text-xl max-w-5xl mx-auto">
+    <nav class="flex space-x-2 items-center">
+      <a class="hover:opacity-50 no-underline!" href="/">aarhus.dev</a>
       {
         language && (
           <>
@@ -41,9 +35,9 @@ Click on language (on event page) -> home with language filter
       }
       {
         !language && (
-          <div class="flex ml-5 space-x-2 opacity-25">
+          <div class="flex ml-5 space-x-4 opacity-25">
             {languages.map((language) => (
-              <a class="hover:underline" href={language}>
+              <a class="hover:underline" href={'/' + language}>
                 {language}
               </a>
             ))}
@@ -51,6 +45,7 @@ Click on language (on event page) -> home with language filter
         )
       }
     </nav>
+    <div class="h-8"></div>
     <slot />
   </body>
 </html>

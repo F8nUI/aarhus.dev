@@ -1,12 +1,26 @@
 ---
 import Layout from '@layouts/Layout.astro'
 import type { GetStaticPaths } from 'astro'
+import { render } from 'astro:content'
+import { getCollection } from 'astro:content'
 
-export const getStaticPaths = (() => {
-  return [{ params: { organizer: 'swift-aarhus' } }]
+export const getStaticPaths = (async () => {
+  const organizers = await getCollection('organizers')
+  return organizers.map((organizer) => ({
+    params: { organizer: organizer.id },
+    props: {
+      organizer,
+    },
+  }))
 }) satisfies GetStaticPaths
+
+const { organizer } = Astro.props
+const { Content } = await render(organizer)
 ---
 
 <Layout>
-  <p>Organizer</p>
+  <p>{organizer.data.name}</p>
+  <div class="markdown">
+    <Content />
+  </div>
 </Layout>

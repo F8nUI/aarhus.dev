@@ -6,7 +6,7 @@ startTime: 17:00
 endTime: 20:00
 venue: 
   title: 'Trifork A/S'
-  address: '9 Sankt Knuds Torv · Aarhus'
+  address: 'Trifork A/S, 9 Sankt Knuds Torv, Aarhus'
 learnMoreURL: https://www.meetup.com/rust-aarhus/events/311502123/?eventOrigin=group_events_list
 ---
 
@@ -14,7 +14,7 @@ learnMoreURL: https://www.meetup.com/rust-aarhus/events/311502123/?eventOrigin=g
 
 🧑‍💻 Attend this meetup at Trifork to enjoy 2 English talks by local speakers and meet both new and seasoned JavaScript developers.
 
-## ✅❌ RSVP to help us plan food, beverages, and other amenities.
+✅❌ RSVP to help us plan food, beverages, and other amenities.
 
 ## 📜 Code of Conduct
 Please see our Code of Conduct on our about page: https://www.meetup.com/aarhusjs-meetup/

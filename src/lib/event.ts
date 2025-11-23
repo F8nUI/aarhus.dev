@@ -1,4 +1,4 @@
-import { getCollection, getEntry } from 'astro:content'
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content'
 
 export async function getEvents(): Promise<ADEvent[]> {
   const events = await getCollection('events')
@@ -6,27 +6,36 @@ export async function getEvents(): Promise<ADEvent[]> {
   const adEvents: ADEvent[] = []
 
   for (const event of events) {
-    const [language, eventId] = event.id.split('/')
-    const startDate = toCphDate(event.data.date, event.data.startTime)
-    const endDate = toCphDate(event.data.endDate ?? event.data.date, event.data.endTime)
-    adEvents.push({
-      ...event,
-      language,
-      eventId,
-      startDate,
-      endDate,
-      startDateFormatted: formatEventDate(startDate),
-      endDateFormatted: formatEventDate(endDate),
-      organizer: await getEntry(event.data.organizer),
-    })
+    adEvents.push(await parseEvent(event))
   }
 
   return adEvents.sort((a, b) => b.startDate.valueOf() - a.startDate.valueOf())
 }
 
+export async function parseEvent(event: CollectionEntry<'events'>): Promise<ADEvent> {
+  const [language, eventId] = event.id.split('/')
+  const startDate = toCphDate(event.data.date, event.data.startTime)
+  const endDate = toCphDate(event.data.endDate ?? event.data.date, event.data.endTime)
+  return {
+    ...event,
+    language,
+    eventId,
+    startDate,
+    endDate,
+    startDateFormatted: formatEventDate(startDate),
+    endDateFormatted: formatEventDate(endDate),
+    dateFormatted: formatEventDateRange(startDate, endDate),
+    organizer: await getEntry(event.data.organizer),
+  }
+}
+
 export async function getLanguages(): Promise<string[]> {
   const events = await getEvents()
-  let languages = events.flatMap((e) => e.id.split('/')[0]).filter((lang) => lang)
+  let languages = events
+    .flatMap((e) => e.id.split('/')[0])
+    .filter((lang) => lang)
+    .sort()
+    .reverse()
   return [...new Set(languages)]
 }
 
@@ -60,4 +69,35 @@ function formatEventDate(date: Date): string {
   })
 
   return `${weekday}, ${day} at ${time}`
+}
+
+function formatEventDateRange(startDate: Date, endDate: Date): { date: string; time: string } {
+  const options = { timeZone: 'Europe/Copenhagen' }
+
+  const weekday = startDate.toLocaleDateString('en-US', {
+    weekday: 'long',
+    ...options,
+  })
+  const day = startDate.toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'short',
+    ...options,
+  })
+  const startTime = startDate.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    ...options,
+  })
+  const endTime = endDate.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    ...options,
+  })
+
+  return {
+    date: `${weekday}, ${day}`,
+    time: `${startTime} – ${endTime}`,
+  }
 }

@@ -41,7 +41,7 @@ const sortedLanguages = [selectedLanguage, ...languages.filter((l) => l != selec
       sortedLanguages.map((language) => (
         <el-option
           value={language}
-          class="group/option relative block cursor-default py-2 pl-2 pr-8 text-gray-900 select-none focus:bg-indigo-600 focus:text-white focus:outline-hidden"
+          class="group/option relative block cursor-default py-2 pl-2 pr-8 text-gray-900 select-none focus:bg-gray-600 focus:text-white focus:outline-hidden"
         >
           <Option {language} />
         </el-option>
@@ -54,7 +54,7 @@ const sortedLanguages = [selectedLanguage, ...languages.filter((l) => l != selec
   const selectedLanguage = (select as HTMLElement).getAttribute('value')
   select?.addEventListener('change', () => {
     const currentLanguageId = select.querySelector('el-selectedcontent div div')?.id
-    if (currentLanguageId && currentLanguageId != selectedLanguage) {
+    if (currentLanguageId) {
       window.location.assign(`/${currentLanguageId}`)
     }
   })

@@ -16,4 +16,4 @@ const events = (await getEvents()).filter((e) => {
 })
 ---
 
-<EventList client:load events={events} />
+<EventList client:load events={events} filteringByLanguage={language != undefined} />

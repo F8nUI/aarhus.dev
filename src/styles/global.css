@@ -1,1 +1,23 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@theme {
+  --breakpoint-layout: 72rem;
+}
+
+a {
+  @apply underline text-slate-900 hover:text-slate-700;
+}
+
+.markdown {
+  @apply font-sans text-slate-900;
+
+  h1 {
+    @apply text-2xl mt-6;
+  }
+  h2 {
+    @apply text-xl font-semibold mt-4;
+  }
+  p {
+    @apply tracking-wide leading-relaxed text-lg;
+  }
+}

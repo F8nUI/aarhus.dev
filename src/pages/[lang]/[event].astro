@@ -1,9 +1,10 @@
 ---
 import Layout from '@layouts/Layout.astro'
-import type { GetStaticPaths } from 'astro'
+import EventHeader from '@components/EventHeader'
 import { getEntry } from 'astro:content'
 import { render } from 'astro:content'
 import { getCollection } from 'astro:content'
+import { parseEvent } from '@lib/event'
 
 export async function getStaticPaths() {
   const events = await getCollection('events')
@@ -11,25 +12,23 @@ export async function getStaticPaths() {
     const [lang, eventId] = event.id.split('/')
     return {
       params: { lang, event: eventId },
-      props: { language: lang, event },
+      props: { language: lang, event: parseEvent(event) },
     }
   })
 
   return paths
 }
 
-const { event, language } = Astro.props
+const { event: eventAsync, language } = Astro.props
+const event = await eventAsync
 const { Content } = await render(event)
-const { title, subtitle, venue, organizer: organizerRef } = event.data
-
-const organizer = await getEntry(organizerRef)
-const { name: organizerName, website: organizerWebsite } = organizer.data
+const { organizer: organizerRef } = event.data
 ---
 
 <Layout {language}>
-  <h1>{title}</h1>
-  {subtitle && <span>{subtitle}</span>}
-  <div class="mt-2">
+  <EventHeader event={event} isEventPage languageBadge={false} />
+  <div class="h-px my-4 w-full bg-gray-100"></div>
+  <div class="markdown">
     <Content />
   </div>
 </Layout>

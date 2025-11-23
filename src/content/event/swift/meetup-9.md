@@ -6,8 +6,8 @@ date: 2025-09-23
 startTime: 17:00
 endTime: 20:00
 venue: 
-  title: 'Undervisningslokale 1(U1), Dokk1'
-  address: 'Hack Kampmanns Pl.2, Aarhus C'
+  title: 'Dokk1'
+  address: 'Undervisningslokale 1(U1), Dokk1, Hack Kampmanns Pl.2, Aarhus C'
   # url:
     # google: ''
     # apple: ''

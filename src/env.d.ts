@@ -8,6 +8,10 @@ declare global {
     startDateFormatted: string
     endDate: Date
     endDateFormatted: string
+    dateFormatted: {
+      date: string
+      time: string
+    }
     organizer: CollectionEntry<'organizers'>
   }
 }
