@@ -33,6 +33,8 @@ const events = defineCollection({
       address: z.string(),
     }),
     learnMoreURL: z.string(),
+    // TODO: speakers
+    // TODO: program
   }),
 })
 
