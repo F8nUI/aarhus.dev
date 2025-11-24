@@ -11,17 +11,15 @@ import { glob } from 'astro/loaders'
 import { getCollection } from 'astro:content'
 
 const organizers = defineCollection({
-  loader: glob({ pattern: '*.md', base: 'src/content/organizer' }),
+  loader: glob({ pattern: ['*.md', '!_*.md'], base: 'src/content/organizer' }),
   schema: z.object({
     name: z.string(),
     website: z.string().optional(),
-    // logo: asset
-    // backgroundImage: asset
   }),
 })
 
 const events = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: 'src/content/event' }),
+  loader: glob({ pattern: ['**/*.md', '!**/_*.md'], base: 'src/content/event' }),
   schema: z.object({
     title: z.string(),
     subtitle: z.string().optional(),
