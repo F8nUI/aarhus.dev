@@ -16,9 +16,13 @@ export const getStaticPaths = (async () => {
 
 const { organizer } = Astro.props
 const { Content } = await render(organizer)
+const metadata = {
+  title: organizer.data.name,
+  description: `Information about ${organizer.data.name}, a tech community organizer in Aarhus, Denmark`
+}
 ---
 
-<Layout>
+<Layout {metadata}>
   <p>{organizer.data.name}</p>
   <div class="markdown">
     <Content />

@@ -1,7 +1,7 @@
 ---
 import Events from '@components/Events.astro'
 import Layout from '@layouts/Layout.astro'
-import { getEvents } from '@lib/event'
+import { getEvents, getLanguageName } from '@lib/event'
 
 export async function getStaticPaths() {
   const events = await getEvents()
@@ -15,8 +15,13 @@ export async function getStaticPaths() {
 }
 
 const { language } = Astro.props
+const languageName = getLanguageName(language)
+const metadata = {
+  title: `${languageName} Events in Aarhus`,
+  description: `${languageName} tech events and meetups in Aarhus, Denmark`
+}
 ---
 
-<Layout {language}>
+<Layout {language} {metadata}>
   <Events {language} />
 </Layout>

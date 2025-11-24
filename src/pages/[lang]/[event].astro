@@ -23,9 +23,13 @@ const { event: eventAsync, language } = Astro.props
 const event = await eventAsync
 const { Content } = await render(event)
 const { organizer: organizerRef } = event.data
+const metadata = {
+  title: event.data.title,
+  description: event.data.subtitle || `${event.data.title} - ${event.data.venue.title}, ${new Date(event.data.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+}
 ---
 
-<Layout {language}>
+<Layout {language} {metadata}>
   <EventHeader event={event} isEventPage languageBadge={false} />
   <div class="h-px my-4 w-full bg-gray-100"></div>
   <div class="markdown">

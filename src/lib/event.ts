@@ -39,6 +39,25 @@ export async function getLanguages(): Promise<string[]> {
   return [...new Set(languages)]
 }
 
+export function getLanguageName(languageCode: string): string {
+  const languageMap: Record<string, string> = {
+    js: 'JavaScript',
+    rust: 'Rust',
+    swift: 'Swift',
+    ruby: 'Ruby',
+    python: 'Python',
+    go: 'Go',
+    java: 'Java',
+    kotlin: 'Kotlin',
+    cpp: 'C++',
+    csharp: 'C#',
+    php: 'PHP',
+    typescript: 'TypeScript',
+  }
+
+  return languageMap[languageCode.toLowerCase()] || languageCode
+}
+
 function toCphDate(date: Date, time: string): Date {
   const dateStr = date.toISOString().split('T')[0]
   const iso = `${dateStr}T${time}`

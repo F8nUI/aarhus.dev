@@ -4,10 +4,24 @@ import '../styles/global.css'
 import LanguagePicker from '@components/LanguagePicker/LanguagePicker.astro'
 import { getLanguages } from '@lib/event'
 
+interface Metadata {
+  title?: string
+  description?: string
+}
+
 interface Props {
   language?: string
+  metadata?: Metadata
 }
-const { language } = Astro.props
+
+const { language, metadata } = Astro.props
+
+const siteName = 'aarhus.dev'
+const siteTitle = 'aarhus.dev – dev events in Aarhus'
+const defaultDescription = 'Community-driven website showcasing tech events and meetups in Aarhus, Denmark'
+
+const pageTitle = metadata?.title ? `${metadata.title} – ${siteName}` : siteTitle
+const pageDescription = metadata?.description || defaultDescription
 
 const languages = await getLanguages()
 ---
@@ -18,9 +32,10 @@ const languages = await getLanguages()
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={pageDescription} />
     <script is:inline src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"
     ></script>
-    <title>Astro</title>
+    <title>{pageTitle}</title>
   </head>
   <body class="p-4 font-mono text-xl max-w-5xl mx-auto">
     <nav class="flex space-x-2 items-center">
