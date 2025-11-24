@@ -1,7 +1,5 @@
 ---
 name: 'Swift Aarhus'
-# website: 
-# logo: square image, could be transparent
 
 ---
 > Please join our [Slack](https://join.slack.com/t/swiftdevelopersaarhus/shared_invite/zt-245acml44-Hu3DA4oAl6YgysItmDDVMw) to join discussions about Swift or about planning our future meetups. :-)

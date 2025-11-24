@@ -32,8 +32,7 @@ const events = defineCollection({
       title: z.string(),
       address: z.string(),
     }),
-    learnMoreURL: z.string().optional(),
-    signUpURL: z.string().optional(),
+    learnMoreURL: z.string(),
   }),
 })
 

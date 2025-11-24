@@ -1,7 +1,5 @@
 ---
 name: 'AarhusJS'
-# website: 
-# logo: square image, could be transparent
 
 ---
 ## AarhusJS’ Code of Conduct

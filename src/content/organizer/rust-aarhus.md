@@ -1,8 +1,5 @@
 ---
 name: 'Rust Aarhus'
-# website: 
-# logo: square image, could be transparent
-
 ---
 Welcome to the Rust Aarhus User Group. We are a community of programmers and enthusiasts who are passionate about the Rust programming language. Whether you're a seasoned Rustacean or just getting started, our group is the perfect place for you to connect with like-minded individuals, share knowledge, and learn something new.
 

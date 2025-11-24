@@ -1,6 +1,6 @@
 ---
 name: 'Organizer Name'
-website: https://example.com
+# website: https://example.com
 ---
 
 ## About
