@@ -1,5 +1,9 @@
 # aarhus.dev
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Built with Astro](https://img.shields.io/badge/Built%20with-Astro-FF5D01?logo=astro)](https://astro.build)
+[![Powered by Bun](https://img.shields.io/badge/Powered%20by-Bun-000000?logo=bun)](https://bun.sh)
+
 A community-driven website showcasing tech events and meetups in Aarhus, Denmark.
 
 ## About
@@ -109,9 +113,78 @@ Or work locally by copying `src/content/organizer/_template.md` and creating a P
 | `bun run astro ...`    | Run CLI commands like `astro add`, `astro check` |
 | `bun run astro --help` | Get help using the Astro CLI                     |
 
+## Troubleshooting
+
+### Common Issues
+
+#### Port Already in Use
+
+If you see an error that port 4321 is already in use:
+
+```sh
+# Find the process using the port
+lsof -ti:4321
+
+# Kill the process
+kill -9 $(lsof -ti:4321)
+
+# Or start on a different port
+bun run dev -- --port 3000
+```
+
+#### Build Fails with Type Errors
+
+```sh
+# Run type checking to see detailed errors
+bun run astro check
+
+# Clear cache and rebuild
+rm -rf dist .astro
+bun run build
+```
+
+#### Bun Installation Issues
+
+If you encounter issues installing Bun, refer to the [official Bun installation guide](https://bun.sh/docs/installation).
+
+#### Content Not Showing Up
+
+- Ensure the markdown file has valid frontmatter
+- Check that the file is in the correct directory (`src/content/event/[lang]/` or `src/content/organizer/`)
+- Verify the frontmatter matches the schema requirements
+- Restart the dev server after adding new content files
+
+#### Node.js Compatibility
+
+This project is designed to work with Bun. While it may work with Node.js, Bun is the recommended runtime for the best experience.
+
+### Getting Help
+
+If you encounter other issues:
+
+1. Check existing [GitHub issues](https://github.com/yourusername/aarhus.dev/issues)
+2. Search the [Astro documentation](https://docs.astro.build)
+3. Open a new issue with details about your problem
+
 ## Contributing
 
-Contributions are welcome! Feel free to submit a pull request or open an issue.
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request.
+
+### Quick Start for Contributors
+
+1. Fork the repository
+2. Clone your fork: `git clone https://github.com/YOUR-USERNAME/aarhus.dev.git`
+3. Create a branch: `git checkout -b my-feature`
+4. Make your changes
+5. Test locally: `bun run dev` and `bun run build`
+6. Commit and push: `git commit -am "Add feature" && git push origin my-feature`
+7. Open a Pull Request
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+## Code of Conduct
+
+This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
 ## License
 

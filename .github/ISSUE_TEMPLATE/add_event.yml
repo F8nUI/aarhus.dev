@@ -1,0 +1,135 @@
+name: Add Event
+description: Submit a new tech event in Aarhus
+title: "[Event]: "
+labels: ["content", "event"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for adding an event! You can either:
+        1. Fill out this form, and we'll create the event file for you, OR
+        2. Create a PR directly by adding a file to `src/content/event/[lang]/` using the template
+
+  - type: input
+    id: title
+    attributes:
+      label: Event Title
+      description: The name of the event
+      placeholder: e.g., Aarhus.js Monthly Meetup
+    validations:
+      required: true
+
+  - type: input
+    id: subtitle
+    attributes:
+      label: Subtitle (optional)
+      description: Optional subtitle for the event
+      placeholder: e.g., Special Workshop Edition
+    validations:
+      required: false
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Programming Language/Community
+      description: Which tech community is this event for?
+      options:
+        - JavaScript (js)
+        - Rust
+        - Swift
+        - Ruby
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: date
+    attributes:
+      label: Event Start Date
+      description: When does the event start?
+      placeholder: YYYY-MM-DD (e.g., 2025-02-15)
+    validations:
+      required: true
+
+  - type: input
+    id: startTime
+    attributes:
+      label: Start Time
+      description: What time does it start?
+      placeholder: e.g., 18:00
+    validations:
+      required: true
+
+  - type: input
+    id: endDate
+    attributes:
+      label: Event End Date (optional)
+      description: If the event spans multiple days, when does it end?
+      placeholder: YYYY-MM-DD (e.g., 2025-02-16)
+    validations:
+      required: false
+
+  - type: input
+    id: endTime
+    attributes:
+      label: End Time
+      description: What time does it end?
+      placeholder: e.g., 20:00
+    validations:
+      required: true
+
+  - type: input
+    id: venue_title
+    attributes:
+      label: Venue Name
+      description: Name of the venue
+      placeholder: e.g., TechHub Aarhus
+    validations:
+      required: true
+
+  - type: input
+    id: venue_address
+    attributes:
+      label: Venue Address
+      description: Street address and city
+      placeholder: e.g., Some Street 1, Aarhus
+    validations:
+      required: true
+
+  - type: input
+    id: organizer
+    attributes:
+      label: Organizer ID
+      description: The organizer's ID (must match a file in src/content/organizer/)
+      placeholder: e.g., aarhus-js
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Event Description
+      description: Detailed description of the event (supports Markdown)
+      placeholder: |
+        Tell us about the event, what to expect, speakers, agenda, etc.
+    validations:
+      required: true
+
+  - type: input
+    id: learnMoreURL
+    attributes:
+      label: Event URL
+      description: Link to event page or registration
+      placeholder: https://...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have verified the event details are accurate
+          required: true
+        - label: The organizer exists in the organizers directory
+          required: false

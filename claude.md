@@ -30,9 +30,19 @@ After making changes:
 ### Content Schema
 
 Before adding/modifying content files, check:
-- Existing files in `src/content/event/[lang]/` for event format
-- Existing files in `src/content/organizer/` for organizer format
-- Template files for required frontmatter fields
+- `src/content.config.ts` for the definitive schema (Zod validation)
+- Template files: `src/content/event/_template.md` and `src/content/organizer/_template.md`
+- Existing files in `src/content/event/[lang]/` for event examples
+- Existing files in `src/content/organizer/` for organizer examples
+
+### Git Conventions
+
+When creating commits, prefix them with "Claude:" to identify AI-generated commits:
+```
+Claude: Add new event template
+Claude: Fix navigation bug
+Claude: Update organizer schema
+```
 
 ### Helpful Commands
 

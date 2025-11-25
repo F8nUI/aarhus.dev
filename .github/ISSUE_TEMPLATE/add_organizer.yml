@@ -1,0 +1,58 @@
+name: Add Organizer
+description: Submit a new community organizer or group
+title: "[Organizer]: "
+labels: ["content", "organizer"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for adding an organizer! You can either:
+        1. Fill out this form, and we'll create the organizer file for you, OR
+        2. Create a PR directly by adding a file to `src/content/organizer/` using the template
+
+  - type: input
+    id: name
+    attributes:
+      label: Organizer Name
+      description: The name of the community or organization
+      placeholder: e.g., Aarhus JavaScript User Group
+    validations:
+      required: true
+
+  - type: input
+    id: id
+    attributes:
+      label: Organizer ID
+      description: A unique identifier (lowercase, no spaces, use hyphens)
+      placeholder: e.g., aarhus-js
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the community, what they do, who should join, etc. (supports Markdown)
+      placeholder: Tell us about this community...
+    validations:
+      required: true
+
+  - type: input
+    id: website
+    attributes:
+      label: Website (optional)
+      description: Community website URL
+      placeholder: https://...
+    validations:
+      required: false
+
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have verified the organizer information is accurate
+          required: true
+        - label: This organizer is active and hosts events in Aarhus
+          required: true

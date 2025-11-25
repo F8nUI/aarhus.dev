@@ -65,10 +65,13 @@ bun run astro ...    # Run Astro CLI commands
 
 ## Code Conventions
 
-- **File naming**: Use kebab-case for files
+- **File naming**:
+  - Use PascalCase for component files: `MyComponent.astro`
+  - Use kebab-case for content (markdown) files: `my-event.md`
 - **Components**: Can be `.astro` or `.tsx` (Preact)
 - **Formatting**: Prettier is configured (see `.prettierrc`)
 - **Content files**: Must follow the structure defined in content collection schemas
+- **Commit messages**: If an AI agent creates a commit, prefix it with the agent name. For example: `Claude: Add new event template` or `Claude: Fix navigation bug`
 
 ## Content Management
 
