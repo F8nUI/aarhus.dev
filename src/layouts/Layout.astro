@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content'
 import '../styles/global.css'
 import LanguagePicker from '@components/LanguagePicker/LanguagePicker.astro'
 import { getLanguages } from '@lib/event'
+import Analytics from '@vercel/analytics/astro'
 
 interface Metadata {
   title?: string
@@ -37,6 +38,7 @@ const languages = await getLanguages()
     <script is:inline src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"
     ></script>
     <title>{pageTitle}</title>
+    <Analytics />
   </head>
   <body class="p-4 font-mono text-xl max-w-5xl mx-auto">
     <nav class="flex space-x-2 items-center">
