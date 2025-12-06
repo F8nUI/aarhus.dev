@@ -26,7 +26,7 @@ This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participatin
 1. Fork the repository on GitHub
 2. Clone your fork:
    ```sh
-   git clone https://github.com/YOUR-USERNAME/aarhus.dev.git
+   git clone https://github.com/f8nui/aarhus.dev.git
    cd aarhus.dev
    ```
 3. Install dependencies:

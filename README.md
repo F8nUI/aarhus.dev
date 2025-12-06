@@ -162,7 +162,7 @@ This project is designed to work with Bun. While it may work with Node.js, Bun i
 
 If you encounter other issues:
 
-1. Check existing [GitHub issues](https://github.com/yourusername/aarhus.dev/issues)
+1. Check existing [GitHub issues](https://github.com/f8nui/aarhus.dev/issues)
 2. Search the [Astro documentation](https://docs.astro.build)
 3. Open a new issue with details about your problem
 
@@ -173,7 +173,7 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
 ### Quick Start for Contributors
 
 1. Fork the repository
-2. Clone your fork: `git clone https://github.com/YOUR-USERNAME/aarhus.dev.git`
+2. Clone your fork: `git clone https://github.com/f8nui/aarhus.dev.git`
 3. Create a branch: `git checkout -b my-feature`
 4. Make your changes
 5. Test locally: `bun run dev` and `bun run build`
