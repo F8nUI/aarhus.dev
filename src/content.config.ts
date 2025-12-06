@@ -38,4 +38,12 @@ const events = defineCollection({
   }),
 })
 
-export const collections = { events, organizers }
+const pages = defineCollection({
+  loader: glob({ pattern: ['*.md'], base: 'src/content' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+  }),
+})
+
+export const collections = { events, organizers, pages }
