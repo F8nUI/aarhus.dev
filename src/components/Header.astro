@@ -1,0 +1,37 @@
+---
+import LanguagePicker from '@components/LanguagePicker/LanguagePicker.astro'
+
+interface Props {
+  language?: string
+  languages: string[]
+}
+
+const { language, languages } = Astro.props
+---
+
+<nav class="flex space-x-2 items-center">
+  <a class="hover:opacity-50 no-underline!" href="/">aarhus.dev</a>
+  {
+    language && (
+      <>
+        <span>/</span>
+        <LanguagePicker selectedLanguage={language} languages={languages} />
+      </>
+    )
+  }
+  {
+    !language && (
+      <div class="flex ml-5 space-x-4">
+        {languages.map((language) => (
+          <a class="hover:underline text-gray-400! hover:text-gray-600!" href={'/' + language}>
+            {language}
+          </a>
+        ))}
+      </div>
+    )
+  }
+  <div class="flex w-full space-x-2 justify-end text-sm *:text-gray-400! *:hover:text-gray-600!">
+    <!-- <a href="/about">About</a> -->
+    <a href="https://github.com/f8nui/aarhus.dev">GitHub</a>
+  </div>
+</nav>

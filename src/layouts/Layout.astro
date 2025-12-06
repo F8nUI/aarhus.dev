@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content'
 import '../styles/global.css'
-import LanguagePicker from '@components/LanguagePicker/LanguagePicker.astro'
+import Header from '@components/Header.astro'
 import { getLanguages } from '@lib/event'
 import Analytics from '@vercel/analytics/astro'
 
@@ -41,34 +41,7 @@ const languages = await getLanguages()
     <Analytics />
   </head>
   <body class="p-4 font-mono text-xl max-w-5xl mx-auto">
-    <nav class="flex space-x-2 items-center">
-      <a class="hover:opacity-50 no-underline!" href="/">aarhus.dev</a>
-      {
-        language && (
-          <>
-            <span>/</span>
-            <LanguagePicker selectedLanguage={language} languages={languages} />
-          </>
-        )
-      }
-      {
-        !language && (
-          <div class="flex ml-5 space-x-4">
-            {languages.map((language) => (
-              <a class="hover:underline text-gray-400! hover:text-gray-600!" href={'/' + language}>
-                {language}
-              </a>
-            ))}
-          </div>
-        )
-      }
-      <div
-        class="flex w-full space-x-2 justify-end text-sm *:text-gray-400! *:hover:text-gray-600!"
-      >
-        <!-- <a href="/about">About</a> -->
-        <a href="https://github.com/f8nui/aarhus.dev">GitHub</a>
-      </div>
-    </nav>
+    <Header {language} {languages} />
     <div class="h-8"></div>
     <slot />
   </body>
