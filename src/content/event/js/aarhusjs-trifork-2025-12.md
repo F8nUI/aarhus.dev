@@ -7,7 +7,7 @@ endTime: 20:00
 venue: 
   title: 'Trifork A/S'
   address: 'Trifork A/S, 9 Sankt Knuds Torv, Aarhus'
-learnMoreURL: https://www.meetup.com/rust-aarhus/events/311502123/?eventOrigin=group_events_list
+learnMoreURL: https://www.meetup.com/aarhusjs-meetup/events/311884214/
 ---
 
 ## 🎆 First and last AarhusJS meetup of 2025
