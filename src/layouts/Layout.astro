@@ -1,8 +1,7 @@
 ---
-import { getCollection } from 'astro:content'
 import '../styles/global.css'
 import Header from '@components/Header.astro'
-import { getLanguages } from '@lib/event'
+import { getTopics } from '@lib/event'
 import Analytics from '@vercel/analytics/astro'
 
 interface Metadata {
@@ -11,11 +10,11 @@ interface Metadata {
 }
 
 interface Props {
-  language?: string
+  topic?: string
   metadata?: Metadata
 }
 
-const { language, metadata } = Astro.props
+const { topic, metadata } = Astro.props
 
 const siteName = 'aarhus.dev'
 const siteTitle = 'Aarhus Developer Events & Meetups – aarhus.dev'
@@ -25,7 +24,7 @@ const defaultDescription =
 const pageTitle = metadata?.title ? `${metadata.title} – ${siteName}` : siteTitle
 const pageDescription = metadata?.description || defaultDescription
 
-const languages = await getLanguages()
+const topics = await getTopics()
 ---
 
 <html lang="en">
@@ -35,14 +34,43 @@ const languages = await getLanguages()
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={pageDescription} />
-    <script is:inline src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"
-    ></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&display=swap"
+      rel="stylesheet"
+    />
     <title>{pageTitle}</title>
+    <script is:inline>
+      (function () {
+        var t = localStorage.getItem('theme')
+        if (t === 'dark' || t === 'light') {
+          document.documentElement.setAttribute('data-theme', t)
+        }
+      })()
+    </script>
     <Analytics />
   </head>
-  <body class="p-4 font-mono text-xl max-w-5xl mx-auto">
-    <Header {language} {languages} />
-    <div class="h-8"></div>
-    <slot />
+  <body class="font-mono text-xl max-w-5xl mx-auto px-4 min-h-screen flex flex-col overflow-x-hidden">
+    <header class="py-4">
+      <Header {topic} {topics} />
+    </header>
+    <main class="flex-1 pb-8">
+      <slot />
+    </main>
+    <footer class="py-6 border-t mt-auto sticky bottom-0 bg-[var(--color-bg)] -mx-3 px-3" style="border-color: var(--color-border);">
+      <div
+        class="flex items-center justify-between text-sm"
+        style="color: var(--color-text-muted);"
+      >
+        <span>aarhus.dev</span>
+        <nav class="flex space-x-4">
+          <a class="no-underline hover:underline" href="https://github.com/f8nui/aarhus.dev"
+            >GitHub</a
+          >
+          <a class="no-underline hover:underline" href="/about">About</a>
+        </nav>
+      </div>
+    </footer>
   </body>
 </html>

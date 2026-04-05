@@ -1,5 +1,19 @@
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content'
 
+export type ADEvent = CollectionEntry<'events'> & {
+  topic: string
+  eventId: string
+  startDate: Date
+  startDateFormatted: string
+  endDate: Date
+  endDateFormatted: string
+  dateFormatted: {
+    date: string
+    time: string
+  }
+  organizer: CollectionEntry<'organizers'>
+}
+
 export async function getEvents(): Promise<ADEvent[]> {
   const events = await getCollection('events')
 
@@ -13,12 +27,12 @@ export async function getEvents(): Promise<ADEvent[]> {
 }
 
 export async function parseEvent(event: CollectionEntry<'events'>): Promise<ADEvent> {
-  const [language, eventId] = event.id.split('/')
+  const [topic, eventId] = event.id.split('/')
   const startDate = toCphDate(event.data.date, event.data.startTime)
   const endDate = toCphDate(event.data.endDate ?? event.data.date, event.data.endTime)
   return {
     ...event,
-    language,
+    topic,
     eventId,
     startDate,
     endDate,
@@ -29,18 +43,14 @@ export async function parseEvent(event: CollectionEntry<'events'>): Promise<ADEv
   }
 }
 
-export async function getLanguages(): Promise<string[]> {
-  const events = await getEvents()
-  let languages = events
-    .flatMap((e) => e.id.split('/')[0])
-    .filter((lang) => lang)
-    .sort()
-    .reverse()
-  return [...new Set(languages)]
+export async function getTopics(): Promise<string[]> {
+  const events = await getCollection('events')
+  const topics = [...new Set(events.map((e) => e.id.split('/')[0]))]
+  return topics.sort().reverse()
 }
 
-export function getLanguageName(languageCode: string): string {
-  const languageMap: Record<string, string> = {
+export function getTopicName(topicCode: string): string {
+  const topicMap: Record<string, string> = {
     js: 'JavaScript',
     rust: 'Rust',
     swift: 'Swift',
@@ -53,50 +63,48 @@ export function getLanguageName(languageCode: string): string {
     csharp: 'C#',
     php: 'PHP',
     typescript: 'TypeScript',
+    dotnet: '.NET',
+    ai: 'AI',
   }
 
-  return languageMap[languageCode.toLowerCase()] || languageCode
+  return topicMap[topicCode.toLowerCase()] || topicCode
 }
+
+const CPH_TIMEZONE = 'Europe/Copenhagen'
+
+const cphOffsetFormatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: CPH_TIMEZONE,
+  timeZoneName: 'longOffset',
+})
 
 function toCphDate(date: Date, time: string): Date {
   const dateStr = date.toISOString().split('T')[0]
-  const iso = `${dateStr}T${time}`
-  const tempDate = new Date(iso + 'Z')
-  const cphTime = new Date(tempDate.toLocaleString('en-US', { timeZone: 'Europe/Copenhagen' }))
-  const utcTime = new Date(tempDate.toLocaleString('en-US', { timeZone: 'UTC' }))
-  const offsetMs = utcTime.getTime() - cphTime.getTime()
-  const offset = offsetMs === -3600000 ? '+01:00' : '+02:00'
-
-  return new Date(iso + offset)
+  // Determine the Copenhagen UTC offset for this specific date
+  const noonUtc = new Date(`${dateStr}T12:00:00Z`)
+  const parts = cphOffsetFormatter.formatToParts(noonUtc)
+  const tzPart = parts.find((p) => p.type === 'timeZoneName')
+  const offset = tzPart?.value.replace('GMT', '') || '+01:00'
+  return new Date(`${dateStr}T${time}:00${offset}`)
 }
 
 function formatEventDate(date: Date): string {
-  const weekday = date.toLocaleDateString('en-US', {
-    weekday: 'long',
-    timeZone: 'Europe/Copenhagen',
-  })
-  const day = date.toLocaleDateString('en-US', {
-    day: 'numeric',
-    month: 'short',
-    timeZone: 'Europe/Copenhagen',
-  })
+  const options = { timeZone: CPH_TIMEZONE } as const
+  const weekday = date.toLocaleDateString('en-US', { weekday: 'long', ...options })
+  const day = date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', ...options })
   const time = date.toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
-    timeZone: 'Europe/Copenhagen',
+    ...options,
   })
 
   return `${weekday}, ${day} at ${time}`
 }
 
 function formatEventDateRange(startDate: Date, endDate: Date): { date: string; time: string } {
-  const options = { timeZone: 'Europe/Copenhagen' }
+  const options = { timeZone: CPH_TIMEZONE } as const
 
-  const weekday = startDate.toLocaleDateString('en-US', {
-    weekday: 'long',
-    ...options,
-  })
+  const weekday = startDate.toLocaleDateString('en-US', { weekday: 'long', ...options })
   const day = startDate.toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'short',

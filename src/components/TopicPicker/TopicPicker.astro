@@ -1,0 +1,25 @@
+---
+interface Props {
+  selectedTopic: string
+  topics: string[]
+}
+
+const { selectedTopic, topics } = Astro.props
+---
+
+<select
+  id="topic-picker"
+  class="bg-transparent cursor-pointer focus:outline-none"
+>
+  {topics.map((topic) => (
+    <option value={topic} selected={topic === selectedTopic}>
+      {topic}
+    </option>
+  ))}
+</select>
+<script>
+  const select = document.getElementById('topic-picker') as HTMLSelectElement
+  select?.addEventListener('change', () => {
+    window.location.assign(`/${select.value}`)
+  })
+</script>

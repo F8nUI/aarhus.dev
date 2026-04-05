@@ -1,5 +1,5 @@
-export default function getLanguageColor(language: string) {
-  switch (language) {
+export default function getTopicColor(topic: string) {
+  switch (topic) {
     case 'swift':
       return 'bg-[#f05138] text-gray-100!'
     case 'js':

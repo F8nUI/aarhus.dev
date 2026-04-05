@@ -3,17 +3,18 @@ import { getEvents } from '@lib/event'
 import EventList from './EventList'
 
 interface Props {
-  language?: string
+  topic?: string
+  pastOnly?: boolean
 }
 
-const { language } = Astro.props
+const { topic, pastOnly } = Astro.props
 const events = (await getEvents()).filter((e) => {
-  if (!language) {
+  if (!topic) {
     return e
   }
 
-  return e.language == language
+  return e.topic == topic
 })
 ---
 
-<EventList client:load events={events} filteringByLanguage={language != undefined} />
+<EventList client:only="preact" events={events} filteringByTopic={topic != undefined} pastOnly={pastOnly} topic={topic} />

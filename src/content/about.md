@@ -1,16 +1,18 @@
 ---
 title: About aarhus.dev
-description: A community-driven website showcasing tech events and meetups in Aarhus, Denmark.
+description: A community-driven timetable of tech events in Aarhus, Denmark.
 ---
 
-## What We Do
+## What is this?
 
-This project aggregates information about various technology communities and their events in Aarhus, including JavaScript, Rust, Swift, Ruby, and more.
+A single place to find tech events and meetups in Aarhus — JavaScript, Rust, Swift, .NET, AI, Ruby, and more.
 
-## Contributing
+Built with Astro, Preact, and Tailwind CSS. Fully open source.
 
-Want to add an event or become an organizer? You can add events and organizers directly through the [GitHub repository](https://github.com/f8nui/aarhus.dev) - no need to clone the repository or create a PR manually!
+## Add your event
 
-## Open Source
+Anyone can add events via pull request. See [how to add an event](/add-event).
 
-This project is open source and built with Astro, Preact, and Tailwind CSS. Contributions are welcome! Check out our [GitHub repository](https://github.com/f8nui/aarhus.dev) to get started.
+## Source
+
+[GitHub repository](https://github.com/f8nui/aarhus.dev)

@@ -1,80 +1,96 @@
-import getLanguageColor from '@lib/languageColor'
-import type { ComponentChild } from 'preact'
+import { cn } from '@lib/cn'
+import type { ADEvent } from '@lib/event'
 
-interface SectionProps {
+interface EventHeaderProps {
   event: ADEvent
   isEventPage: boolean
   languageBadge: boolean
 }
 
-export default function EventHeader({ event, isEventPage, languageBadge }: SectionProps) {
-  function Organizer({ isVisible }: { isVisible: boolean }) {
-    return isVisible && <p class="opacity-30 text-nowrap">by {event.organizer.data.name}</p>
-  }
+const topicColors: Record<string, string> = {
+  swift: 'var(--color-topic-swift)',
+  js: 'var(--color-topic-js)',
+  rust: 'var(--color-topic-rust)',
+  ruby: 'var(--color-topic-ruby)',
+  dotnet: 'var(--color-topic-dotnet)',
+  ai: 'var(--color-topic-ai)',
+}
 
-  function Badge({
-    color,
-    children,
-    className,
-  }: {
-    color?: string
-    children: ComponentChild
-    className?: string
-  }) {
+const CPH = 'Europe/Copenhagen'
+
+function shortDate(date: Date): string {
+  const weekday = date
+    .toLocaleDateString('en-US', { weekday: 'short', timeZone: CPH })
+    .toLowerCase()
+  const dayMonth = date
+    .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: CPH })
+    .toLowerCase()
+  const time = date.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: CPH,
+  })
+  return `${weekday}, ${dayMonth} \u00b7 ${time}`
+}
+
+export default function EventHeader({ event, isEventPage, languageBadge }: EventHeaderProps) {
+  if (isEventPage) {
     return (
-      <span
-        class={['w-fit px-1.5 py-0.5 text-sm no-underline', className, color ?? 'bg-amber-100']
-          .filter((c) => c)
-          .join(' ')}
-      >
-        {children}
-      </span>
+      <div>
+        <h1 class="text-2xl md:text-3xl font-semibold leading-tight">{event.data.title}</h1>
+        <div class="mt-3 text-sm flex flex-col gap-1" style={{ color: 'var(--color-text-muted)' }}>
+          <span>
+            Organized by{' '}
+            <a href={'/organizer/' + event.organizer.id}>{event.organizer.data.name}</a>
+          </span>
+          <p>
+            {event.dateFormatted.date}, {event.dateFormatted.time}
+          </p>
+          <p>{event.data.venue.address}</p>
+        </div>
+        {event.data.learnMoreURL && (
+          <a class="cta mt-4 text-sm" href={event.data.learnMoreURL}>
+            Attend / Learn more &rarr;
+          </a>
+        )}
+      </div>
     )
   }
 
   return (
-    <div class="leading-tight group">
-      <div>
+    <div class="py-2 px-3 -mx-3 rounded-sm hover-row flex items-start gap-2.5">
+      <span
+        class="w-2 h-2 rounded-full shrink-0 mt-[0.45em]"
+        style={{
+          backgroundColor: topicColors[event.topic] ?? 'var(--color-text-muted)',
+        }}
+        title={event.topic}
+      />
+      <div class="flex-1 min-w-0">
+        <div>
+          <span class="group-hover:underline">{event.data.title}</span>
+        </div>
         <div
-          class={['flex space-x-2 items-center flex-wrap', isEventPage && 'font-semibold text-3xl']
-            .filter((v) => v)
-            .join(' ')}
+          class="text-sm mt-0.5 flex items-center gap-1.5 flex-wrap"
+          style={{ color: 'var(--color-text-muted)' }}
         >
-          {languageBadge && (
-            <Badge color={getLanguageColor(event.language)}>{event.language}</Badge>
-          )}
-          <span
-            class={['text-nowrap', !isEventPage && 'group-hover:underline']
-              .filter((c) => c)
-              .join(' ')}
-          >
-            {event.data.title}
+          <span>
+            by{' '}
+            <a
+              class="no-underline hover:underline"
+              style={{ color: 'inherit' }}
+              href={'/organizer/' + event.organizer.id}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {event.organizer.data.name}
+            </a>
           </span>
-          <div class="space-x-2 items-center layout:flex hidden">
-            <Organizer isVisible={!isEventPage} />
-          </div>
+          <span>&middot;</span>
+          <span>{shortDate(event.startDate)}</span>
+          <span>&middot;</span>
+          <span>{event.data.venue.title}</span>
         </div>
-        <div class="max-layout:flex hidden">
-          <Organizer isVisible={!isEventPage} />
-        </div>
-        {isEventPage ? (
-          <div class="flex flex-col text-sm opacity-50 mt-2">
-            <span>
-              Organized by{' '}
-              <a href={'/organizer/' + event.organizer.id}>{event.organizer.data.name}</a>
-            </span>
-            <p class="">
-              When: {event.dateFormatted.date}, {event.dateFormatted.time}
-            </p>
-            <p class="">Where: {event.data.venue.address}</p>
-            {event.data.learnMoreURL && <a href={event.data.learnMoreURL}>Attend / Learn more…</a>}
-          </div>
-        ) : (
-          <div class="flex items-center space-x-2 text-lg opacity-50 flex-wrap">
-            <p class="text-nowrap">{event.startDateFormatted}</p>
-            <p class="text-nowrap">@ {event.data.venue.title}</p>
-          </div>
-        )}
       </div>
     </div>
   )

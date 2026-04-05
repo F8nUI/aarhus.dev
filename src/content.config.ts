@@ -1,14 +1,5 @@
-import {
-  defineCollection,
-  reference,
-  render,
-  z,
-  type CollectionEntry,
-  type InferEntrySchema,
-  type RenderResult,
-} from 'astro:content'
+import { defineCollection, reference, z } from 'astro:content'
 import { glob } from 'astro/loaders'
-import { getCollection } from 'astro:content'
 
 const organizers = defineCollection({
   loader: glob({ pattern: ['*.md', '!_*.md'], base: 'src/content/organizer' }),

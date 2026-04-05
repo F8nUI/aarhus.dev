@@ -1,23 +1,55 @@
+import type { ADEvent } from '@lib/event'
 import EventHeader from './EventHeader'
 
 interface EventListProps {
   events: ADEvent[]
-  filteringByLanguage: boolean
+  filteringByTopic: boolean
+  pastOnly?: boolean
+  topic?: string
 }
 
-export default function EventList({ events, filteringByLanguage }: EventListProps) {
+export default function EventList({ events, filteringByTopic, pastOnly, topic }: EventListProps) {
   const { now, today, upcoming, past } = groupEvents(events)
+
+  if (pastOnly) {
+    const sorted = past.sort((a, b) => b.startDate.getTime() - a.startDate.getTime())
+    return (
+      <div>
+        <EventItems events={sorted} filteringByTopic={filteringByTopic} />
+      </div>
+    )
+  }
+
+  const hasActive = now.length + today.length + upcoming.length > 0
 
   return (
     <div class="flex flex-col space-y-8">
-      <Section title="Happening right now" filteringByLanguage={filteringByLanguage} events={now} />
-      <Section title="Today" filteringByLanguage={filteringByLanguage} events={today} />
-      <Section
-        title="Upcoming Events"
-        filteringByLanguage={filteringByLanguage}
-        events={upcoming}
-      />
-      <Section title="Past Events" filteringByLanguage={filteringByLanguage} events={past} />
+      <Section title="Happening right now" filteringByTopic={filteringByTopic} events={now} />
+      <Section title="Today" filteringByTopic={filteringByTopic} events={today} />
+      <Section title="Upcoming" filteringByTopic={filteringByTopic} events={upcoming} showHeader={now.length > 0 || today.length > 0} />
+      {!hasActive && (
+        <div class="py-2 px-3 -mx-3 flex items-start gap-2.5" style={{ color: 'var(--color-text-muted)' }}>
+          <span class="w-2 h-2 rounded-full shrink-0 mt-[0.45em]" style={{ backgroundColor: 'var(--color-border)' }} />
+          <div>
+            <p>No upcoming events yet.</p>
+            <p class="text-sm mt-1">
+              Know something coming up?{' '}
+              <a class="underline" href="/add-event">Add an event</a>
+            </p>
+          </div>
+        </div>
+      )}
+      <div style={past.length === 0 ? { display: 'none' } : undefined}>
+        <div class="h-px mb-4" style={{ backgroundColor: 'var(--color-border)', opacity: 0.7 }}></div>
+        <a
+          class="no-underline! block py-2 px-3 -mx-3 rounded-sm hover-row flex items-start gap-2.5"
+          style={{ color: 'var(--color-text-muted)', opacity: 0.6 }}
+          href={topic ? `/past/${topic}` : '/past'}
+        >
+          <span class="w-2 h-2 rounded-full shrink-0 mt-[0.45em]" style={{ backgroundColor: 'var(--color-border)' }} />
+          <span>Past events ({past.length})</span>
+        </a>
+      </div>
     </div>
   )
 }
@@ -25,26 +57,53 @@ export default function EventList({ events, filteringByLanguage }: EventListProp
 interface SectionProps {
   title: string
   events: ADEvent[]
-  filteringByLanguage: boolean
+  filteringByTopic: boolean
+  showHeader?: boolean
 }
 
-const Section = ({ title, events, filteringByLanguage }: SectionProps) => {
+const EventItems = ({ events, filteringByTopic }: { events: ADEvent[]; filteringByTopic: boolean }) => {
+  const grouped = groupByMonth(events)
+
   return (
-    events.length > 0 && (
-      <section class="flex flex-col space-y-2">
-        <h2 class="text-sm opacity-50 relative flex items-center space-x-2">
-          <span class="text-nowrap">{title}</span>
-          <span class="h-px w-full bg-gray-300"></span>
-        </h2>
-        <div class="flex flex-col space-y-2">
-          {events.map((event) => (
-            <a class="no-underline! relative group" href={event.id}>
-              <EventHeader isEventPage={false} event={event} languageBadge={!filteringByLanguage} />
+    <>
+      {grouped.map(({ label, events: monthEvents }) => (
+        <div class="mt-3 first:mt-0">
+          <div
+            class="flex items-center gap-2 mb-1"
+            style={{ color: 'var(--color-text-muted)', opacity: 0.7 }}
+          >
+            <span class="h-px w-[18px] shrink-0" style={{ backgroundColor: 'var(--color-border)' }}></span>
+            <span class="text-xs uppercase tracking-wide shrink-0">{label}</span>
+            <span class="h-px flex-1" style={{ backgroundColor: 'var(--color-border)' }}></span>
+          </div>
+          {monthEvents.map((event) => (
+            <a class="no-underline! block group" href={event.id}>
+              <EventHeader isEventPage={false} event={event} languageBadge={!filteringByTopic} />
             </a>
           ))}
         </div>
-      </section>
-    )
+      ))}
+    </>
+  )
+}
+
+const Section = ({ title, events, filteringByTopic, showHeader = true }: SectionProps) => {
+  const empty = events.length === 0
+
+  return (
+    <div style={empty ? { display: 'none' } : undefined}>
+      {showHeader && (
+        <h2
+          class="text-sm flex items-center mb-2"
+          style={{ color: 'var(--color-text-muted)' }}
+        >
+          <span class="shrink-0 w-[18px] text-left">//</span>
+          <span class="shrink-0">{title.toLowerCase()}</span>
+          <span class="h-px flex-1" style={{ backgroundColor: 'var(--color-border)' }}></span>
+        </h2>
+      )}
+      <EventItems events={events} filteringByTopic={filteringByTopic} />
+    </div>
   )
 }
 
@@ -89,4 +148,22 @@ function groupEvents(events: ADEvent[]): {
   result.upcoming.sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
 
   return result
+}
+
+function groupByMonth(events: ADEvent[]): { label: string; events: ADEvent[] }[] {
+  const groups: { label: string; events: ADEvent[] }[] = []
+  for (const event of events) {
+    const label = event.startDate.toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'Europe/Copenhagen',
+    })
+    const last = groups[groups.length - 1]
+    if (last && last.label === label) {
+      last.events.push(event)
+    } else {
+      groups.push({ label, events: [event] })
+    }
+  }
+  return groups
 }
