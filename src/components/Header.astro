@@ -1,37 +1,91 @@
 ---
-import LanguagePicker from '@components/LanguagePicker/LanguagePicker.astro'
-
 interface Props {
-  language?: string
-  languages: string[]
+  topic?: string
+  topics: string[]
 }
 
-const { language, languages } = Astro.props
+const { topic, topics } = Astro.props
 ---
 
-<nav class="flex space-x-2 items-center">
-  <a class="hover:opacity-50 no-underline!" href="/">aarhus.dev</a>
-  {
-    language && (
-      <>
-        <span>/</span>
-        <LanguagePicker selectedLanguage={language} languages={languages} />
-      </>
-    )
-  }
-  {
-    !language && (
-      <div class="flex ml-5 space-x-4">
-        {languages.map((language) => (
-          <a class="hover:underline text-gray-400! hover:text-gray-600!" href={'/' + language}>
-            {language}
-          </a>
-        ))}
-      </div>
-    )
-  }
-  <div class="flex w-full space-x-4 justify-end text-sm *:text-gray-400! *:hover:text-gray-600!">
-    <a href="https://github.com/f8nui/aarhus.dev">GitHub</a>
-    <a href="/about">About</a>
+<nav>
+  <div class="flex items-center justify-between">
+    <div>
+      <a class="hover:opacity-50 no-underline!" href="/">aarhus.dev</a>{topic && <><span style="color: var(--color-text-muted);">/</span><a class="no-underline! hover:opacity-50" style="color: var(--color-text-muted);" href={'/' + topic}>{topic}</a><span class="inline-block w-2 h-2 rounded-full ml-1.5 align-[0.15em]" style={`background-color: var(--color-topic-${topic});`}></span></>}
+    </div>
+    <div class="flex items-center gap-3 text-sm">
+      <a
+        class="no-underline! hover:underline!"
+        style="color: var(--color-text-muted);"
+        href="/add-event"
+      >add event</a>
+      <button
+        id="theme-toggle"
+        class="cursor-pointer p-1 hover:opacity-70"
+        style="color: var(--color-text-muted);"
+        aria-label="Toggle theme"
+      >
+        <svg
+          class="icon-sun"
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg
+          class="icon-moon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div class="flex gap-3 mt-1 text-sm">
+    {
+      (topic ? topics.filter((t) => t !== topic) : topics).map((t) => (
+        <a
+          class="no-underline! hover:underline!"
+          style="color: var(--color-text-muted);"
+          href={'/' + t}
+        >
+          {t}
+        </a>
+      ))
+    }
   </div>
 </nav>
+<script>
+  const btn = document.getElementById('theme-toggle')
+  btn?.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme')
+    const isDark =
+      current === 'dark' ||
+      (!current && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    const next = isDark ? 'light' : 'dark'
+    document.documentElement.setAttribute('data-theme', next)
+    localStorage.setItem('theme', next)
+  })
+</script>

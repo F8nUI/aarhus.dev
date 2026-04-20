@@ -18,13 +18,15 @@ const { organizer } = Astro.props
 const { Content } = await render(organizer)
 const metadata = {
   title: organizer.data.name,
-  description: `Information about ${organizer.data.name}, a tech community organizer in Aarhus, Denmark`
+  description: `Information about ${organizer.data.name}, a tech community organizer in Aarhus, Denmark`,
 }
 ---
 
 <Layout {metadata}>
-  <p>{organizer.data.name}</p>
-  <div class="markdown">
+  <div class="mb-6">
+    <h1 class="font-semibold text-2xl md:text-3xl">{organizer.data.name}</h1>
+  </div>
+  <div class="prose">
     <Content />
   </div>
 </Layout>

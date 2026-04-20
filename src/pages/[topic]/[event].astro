@@ -9,30 +9,31 @@ import { parseEvent } from '@lib/event'
 export async function getStaticPaths() {
   const events = await getCollection('events')
   const paths = events.map((event) => {
-    const [lang, eventId] = event.id.split('/')
+    const [topic, eventId] = event.id.split('/')
     return {
-      params: { lang, event: eventId },
-      props: { language: lang, event: parseEvent(event) },
+      params: { topic, event: eventId },
+      props: { topic, event: parseEvent(event) },
     }
   })
 
   return paths
 }
 
-const { event: eventAsync, language } = Astro.props
+const { event: eventAsync, topic } = Astro.props
 const event = await eventAsync
 const { Content } = await render(event)
-const { organizer: organizerRef } = event.data
 const metadata = {
   title: event.data.title,
-  description: event.data.subtitle || `${event.data.title} - ${event.data.venue.title}, ${new Date(event.data.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+  description:
+    event.data.subtitle ||
+    `${event.data.title} - ${event.data.venue.title}, ${new Date(event.data.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
 }
 ---
 
-<Layout {language} {metadata}>
+<Layout {topic} {metadata}>
   <EventHeader event={event} isEventPage languageBadge={false} />
-  <div class="h-px my-4 w-full bg-gray-100"></div>
-  <div class="markdown">
+  <div class="h-px my-6 w-full" style="background-color: var(--color-border);"></div>
+  <div class="prose">
     <Content />
   </div>
 </Layout>
