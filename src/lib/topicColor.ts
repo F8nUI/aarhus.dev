@@ -6,6 +6,8 @@ export default function getTopicColor(topic: string) {
       return 'bg-[#f7df1e] text-gray-600!'
     case 'rust':
       return 'bg-[#dea584] text-gray-100!'
+    case 'go':
+      return 'bg-[#00add8] text-gray-100!'
     case 'ruby':
       return 'bg-[#cc342d] text-gray-100!'
   }
