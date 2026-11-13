@@ -48,9 +48,13 @@
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
-  transition:
-    background-color 0.15s,
-    color 0.15s;
+}
+
+/* Theme switch: the whole page crossfades as one image (see Header.astro),
+   so no element can change color ahead of the others. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.2s;
 }
 
 a {
