@@ -1,0 +1,117 @@
+---
+// One event as a gig flyer. On the home and topic pages every event gets one and
+// a script in List.astro shows the next; on an event page it is the page's hero.
+import { formatLong, type ADEvent } from '@lib/event'
+import {
+  eventAttrs,
+  googleCalendarUrl,
+  icsFileName,
+  icsHref,
+  linkHost,
+  mapUrl,
+  relativeAtBuild,
+  topicName,
+} from '../shared'
+import { dateLabel, needsYear, startStamp, timeLabel, titleFit, topicStyle } from './poster'
+
+interface Props {
+  event: ADEvent
+  /** The event's own page: an h1, the full When line and the calendar links. */
+  page?: boolean
+  /** On a list: the poster shown before the script runs (the next event at build time). */
+  shown?: boolean
+}
+
+const { event, page = false, shown = false } = Astro.props
+const { title, subtitle, venue, learnMoreURL, endTime } = event.data
+const when = formatLong(event)
+const map = mapUrl(event)
+const rel = relativeAtBuild(event)
+const Heading = page ? 'h1' : 'h2'
+// On a list the poster is an event item itself; on a page the page's root carries the attributes.
+const attrs = page ? {} : { ...eventAttrs(event), 'data-v5-poster': '' }
+---
+
+<article
+  class:list={['poster', `fit-${titleFit(title)}`, { 'is-shown': shown, 'is-page': page }]}
+  style={topicStyle(event.topic)}
+  {...attrs}
+>
+  <p class="strip">
+    <span class="strip-state">
+      <span class="s-now"><span class="pulse" aria-hidden="true"></span>Happening now{endTime && ` · until ${endTime}`}</span>
+      <span class="s-up">{page ? 'Coming up' : 'Next up'} · <span data-rel>{rel}</span></span>
+      <span class="s-past">This event has ended · <span data-rel>{rel}</span></span>
+    </span>
+    <a class="strip-topic" href={`/${event.topic}`}>{topicName(event.topic)}</a>
+  </p>
+
+  <div class="poster-sheet">
+    <hgroup class="poster-head">
+      <Heading class="poster-title">{page ? title : <a href={event.url}>{title}</a>}</Heading>
+      {subtitle && <p class="poster-subtitle">{subtitle}</p>}
+    </hgroup>
+
+    <p class="slab">
+      <time datetime={startStamp(event)}>
+        <span>{dateLabel(event, needsYear(event))}</span>
+        <span class="slab-dash" aria-hidden="true"><span>—</span></span>
+        <span>{timeLabel(event)}</span>
+      </time>
+    </p>
+
+    <div class="poster-foot">
+      <dl class="facts">
+        {
+          page && (
+            <div>
+              <dt>When</dt>
+              <dd>
+                {when.date}
+                <br />
+                {when.time} · <span data-rel>{rel}</span>
+              </dd>
+            </div>
+          )
+        }
+        <div>
+          <dt>Where</dt>
+          <dd>
+            {
+              venue ? (
+                <>
+                  <span class="venue">{venue.title}</span>
+                  <a href={map}>{venue.address}</a>
+                </>
+              ) : (
+                <span class="venue">Venue TBA</span>
+              )
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>Organizer</dt>
+          <dd><a href={`/organizer/${event.organizer.id}`}>{event.organizer.data.name}</a></dd>
+        </div>
+      </dl>
+
+      <div class="actions">
+        <a class="signup" href={learnMoreURL}><span>Sign up on</span> <span>{linkHost(learnMoreURL)} →</span></a>
+        {
+          page ? (
+            <span class="more">
+              <a href={icsHref(event)} download={icsFileName(event)}>
+                Add to calendar (.ics)
+              </a>
+              <a href={googleCalendarUrl(event)}>Google Calendar</a>
+            </span>
+          ) : (
+            <span class="more">
+              <a href={event.url}>Event details</a>
+            </span>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</article>

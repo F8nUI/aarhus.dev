@@ -1,0 +1,847 @@
+/* Poster (v5). Tokens live on :root[data-variant='v5']; every other rule is under
+   [data-variant-block='v5']. A poster or list item carries its topic color as --p and
+   the ink that reads on it (black or white) as --p-on.
+
+   Light is a two-colour print: black ink on paper, the topic colour as the one spot
+   colour. Dark is the flyer itself: the poster is a field of topic colour on black.
+   light-dark() picks between them per element, so each rule says both at once. */
+
+:root[data-variant='v5'] {
+  --color-bg: #f2f2ee;
+  --color-bg-subtle: #e4e3dd;
+  --color-text: #000;
+  --color-text-muted: #55544e;
+  --color-border: #c8c7c0;
+  --v5-rule: #000;
+  --v5-code-bg: #000;
+}
+
+:root[data-variant='v5'][data-theme='dark'] {
+  --color-bg: #000;
+  --color-bg-subtle: #191917;
+  --color-text: #eeece6;
+  --color-text-muted: #a3a199;
+  --color-border: #34332f;
+  --v5-rule: #eeece6;
+  --v5-code-bg: #191917;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-variant='v5']:not([data-theme='light']) {
+    --color-bg: #000;
+    --color-bg-subtle: #191917;
+    --color-text: #eeece6;
+    --color-text-muted: #a3a199;
+    --color-border: #34332f;
+    --v5-rule: #eeece6;
+    --v5-code-bg: #191917;
+  }
+}
+
+@keyframes v5-pulse {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+[data-variant-block='v5'] {
+  --v5-display: 'Archivo', 'Arial Narrow', ui-sans-serif, system-ui, sans-serif;
+  --v5-mono: 'Spline Sans Mono', ui-monospace, Menlo, monospace;
+  --v5-gutter: clamp(1rem, 4vw, 3rem);
+
+  font-family: var(--v5-display);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+
+  & a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  & a:hover {
+    color: inherit;
+    text-decoration-thickness: 2px;
+  }
+  & :focus-visible {
+    outline: 3px solid var(--color-text);
+    outline-offset: 3px;
+  }
+
+  /* --- Frame ------------------------------------------------------------ */
+
+  & .v5 {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 84rem;
+    margin-inline: auto;
+    padding-inline: var(--v5-gutter);
+  }
+
+  & .v5-head {
+    padding-top: 1.25rem;
+  }
+  & .v5-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  & .v5-name {
+    font-weight: 900;
+    font-stretch: 115%;
+    font-size: 1.5rem;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    text-decoration: none;
+  }
+  & .v5-tools {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    font-family: var(--v5-mono);
+    font-size: 0.875rem;
+  }
+  & .v5-tools a {
+    text-decoration: none;
+  }
+  & .v5-tools a:hover {
+    text-decoration: underline;
+  }
+  & .theme-toggle {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-right: -0.6rem;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  & .v5-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 1rem;
+    margin-left: -0.5rem;
+    font-family: var(--v5-mono);
+    font-size: 0.8125rem;
+  }
+  & .v5-topics a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    padding: 0.3rem 0.5rem;
+    border: 2px solid transparent;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  & .v5-topics a:hover {
+    border-color: currentColor;
+  }
+  & .v5-topics .sw {
+    width: 0.7em;
+    height: 0.7em;
+    background: var(--p);
+  }
+  & .v5-topics a[aria-current] {
+    background: var(--p, var(--color-text));
+    color: var(--p-on, var(--color-bg));
+    font-weight: 600;
+  }
+  & .v5-topics a[aria-current] .sw {
+    background: currentColor;
+  }
+
+  & .v5-main {
+    flex: 1;
+    padding-block: clamp(1.5rem, 4vw, 2.75rem) clamp(3rem, 8vw, 6rem);
+  }
+
+  & .v5-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    padding-block: 1.25rem 3rem;
+    border-top: 4px solid var(--v5-rule);
+    font-family: var(--v5-mono);
+    font-size: 0.8125rem;
+  }
+  & .v5-foot p {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 1rem;
+    color: var(--color-text-muted);
+  }
+  & .v5-foot .v5-name {
+    color: var(--color-text);
+    font-family: var(--v5-display);
+    font-size: 1.125rem;
+  }
+  & .v5-foot nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+
+  /* --- List pages ------------------------------------------------------- */
+
+  & .list-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  & .list-head h1 {
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+  & .list-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+    font-family: var(--v5-mono);
+    font-size: 0.875rem;
+  }
+
+  /* --- The poster ------------------------------------------------------- */
+
+  & .posters > .poster:not(.is-shown) {
+    display: none;
+  }
+
+  & .poster {
+    container-type: inline-size;
+    color: light-dark(var(--color-text), var(--p-on));
+    background: light-dark(transparent, var(--p));
+    /* Light: an ink frame. Dark: a frame of the poster's own colour, which keeps
+       the black strip and date band inside the sheet instead of merging with the page. */
+    border: 3px solid light-dark(var(--color-text), var(--p));
+  }
+  & .poster :focus-visible {
+    outline-color: light-dark(var(--color-text), var(--p-on));
+  }
+
+  /* Status strip across the top: next up / happening now / ended. */
+  & .strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.55rem clamp(1rem, 4cqi, 3rem);
+    background: light-dark(var(--color-text), var(--p-on));
+    color: light-dark(var(--color-bg), var(--p));
+    font-family: var(--v5-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+  & .strip :focus-visible {
+    outline-color: currentColor;
+    outline-offset: 2px;
+  }
+  & .strip-topic {
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  & .strip-topic:hover {
+    text-decoration: underline;
+  }
+  & .s-now,
+  & .s-past {
+    display: none;
+  }
+  & [data-when~='now'] .s-now {
+    display: inline-flex;
+    align-items: center;
+  }
+  & [data-when~='past'] .s-past {
+    display: inline;
+  }
+  & [data-when~='now'] .s-up,
+  & [data-when~='past'] .s-up {
+    display: none;
+  }
+  & [data-when~='now'] .strip {
+    background: light-dark(var(--p), var(--p-on));
+    color: light-dark(var(--p-on), var(--p));
+  }
+  & .pulse {
+    width: 0.65em;
+    height: 0.65em;
+    margin-right: 0.65em;
+    border-radius: 50%;
+    background: currentColor;
+    animation: v5-pulse 1.6s ease-in-out infinite;
+  }
+
+  & .poster-sheet {
+    --pad: clamp(1.25rem, 4cqi, 3rem);
+    display: grid;
+    gap: clamp(1.5rem, 3.5cqi, 2.5rem);
+    padding: var(--pad);
+  }
+
+  & .poster-title {
+    font-weight: 850;
+    line-height: 0.88;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    hyphens: manual;
+  }
+  & .poster-title a {
+    text-decoration: none;
+  }
+  & .poster-title a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 0.06em;
+    text-underline-offset: 0.08em;
+  }
+  /* Short titles go big and wide, long ones condensed — the headline block stays about the same size. */
+  & .fit-xs .poster-title {
+    font-size: clamp(4rem, 15cqi, 12rem);
+    font-stretch: 112%;
+    letter-spacing: -0.035em;
+  }
+  & .fit-s .poster-title {
+    font-size: clamp(3rem, 11.5cqi, 9.5rem);
+    font-stretch: 88%;
+  }
+  & .fit-m .poster-title {
+    font-size: clamp(2.8rem, 9cqi, 7.25rem);
+    font-stretch: 75%;
+  }
+  & .fit-l .poster-title {
+    font-size: clamp(2.3rem, 8.4cqi, 6.75rem);
+    font-stretch: 66%;
+  }
+  & .poster-subtitle {
+    margin-top: 0.7em;
+    font-size: clamp(1.125rem, 2.6cqi, 1.75rem);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  /* The date block, a band right across the poster: THU 19 NOV ——— 18:00–21:00 */
+  & .slab {
+    margin-inline: calc(-1 * var(--pad));
+  }
+  & .slab time {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+    padding: 0.16em var(--pad) 0.12em;
+    background: light-dark(var(--p), var(--p-on));
+    color: light-dark(var(--p-on), var(--p));
+    font-size: clamp(1.75rem, 5.4cqi, 4.25rem);
+    font-weight: 900;
+    font-stretch: 80%;
+    line-height: 1;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+  & .slab-dash {
+    flex: 1;
+    min-width: 1em;
+    height: 0.12em;
+    background: currentColor;
+  }
+  & .slab-dash > span {
+    display: none;
+  }
+
+  & .poster-foot {
+    display: grid;
+    gap: clamp(1.5rem, 3.5cqi, 2.5rem);
+  }
+  & .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12.5rem), 1fr));
+    gap: 1rem 2rem;
+    font-family: var(--v5-mono);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+  & .facts dt {
+    margin-bottom: 0.3rem;
+    color: light-dark(var(--color-text-muted), var(--p-on));
+    font-size: 0.75rem;
+    font-weight: 400;
+  }
+  & .facts dd {
+    font-weight: 500;
+  }
+  & .facts .venue {
+    display: block;
+    font-family: var(--v5-display);
+    font-size: 1.375rem;
+    font-weight: 800;
+    font-stretch: 85%;
+    line-height: 1.15;
+  }
+
+  & .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2rem;
+  }
+  & .signup {
+    display: inline-block;
+    text-wrap: balance;
+    padding: 0.75em 1.15em;
+    border: 3px solid light-dark(var(--color-text), var(--p-on));
+    background: light-dark(var(--color-text), var(--p-on));
+    color: light-dark(var(--color-bg), var(--p));
+    font-size: clamp(1.125rem, 2.4cqi, 1.5rem);
+    font-weight: 800;
+    font-stretch: 90%;
+    line-height: 1.1;
+    text-decoration: none;
+  }
+  & .signup:hover {
+    background: light-dark(var(--p), transparent);
+    color: var(--p-on);
+  }
+  & [data-when~='past'] .signup {
+    background: transparent;
+    color: inherit;
+  }
+  & .signup > span {
+    white-space: nowrap;
+  }
+  & .more {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    font-family: var(--v5-mono);
+    font-size: 0.9375rem;
+  }
+
+  /* Wide poster: facts on the left, the sign-up button in the bottom-right corner. */
+  @container (min-width: 60rem) {
+    & .poster:not(.is-page) .poster-foot {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      column-gap: 3rem;
+    }
+    & .poster:not(.is-page) .actions {
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.85rem;
+    }
+  }
+  @container (max-width: 36rem) {
+    & .slab-dash {
+      display: none;
+    }
+    & .slab time {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+    }
+    & .signup {
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  /* --- Also now / later today, under the poster ------------------------- */
+
+  & .also {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  & .also section {
+    display: grid;
+    grid-template-columns: 10rem minmax(0, 1fr);
+    gap: 0.25rem 1.5rem;
+    align-items: baseline;
+  }
+  & .also h2 {
+    color: var(--color-text-muted);
+    font-family: var(--v5-mono);
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+  & .also ul {
+    display: grid;
+    gap: 0.35rem;
+  }
+  & .also li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.15rem 0.75rem;
+  }
+  & .also-time {
+    font-family: var(--v5-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  & .also li > a,
+  & .row-title {
+    font-weight: 700;
+    text-decoration: none;
+  }
+  & .also li > a {
+    font-size: 1.125rem;
+  }
+  & .also li > a:hover,
+  & .row-title:hover {
+    text-decoration: underline;
+  }
+  & .also-org,
+  & .row-org {
+    color: var(--color-text-muted);
+    font-family: var(--v5-mono);
+    font-size: 0.8125rem;
+  }
+  /* A small square of the topic colour, before the time. */
+  & .also li::before,
+  & .row-date::before {
+    content: '';
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    margin-right: 0.6rem;
+    background: var(--p);
+  }
+
+  /* --- Index ------------------------------------------------------------ */
+
+  & .index {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 3.5rem);
+    margin-top: clamp(3rem, 7vw, 5rem);
+  }
+  & .index-group > h2 {
+    margin-bottom: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 4px solid var(--v5-rule);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 850;
+    font-stretch: 75%;
+    line-height: 1;
+  }
+  & .index-year {
+    margin-top: 1rem;
+    color: var(--color-text-muted);
+    font-family: var(--v5-mono);
+    font-size: 0.8125rem;
+  }
+  & .row {
+    display: grid;
+    grid-template-columns: 11rem minmax(0, 1fr) minmax(0, 16rem);
+    gap: 0.2rem 1.5rem;
+    align-items: baseline;
+    padding-block: 0.55rem;
+  }
+  & .row-when {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.9rem;
+    font-family: var(--v5-mono);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  & .row-date,
+  & .row-time {
+    white-space: nowrap;
+  }
+  & .row-title {
+    font-size: 1.25rem;
+    line-height: 1.2;
+    text-wrap: pretty;
+  }
+  & .row-sub {
+    font-weight: 400;
+  }
+  & .row-sub::before {
+    content: ' — ';
+  }
+  & .row-org {
+    text-align: right;
+  }
+
+  @media (max-width: 44rem) {
+    & .also section {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    & .row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    & .row-org {
+      text-align: left;
+    }
+  }
+
+  & .empty {
+    padding-block: 2rem;
+  }
+  & .empty-title {
+    margin-bottom: 0.75rem;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 850;
+    font-stretch: 75%;
+    line-height: 0.95;
+    text-wrap: balance;
+  }
+
+  & .list-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 2rem;
+    margin-top: clamp(3rem, 7vw, 5rem);
+    font-family: var(--v5-mono);
+    font-size: 0.875rem;
+  }
+
+  /* --- Archive: a wall of small posters --------------------------------- */
+
+  & .archive .list-head {
+    margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+  }
+  & .archive .list-head h1 {
+    font-size: clamp(2.75rem, 8vw, 6rem);
+    font-weight: 850;
+    font-stretch: 75%;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+  & .wall-year + .wall-year {
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  }
+  & .wall-label {
+    margin-bottom: 1rem;
+    padding-top: 0.4rem;
+    border-top: 4px solid var(--v5-rule);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 850;
+    font-stretch: 75%;
+    line-height: 1;
+  }
+  & .wall {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+  }
+  @media (max-width: 30rem) {
+    & .wall {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  & .mini {
+    container-type: inline-size;
+  }
+  & .mini a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    aspect-ratio: 4 / 5;
+    padding: 0.7rem 0.75rem 0.75rem;
+    border: 2px solid light-dark(var(--color-text), var(--p));
+    background: light-dark(transparent, var(--p));
+    color: light-dark(var(--color-text), var(--p-on));
+    text-decoration: none;
+  }
+  & .mini a:hover .mini-title {
+    text-decoration: underline;
+    text-decoration-thickness: 0.07em;
+  }
+  & .mini a:focus-visible {
+    outline-color: var(--color-text);
+  }
+  & .mini-date {
+    align-self: start;
+    padding: 0.12em 0.3em 0.08em;
+    background: light-dark(var(--p), var(--p-on));
+    color: light-dark(var(--p-on), var(--p));
+    font-size: max(0.9375rem, 8cqi);
+    font-weight: 900;
+    font-stretch: 80%;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  & .mini-title {
+    flex: 1;
+    font-weight: 850;
+    line-height: 0.92;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+  }
+  & .mini.fit-xs .mini-title {
+    font-size: max(1.75rem, 21cqi);
+    font-stretch: 110%;
+    letter-spacing: -0.03em;
+  }
+  & .mini.fit-s .mini-title {
+    font-size: max(1.375rem, 16.5cqi);
+    font-stretch: 85%;
+  }
+  & .mini.fit-m .mini-title {
+    font-size: max(1.25rem, 14.5cqi);
+    font-stretch: 75%;
+  }
+  & .mini.fit-l .mini-title {
+    font-size: max(1.0625rem, 12cqi);
+    font-stretch: 66%;
+  }
+  & .mini-org {
+    font-family: var(--v5-mono);
+    font-size: 0.75rem;
+  }
+
+  /* --- Event page ------------------------------------------------------- */
+
+  & .event-body {
+    display: grid;
+    gap: 2.5rem;
+    max-width: 42rem;
+    margin-top: clamp(2.5rem, 6vw, 4rem);
+  }
+  & .event-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+    font-family: var(--v5-mono);
+    font-size: 0.875rem;
+  }
+
+  /* --- Text pages: About, Add event, organizers ------------------------- */
+
+  & .v-page {
+    max-width: 46rem;
+  }
+  & .v-page-header {
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+  }
+  & .v-page-header h1 {
+    font-size: clamp(2.75rem, 9vw, 6.5rem);
+    font-weight: 850;
+    font-stretch: 75%;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  & .v-page-description {
+    max-width: 36rem;
+    margin-top: 1rem;
+    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  & .v-page-website {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-family: var(--v5-mono);
+    font-size: 0.9375rem;
+  }
+
+  & .prose {
+    max-width: 40rem;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  & .prose :where(p, ul, ol, pre, h1, h2, h3, h4, blockquote) {
+    margin-block: 0;
+  }
+  & .prose > * + * {
+    margin-top: 1em;
+  }
+  & .prose :where(h1, h2) {
+    margin-top: 1.6em;
+    padding-top: 0.45rem;
+    border-top: 3px solid var(--v5-rule);
+    font-size: 1.875rem;
+    font-weight: 850;
+    font-stretch: 80%;
+    line-height: 1.05;
+  }
+  & .prose > :where(h1, h2):first-child {
+    margin-top: 0;
+  }
+  & .prose h3 {
+    margin-top: 1.75em;
+    font-size: 1.25rem;
+    font-weight: 750;
+    line-height: 1.2;
+  }
+  & .prose :where(h2, h3) + * {
+    margin-top: 0.6em;
+  }
+  & .prose ul {
+    padding-left: 1.25rem;
+    list-style: square;
+  }
+  & .prose ol {
+    padding-left: 1.6rem;
+    list-style: decimal;
+  }
+  & .prose ol > li::marker {
+    font-family: var(--v5-mono);
+    font-size: 0.875em;
+    font-weight: 600;
+  }
+  & .prose li {
+    margin-bottom: 0;
+    padding-left: 0.25rem;
+  }
+  & .prose li + li {
+    margin-top: 0.4em;
+  }
+  & .prose strong {
+    font-weight: 700;
+  }
+  & .prose code {
+    padding: 0.1em 0.35em;
+    border-radius: 0;
+    background: var(--color-bg-subtle);
+    font-family: var(--v5-mono);
+    font-size: 0.85em;
+  }
+  & .prose pre {
+    padding: 1.1rem 1.25rem;
+    border-radius: 0;
+    /* Markdown code blocks arrive with the highlighter's own background inline. */
+    background-color: var(--v5-code-bg) !important;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    overflow-x: auto;
+  }
+  & .prose pre code {
+    padding: 0;
+    background: none;
+    font-size: inherit;
+  }
+  & .prose blockquote {
+    padding-left: 1rem;
+    border-left: 4px solid var(--v5-rule);
+  }
+
+  @media (max-width: 30rem) {
+    & .v5-hide-sm {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    & .pulse {
+      animation: none;
+    }
+  }
+}

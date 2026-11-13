@@ -1,18 +1,66 @@
 ---
-// Placeholder — replaced by the variant's design.
+// The Poster frame: site name, topics, theme switch; footer with the site's links.
+import { calendarFeed, topicName } from '../shared'
+import { topicStyle } from './poster'
+import './v5.css'
+
 interface Props {
   topic?: string
   topics: string[]
 }
 
 const { topic, topics } = Astro.props
+const path = Astro.url.pathname
+// On the archive, topic links stay in the archive.
+const base = path.startsWith('/past') ? '/past' : ''
+const sorted = [...topics].sort((a, b) =>
+  topicName(a).replace(/^\W/, '').localeCompare(topicName(b).replace(/^\W/, '')),
+)
+const allCurrent = !topic && (path === '/' || path.replace(/\/$/, '') === '/past')
 ---
 
-<div class="max-w-3xl mx-auto p-6 font-sans">
-  <header class="mb-6 flex gap-3 flex-wrap">
-    <a href="/"><strong>aarhus.dev</strong></a>
-    {topics.map((t) => <a href={`/${t}`} class={t === topic ? 'font-bold' : ''}>{t}</a>)}
-    <button class="theme-toggle">theme</button>
+<div class="v5">
+  <header class="v5-head">
+    <div class="v5-bar">
+      <a class="v5-name" href="/">aarhus.dev</a>
+      <div class="v5-tools">
+        <a href="/add-event">Add event</a>
+        <a class="v5-hide-sm" href={calendarFeed.webcal}>Subscribe</a>
+        <button class="theme-toggle" type="button" aria-label="Switch light and dark theme">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"></circle>
+            <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <nav class="v5-topics" aria-label="Topics">
+      <a href={base || '/'} aria-current={allCurrent ? 'page' : undefined}>All</a>
+      {
+        sorted.map((t) => (
+          <a href={`${base}/${t}`} style={topicStyle(t)} aria-current={t === topic ? 'true' : undefined}>
+            <span class="sw" aria-hidden="true" />
+            {topicName(t)}
+          </a>
+        ))
+      }
+    </nav>
   </header>
-  <main><slot /></main>
+
+  <main class="v5-main">
+    <slot />
+  </main>
+
+  <footer class="v5-foot">
+    <p>
+      <a class="v5-name" href="/">aarhus.dev</a>
+      <span>A community timetable of tech events in Aarhus.</span>
+    </p>
+    <nav aria-label="Site">
+      <a href="/about">About</a>
+      <a href="/add-event">Add event</a>
+      <a href="https://github.com/f8nui/aarhus.dev">GitHub</a>
+      <a href={calendarFeed.webcal}>Subscribe</a>
+    </nav>
+  </footer>
 </div>
