@@ -21,8 +21,7 @@ const { topic, topics } = Astro.props
         href="/add-event"
       >add event</a>
       <button
-        id="theme-toggle"
-        class="cursor-pointer p-1 hover:opacity-70"
+        class="theme-toggle cursor-pointer p-1 hover:opacity-70"
         style="color: var(--color-text-muted);"
         aria-label="Toggle theme"
       >
@@ -79,21 +78,3 @@ const { topic, topics } = Astro.props
     }
   </div>
 </nav>
-<script>
-  const btn = document.getElementById('theme-toggle')
-  btn?.addEventListener('click', () => {
-    const current = document.documentElement.getAttribute('data-theme')
-    const isDark =
-      current === 'dark' ||
-      (!current && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    const next = isDark ? 'light' : 'dark'
-    const apply = () => document.documentElement.setAttribute('data-theme', next)
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (document.startViewTransition && !reduceMotion) {
-      document.startViewTransition(apply)
-    } else {
-      apply()
-    }
-    localStorage.setItem('theme', next)
-  })
-</script>

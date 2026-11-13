@@ -1,39 +1,21 @@
 ---
-import Layout from '@layouts/Layout.astro'
-import type { GetStaticPaths } from 'astro'
-import { render } from 'astro:content'
-import { getCollection } from 'astro:content'
+import VariantPage from '@variants/VariantPage.astro'
+import { getCollection, render } from 'astro:content'
 
-export const getStaticPaths = (async () => {
-  const organizers = await getCollection('organizers')
-  return organizers.map((organizer) => ({
+export async function getStaticPaths() {
+  return (await getCollection('organizers')).map((organizer) => ({
     params: { organizer: organizer.id },
-    props: {
-      organizer,
-    },
+    props: { organizer },
   }))
-}) satisfies GetStaticPaths
+}
 
 const { organizer } = Astro.props
 const { Content } = await render(organizer)
+const { name, website } = organizer.data
 const metadata = {
-  title: organizer.data.name,
-  description: `Information about ${organizer.data.name}, a tech community organizer in Aarhus, Denmark`,
+  title: name,
+  description: `Information about ${name}, a tech community organizer in Aarhus, Denmark`,
 }
 ---
 
-<Layout {metadata}>
-  <div class="mb-6">
-    <h1 class="font-semibold text-2xl md:text-3xl">{organizer.data.name}</h1>
-    {
-      organizer.data.website && (
-        <a class="text-sm" style="color: var(--color-text-muted);" href={organizer.data.website}>
-          {organizer.data.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
-        </a>
-      )
-    }
-  </div>
-  <div class="prose">
-    <Content />
-  </div>
-</Layout>
+<VariantPage {metadata} page={{ title: name, website }} {Content} />

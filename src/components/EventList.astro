@@ -119,7 +119,7 @@ const hideRow = (e: ADEvent) => past && !isPast(e)
   // Sorts the rows by the visitor's clock. Inline, so it runs before the list is painted.
   ;(function () {
     var list = document.currentScript.previousElementSibling
-    var now = Date.now()
+    var now = window.aarhusNow ? window.aarhusNow() : Date.now()
     // The Aarhus calendar day of a timestamp, e.g. "2026-11-19".
     var day = function (t) {
       return new Date(t).toLocaleDateString('en-CA', { timeZone: 'Europe/Copenhagen' })

@@ -1,0 +1,14 @@
+---
+import EventList from '@components/EventList.astro'
+import type { ADEvent } from '@lib/event'
+
+interface Props {
+  events: ADEvent[]
+  topic?: string
+  past: boolean
+}
+
+const { events, topic, past } = Astro.props
+---
+
+<EventList {events} {topic} {past} />

@@ -1,0 +1,18 @@
+---
+// Placeholder — replaced by the variant's design.
+interface Props {
+  topic?: string
+  topics: string[]
+}
+
+const { topic, topics } = Astro.props
+---
+
+<div class="max-w-3xl mx-auto p-6 font-sans">
+  <header class="mb-6 flex gap-3 flex-wrap">
+    <a href="/"><strong>aarhus.dev</strong></a>
+    {topics.map((t) => <a href={`/${t}`} class={t === topic ? 'font-bold' : ''}>{t}</a>)}
+    <button class="theme-toggle">theme</button>
+  </header>
+  <main><slot /></main>
+</div>

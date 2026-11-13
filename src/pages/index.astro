@@ -1,9 +1,6 @@
 ---
-import Layout from '@layouts/Layout.astro'
-import EventList from '@components/EventList.astro'
+import VariantPage from '@variants/VariantPage.astro'
 import { getEvents } from '@lib/event'
 ---
 
-<Layout>
-  <EventList events={await getEvents()} />
-</Layout>
+<VariantPage list={{ events: await getEvents(), past: false }} />

@@ -1,5 +1,10 @@
 ---
-import ContentPage from '@layouts/ContentPage.astro'
+import VariantPage from '@variants/VariantPage.astro'
+import { getEntry, render } from 'astro:content'
+
+const entry = (await getEntry('pages', 'about'))!
+const { Content } = await render(entry)
+const { title, description } = entry.data
 ---
 
-<ContentPage id="about" />
+<VariantPage metadata={{ title, description }} page={{ title, description }} {Content} />

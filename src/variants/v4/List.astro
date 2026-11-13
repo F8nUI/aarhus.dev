@@ -1,0 +1,26 @@
+---
+// Placeholder — replaced by the variant's design.
+import type { ADEvent } from '@lib/event'
+import { eventAttrs, formatShort, relativeAtBuild } from '../shared'
+
+interface Props {
+  events: ADEvent[]
+  topic?: string
+  past: boolean
+}
+
+const { events, past } = Astro.props
+const ordered = past ? [...events].reverse() : events
+---
+
+<p class="mb-4 opacity-60">Variant 4 placeholder</p>
+<ul data-bucket={past ? 'past' : 'upcoming'}>
+  {
+    ordered.map((event) => (
+      <li {...eventAttrs(event)}>
+        <a href={event.url}>{event.data.title}</a> — {formatShort(event)} · <span data-rel>{relativeAtBuild(event)}</span>
+      </li>
+    ))
+  }
+</ul>
+<p data-empty="upcoming">No upcoming events.</p>

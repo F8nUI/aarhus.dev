@@ -1,6 +1,5 @@
 ---
-import Layout from '@layouts/Layout.astro'
-import EventList from '@components/EventList.astro'
+import VariantPage from '@variants/VariantPage.astro'
 import { getEvents } from '@lib/event'
 
 const metadata = {
@@ -9,6 +8,4 @@ const metadata = {
 }
 ---
 
-<Layout {metadata}>
-  <EventList events={await getEvents()} past />
-</Layout>
+<VariantPage {metadata} list={{ events: await getEvents(), past: true }} />

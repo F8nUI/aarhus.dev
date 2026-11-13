@@ -1,7 +1,8 @@
 ---
 import '../styles/global.css'
-import Header from '@components/Header.astro'
-import { getTopics } from '@lib/event'
+import RuntimeHead from '../variants/RuntimeHead.astro'
+import RuntimeBody from '../variants/RuntimeBody.astro'
+import Overlay from '../variants/Overlay.astro'
 import Analytics from '@vercel/analytics/astro'
 
 interface Metadata {
@@ -10,11 +11,12 @@ interface Metadata {
 }
 
 interface Props {
-  topic?: string
   metadata?: Metadata
 }
 
-const { topic, metadata } = Astro.props
+// On this branch every page renders all design variants (see src/variants/);
+// each variant brings its own header and footer.
+const { metadata } = Astro.props
 
 const siteName = 'aarhus.dev'
 const siteTitle = 'Aarhus Developer Events & Meetups – aarhus.dev'
@@ -24,7 +26,6 @@ const defaultDescription =
 const pageTitle = metadata?.title ? `${metadata.title} – ${siteName}` : siteTitle
 const pageDescription = metadata?.description || defaultDescription
 
-const topics = await getTopics()
 ---
 
 <html lang="en">
@@ -41,36 +42,12 @@ const topics = await getTopics()
       rel="stylesheet"
     />
     <title>{pageTitle}</title>
-    <script is:inline>
-      (function () {
-        var t = localStorage.getItem('theme')
-        if (t === 'dark' || t === 'light') {
-          document.documentElement.setAttribute('data-theme', t)
-        }
-      })()
-    </script>
+    <RuntimeHead />
     <Analytics />
   </head>
-  <body class="font-mono text-xl max-w-5xl mx-auto px-4 min-h-screen flex flex-col overflow-x-hidden">
-    <header class="py-4">
-      <Header {topic} {topics} />
-    </header>
-    <main class="flex-1 pb-8">
-      <slot />
-    </main>
-    <footer class="py-6 border-t mt-auto sticky bottom-0 bg-[var(--color-bg)] -mx-3 px-3" style="border-color: var(--color-border);">
-      <div
-        class="flex items-center justify-between text-sm"
-        style="color: var(--color-text-muted);"
-      >
-        <span>aarhus.dev</span>
-        <nav class="flex space-x-4">
-          <a class="no-underline hover:underline" href="https://github.com/f8nui/aarhus.dev"
-            >GitHub</a
-          >
-          <a class="no-underline hover:underline" href="/about">About</a>
-        </nav>
-      </div>
-    </footer>
+  <body class="min-h-screen">
+    <slot />
+    <Overlay />
+    <RuntimeBody />
   </body>
 </html>

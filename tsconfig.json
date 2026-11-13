@@ -16,6 +16,9 @@
       "@layouts/*": [
         "./src/layouts/*"
       ],
+      "@variants/*": [
+        "./src/variants/*"
+      ],
       "@lib/*": [
         "./src/lib/*"
       ],
