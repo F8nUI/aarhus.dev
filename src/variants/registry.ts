@@ -1,5 +1,11 @@
 // The design variants. Every page renders all of them; the overlay (or ?v=N)
 // picks which one is visible. v0 is the current design, for comparison.
+import V0Meta from './v0/meta'
+import V1Meta from './v1/meta'
+import V2Meta from './v2/meta'
+import V3Meta from './v3/meta'
+import V4Meta from './v4/meta'
+import V5Meta from './v5/meta'
 import V0Shell from './v0/Shell.astro'
 import V0List from './v0/List.astro'
 import V0Event from './v0/Event.astro'
@@ -33,13 +39,14 @@ export interface Variant {
   Event: Component
 }
 
+// Each variant's name, summary and fonts live in its own vN/meta.ts.
 export const variants: Variant[] = [
-  { id: 'v0', name: 'Current', summary: 'The site as it is today', Shell: V0Shell, List: V0List, Event: V0Event },
-  { id: 'v1', name: 'Variant 1', summary: 'Placeholder', Shell: V1Shell, List: V1List, Event: V1Event },
-  { id: 'v2', name: 'Variant 2', summary: 'Placeholder', Shell: V2Shell, List: V2List, Event: V2Event },
-  { id: 'v3', name: 'Variant 3', summary: 'Placeholder', Shell: V3Shell, List: V3List, Event: V3Event },
-  { id: 'v4', name: 'Variant 4', summary: 'Placeholder', Shell: V4Shell, List: V4List, Event: V4Event },
-  { id: 'v5', name: 'Variant 5', summary: 'Placeholder', Shell: V5Shell, List: V5List, Event: V5Event },
+  { id: 'v0', ...V0Meta, Shell: V0Shell, List: V0List, Event: V0Event },
+  { id: 'v1', ...V1Meta, Shell: V1Shell, List: V1List, Event: V1Event },
+  { id: 'v2', ...V2Meta, Shell: V2Shell, List: V2List, Event: V2Event },
+  { id: 'v3', ...V3Meta, Shell: V3Shell, List: V3List, Event: V3Event },
+  { id: 'v4', ...V4Meta, Shell: V4Shell, List: V4List, Event: V4Event },
+  { id: 'v5', ...V5Meta, Shell: V5Shell, List: V5List, Event: V5Event },
 ]
 
 export const defaultVariant = 'v1'

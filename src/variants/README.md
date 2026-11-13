@@ -12,8 +12,8 @@ overlay (bottom right) switches between them:
 
 ## A variant
 
-A folder `vN/` with three Astro components, registered in `registry.ts`
-(id, name, one-line summary, optional Google Fonts URL):
+A folder `vN/` with `meta.ts` (name, one-line summary, optional Google Fonts URL — shown in the
+overlay) and three Astro components, all wired up in `registry.ts`:
 
 | Component | Props | Renders |
 |---|---|---|
@@ -33,7 +33,8 @@ inside your Shell with fixed markup — style it under your block:
 
 Helpers in `shared.ts`: formatting (`formatShort`, `formatLong`, `formatMonth`, `dayNumber`, `weekdayShort`,
 `monthShort`, `timeRange`, `weekOf`, `groupBy`), `topicName` / `topicColor`, `mapUrl`, `googleCalendarUrl`,
-`icsHref` + `icsFileName` (one-event download), `calendarFeed` (subscribe links).
+`icsHref` + `icsFileName` (one-event download), `calendarFeed` (subscribe links), `linkHost` ("meetup.com" — name the
+sign-up destination on the button), `editUrl` ("Edit on GitHub" link for an event).
 
 ### Time: what is past, now, today
 

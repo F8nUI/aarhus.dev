@@ -152,3 +152,12 @@ export function googleCalendarUrl(event: ADEvent): string {
 
 /** Subscribe to every event: webcal link and plain https link. */
 export const calendarFeed = { webcal: 'webcal://aarhus.dev/calendar.ics', https: `${SITE}/calendar.ics` }
+
+/** "meetup.com" — for a button that names where it goes: "Sign up on meetup.com →". */
+export function linkHost(url: string): string {
+  return new URL(url).hostname.replace(/^www\./, '')
+}
+
+/** Where anyone can propose a fix to this event's file on GitHub. */
+export const editUrl = (event: ADEvent) =>
+  `https://github.com/f8nui/aarhus.dev/edit/main/src/content/event/${event.id}.md`
