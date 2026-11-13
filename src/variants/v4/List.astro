@@ -1,7 +1,12 @@
 ---
-// Placeholder — replaced by the variant's design.
+// Topic Lanes: home, topic and archive pages. A line map on top (each topic a
+// line, each event a station placed by date, a "now" marker), then the same
+// events as a plain list grouped by when they happen.
 import type { ADEvent } from '@lib/event'
-import { eventAttrs, formatShort, relativeAtBuild } from '../shared'
+import { getEvents, getTopics } from '@lib/event'
+import { calendarFeed, formatMonth, groupBy, topicName } from '../shared'
+import { MAP, dateLine, layoutMap, lineVars, stateAt } from './lanes'
+import Row from './Row.astro'
 
 interface Props {
   events: ADEvent[]
@@ -9,18 +14,1116 @@ interface Props {
   past: boolean
 }
 
-const { events, past } = Astro.props
-const ordered = past ? [...events].reverse() : events
+const { events, topic, past } = Astro.props
+
+// The map always shows every line; on a topic page the others are dimmed.
+const everything = topic ? await getEvents() : events
+const map = layoutMap(everything, (await getTopics()).sort())
+
+const now = Date.now()
+const nowT = Math.min(Math.max(now, map.t0), map.t1)
+const nowX = map.x(nowT)
+const nowN = ((nowT - map.t0) / (map.t1 - map.t0)) * 100
+const pct = (t: number) => ((t - map.t0) / (map.t1 - map.t0)) * 100
+const nowLabel = new Date(now).toLocaleDateString('en-GB', {
+  weekday: 'short',
+  day: 'numeric',
+  month: 'short',
+  timeZone: 'Europe/Copenhagen',
+})
+const years = map.months.filter((m) => m.year)
+const firstMonth = formatMonth(new Date(map.t0 + 864e5))
+const lastMonth = formatMonth(new Date(map.t1 - 864e5))
+
+const name = topic ? topicName(topic) : undefined
+const pastCount = events.filter((e) => e.end.valueOf() < now).length
+const pastHref = topic ? `/past/${topic}` : '/past'
+const upcomingHref = topic ? `/${topic}` : '/'
+
+const buckets = [
+  { tag: 'now', heading: 'Happening now' },
+  { tag: 'today', heading: 'Later today' },
+  { tag: 'week', heading: 'This week' },
+  { tag: 'nextweek', heading: 'Next week' },
+]
+const monthKey = (e: ADEvent) => formatMonth(e.start)
+const archive = groupBy([...events].reverse(), monthKey)
+const ahead = groupBy(events, monthKey)
+
+const fullDate = (e: ADEvent) => {
+  const d = dateLine(e)
+  const year = e.start.toLocaleDateString('en-GB', { year: 'numeric', timeZone: 'Europe/Copenhagen' })
+  return `${d.day} ${year}, ${d.time === 'TBA' ? 'time TBA' : d.time}`
+}
+const half = Math.ceil(map.lanes.length / 2)
 ---
 
-<p class="mb-4 opacity-60">Variant 4 placeholder</p>
-<ul data-bucket={past ? 'past' : 'upcoming'}>
+<header class="v4-head">
+  <div>
+    <h1>
+      {
+        past ? (
+          name ? (
+            <>
+              Past <span class="v4-badge v4-badge-lg v4-c" style={lineVars(topic!)}>{name}</span> events
+            </>
+          ) : (
+            'Past events'
+          )
+        ) : name ? (
+          <>
+            <span class="v4-badge v4-badge-lg v4-c" style={lineVars(topic!)}>{name}</span> events in Aarhus
+          </>
+        ) : (
+          'Tech events in Aarhus'
+        )
+      }
+    </h1>
+    <p class="v4-lede">
+      {
+        past
+          ? 'Everything that has already happened, newest first.'
+          : name
+            ? `Every ${name} event on its own line, with the other topics faded back.`
+            : 'Meetups, talk nights and conferences. One line per topic, one stop per event.'
+      }
+    </p>
+  </div>
+  <nav class="v4-actions" aria-label="More">
+    {
+      past ? (
+        <a class="v4-btn v4-btn-quiet" href={upcomingHref}>
+          Upcoming events
+        </a>
+      ) : (
+        <a class="v4-btn v4-btn-quiet" href={pastHref}>
+          Past events <span class="v4-count" data-count="past">{pastCount}</span>
+        </a>
+      )
+    }
+    <span class="v4-split">
+      <a class="v4-btn v4-btn-quiet" href={calendarFeed.webcal}>Subscribe</a>
+      <a class="v4-btn v4-btn-quiet" href={calendarFeed.https} aria-label="Calendar feed as an https link">https</a>
+    </span>
+    <a class="v4-btn v4-btn-primary" href="/add-event">Add event</a>
+  </nav>
+</header>
+
+<section
+  class="v4-map"
+  data-v4-map
+  data-mode={past ? 'past' : 'upcoming'}
+  data-t0={map.t0}
+  data-t1={map.t1}
+  data-ppd={MAP.pxPerDay}
+  data-pad={MAP.padLeft}
+  style={`--now-x:${nowX}px;--now-n:${nowN};--now-p:${nowN}%`}
+  aria-label="Line map"
+>
+  <div class="v4-board">
+    <div class="v4-names">
+      {
+        map.lanes.map((lane) => (
+          <a
+            class="v4-lane-name v4-c"
+            style={lineVars(lane.topic)}
+            href={`/${lane.topic}`}
+            tabindex="-1"
+            data-dim={topic && lane.topic !== topic ? '' : undefined}
+            aria-current={lane.topic === topic ? 'page' : undefined}
+          >
+            <span class="v4-badge">{topicName(lane.topic)}</span>
+          </a>
+        ))
+      }
+    </div>
+    <div class="v4-scroll" data-v4-scroll>
+      <div class="v4-canvas" style={`width:${map.width}px`}>
+        <div class="v4-grid" aria-hidden="true">
+          {
+            map.months.map((m) => (
+              <span class:list={{ 'v4-year': m.year }} style={`left:${m.x}px`}>
+                {m.label}
+                {m.year && <b>{m.year}</b>}
+              </span>
+            ))
+          }
+        </div>
+        {
+          map.lanes.map((lane, i) => {
+            const dim = !!topic && lane.topic !== topic
+            return (
+              <div
+                class="v4-lane v4-c"
+                style={lineVars(lane.topic)}
+                data-dim={dim ? '' : undefined}
+                data-focus={lane.topic === topic ? '' : undefined}
+              >
+                <span
+                  class="v4-line"
+                  style={`left:${lane.x0}px;width:${lane.x1 - lane.x0}px;--x0:${lane.x0}px`}
+                />
+                {lane.stations.map((s) => (
+                  <a
+                    class="v4-stn"
+                    href={s.event.url}
+                    style={`left:${s.x}px`}
+                    data-ms={s.event.start.valueOf()}
+                    data-me={s.event.end.valueOf()}
+                    data-state={stateAt(s.event, now)}
+                    data-row={s.row ?? 'none'}
+                    tabindex={dim ? -1 : undefined}
+                    aria-label={`${s.event.data.title}, ${topicName(lane.topic)}, ${fullDate(s.event)}`}
+                  >
+                    <span class="v4-dot" />
+                    {s.row !== null && (
+                      <span class="v4-label" style={`max-width:${s.w}px`}>
+                        {s.short}
+                      </span>
+                    )}
+                    <span
+                      class="v4-tip"
+                      aria-hidden="true"
+                      data-side={i < half ? 'below' : 'above'}
+                      data-align={s.x > map.width - 300 ? 'end' : 'start'}
+                    >
+                      <strong>{s.event.data.title}</strong>
+                      <span>{fullDate(s.event)}</span>
+                      <span>{s.event.data.venue?.title ?? 'Venue TBA'}</span>
+                    </span>
+                  </a>
+                ))}
+              </div>
+            )
+          })
+        }
+        <div class="v4-now" aria-hidden="true">
+          <span class="v4-now-flag">Now <b data-v4-now-label>{nowLabel}</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="v4-map-foot">
+    <ul class="v4-key" aria-label="Key">
+      <li><i class="v4-key-up"></i>Upcoming</li>
+      <li><i class="v4-key-now"></i>Happening now</li>
+      <li><i class="v4-key-past"></i>Past</li>
+    </ul>
+    <div class="v4-pan" data-v4-pan hidden>
+      <button type="button" data-pan="-1">Earlier</button>
+      <button type="button" data-pan="0">Now</button>
+      <button type="button" data-pan="1">Later</button>
+    </div>
+  </div>
+
+  <div
+    class="v4-mini"
+    role="img"
+    aria-label={`Overview of every topic from ${firstMonth} to ${lastMonth}, with today marked. The same events are listed below.`}
+  >
+    <div class="v4-mini-names">
+      {
+        map.lanes.map((lane) => (
+          <span class="v4-c" style={lineVars(lane.topic)} data-dim={topic && lane.topic !== topic ? '' : undefined}>
+            <i />
+            {topicName(lane.topic)}
+          </span>
+        ))
+      }
+    </div>
+    <div class="v4-mini-tracks">
+      <div class="v4-mini-years">
+        {years.map((m) => (
+          <span style={`left:${pct(m.t)}%`}>{m.year}</span>
+        ))}
+      </div>
+      {
+        map.lanes.map((lane) => {
+          const first = lane.stations[0].event.start.valueOf()
+          const last = lane.stations.at(-1)!.event.start.valueOf()
+          const l = pct(first)
+          const w = Math.max(pct(last) - l, 0.01)
+          return (
+            <div
+              class="v4-mini-row v4-c"
+              style={lineVars(lane.topic)}
+              data-dim={topic && lane.topic !== topic ? '' : undefined}
+            >
+              <span class="v4-mini-line" style={`left:${l}%;width:${w}%;--l:${l};--w:${w}`} />
+              {lane.stations.map((s) => (
+                <span
+                  class="v4-mini-dot"
+                  style={`left:${pct(s.event.start.valueOf())}%`}
+                  data-ms={s.event.start.valueOf()}
+                  data-me={s.event.end.valueOf()}
+                  data-state={stateAt(s.event, now)}
+                />
+              ))}
+            </div>
+          )
+        })
+      }
+      <span class="v4-mini-now"><b>Now</b></span>
+    </div>
+  </div>
+</section>
+
+<section class="v4-list" aria-label={past ? 'Past events' : 'Upcoming events'}>
   {
-    ordered.map((event) => (
-      <li {...eventAttrs(event)}>
-        <a href={event.url}>{event.data.title}</a> — {formatShort(event)} · <span data-rel>{relativeAtBuild(event)}</span>
-      </li>
-    ))
+    past ? (
+      <div data-bucket="past">
+        {archive.map((g) => (
+          <div class="v4-group" data-group>
+            <h2 class="v4-month">{g.key}</h2>
+            <ol class="v4-route">
+              {g.items.map((event) => (
+                <Row {event} badge={!topic} />
+              ))}
+            </ol>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <>
+        {buckets.map((b) => (
+          <div class="v4-bucket" data-bucket={b.tag} data-tag={b.tag}>
+            <h2 class="v4-when-head">{b.heading}</h2>
+            <ol class="v4-route">
+              {events.map((event) => (
+                <Row {event} badge={!topic} />
+              ))}
+            </ol>
+          </div>
+        ))}
+        <div class="v4-bucket" data-bucket="later" data-tag="later">
+          <h2 class="v4-when-head">Later</h2>
+          {ahead.map((g) => (
+            <div class="v4-group" data-group>
+              <h3 class="v4-month">{g.key}</h3>
+              <ol class="v4-route">
+                {g.items.map((event) => (
+                  <Row {event} badge={!topic} />
+                ))}
+              </ol>
+            </div>
+          ))}
+        </div>
+      </>
+    )
   }
-</ul>
-<p data-empty="upcoming">No upcoming events.</p>
+
+  <div class="v4-empty" data-empty={past ? 'past' : 'upcoming'}>
+    <p class="v4-empty-line" aria-hidden="true"><i></i><span></span></p>
+    {
+      past ? (
+        <p>Nothing here yet: no {name ?? ''} event has happened so far.</p>
+      ) : (
+        <p>
+          No {name ? `${name} ` : ''}events announced yet. Know of one?{' '}
+          <a class="v4-link" href="/add-event">
+            Add it
+          </a>
+          , or look through the{' '}
+          <a class="v4-link" href={pastHref}>
+            past events
+          </a>
+          .
+        </p>
+      )
+    }
+  </div>
+</section>
+
+<script is:inline>
+  ;(function () {
+    // Places the "now" marker and re-states every station for the viewer's
+    // clock, and scrolls the map so "now" sits near its left third.
+    var block = document.querySelector('[data-variant-block="v4"]')
+    if (!block || typeof window.aarhusNow !== 'function') return
+    var now = window.aarhusNow()
+    var day = function (t) {
+      return new Date(t).toLocaleDateString('en-CA', { timeZone: 'Europe/Copenhagen' })
+    }
+    var label = new Intl.DateTimeFormat('en-GB', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      timeZone: 'Europe/Copenhagen',
+    })
+    var calm = matchMedia('(prefers-reduced-motion: reduce)').matches
+    block.querySelectorAll('[data-v4-map]').forEach(function (map) {
+      var t0 = Number(map.dataset.t0)
+      var t1 = Number(map.dataset.t1)
+      var t = Math.min(Math.max(now, t0), t1)
+      var x = Number(map.dataset.pad) + ((t - t0) / 864e5) * Number(map.dataset.ppd)
+      var n = ((t - t0) / (t1 - t0)) * 100
+      map.style.setProperty('--now-x', x + 'px')
+      map.style.setProperty('--now-n', String(n))
+      map.style.setProperty('--now-p', n + '%')
+      map.querySelectorAll('[data-v4-now-label]').forEach(function (el) {
+        el.textContent = label.format(now)
+      })
+      map.querySelectorAll('[data-ms]').forEach(function (el) {
+        var s = Number(el.dataset.ms)
+        var e = Number(el.dataset.me)
+        el.dataset.state = e < now ? 'past' : s <= now ? 'now' : day(s) === day(now) ? 'today' : 'upcoming'
+      })
+
+      var scroller = map.querySelector('[data-v4-scroll]')
+      if (!scroller) return
+      // Upcoming pages look ahead (now near the left third); the archive looks back (now near the right).
+      var anchor = map.dataset.mode === 'past' ? 0.8 : 0.3
+      var toNow = function (smooth) {
+        scroller.scrollTo({ left: x - scroller.clientWidth * anchor, behavior: smooth && !calm ? 'smooth' : 'auto' })
+      }
+      // The map may be hidden (another variant showing, or a phone): place it once it has a size.
+      var placed = false
+      var place = function () {
+        if (placed || scroller.clientWidth === 0) return
+        placed = true
+        toNow(false)
+      }
+      if ('ResizeObserver' in window) new ResizeObserver(place).observe(scroller)
+      else place()
+
+      var pan = map.querySelector('[data-v4-pan]')
+      if (!pan) return
+      pan.hidden = false
+      pan.addEventListener('click', function (event) {
+        var button = event.target.closest('[data-pan]')
+        if (!button) return
+        var dir = Number(button.dataset.pan)
+        if (dir === 0) return toNow(true)
+        scroller.scrollBy({ left: dir * scroller.clientWidth * 0.7, behavior: calm ? 'auto' : 'smooth' })
+      })
+    })
+  })()
+</script>
+
+<style is:global>
+  /* --- Page head --------------------------------------------------------- */
+
+  [data-variant-block='v4'] .v4-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    padding: 1.25rem 0 1.25rem;
+  }
+  [data-variant-block='v4'] .v4-head h1 {
+    font-size: clamp(2rem, 5vw, 2.9rem);
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: -0.022em;
+  }
+  [data-variant-block='v4'] .v4-badge-lg {
+    font-size: 0.82em;
+    line-height: 1.25;
+    padding: 0 0.3em 0.02em;
+    border-radius: 0.2em;
+    vertical-align: 0.06em;
+    letter-spacing: 0;
+  }
+  [data-variant-block='v4'] .v4-head > div {
+    flex: 1 1 32rem;
+  }
+  [data-variant-block='v4'] .v4-lede {
+    margin-top: 0.5rem;
+    max-width: 44rem;
+    font-size: 1.125rem;
+    color: var(--color-text-muted);
+  }
+  [data-variant-block='v4'] .v4-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  /* Subscribe: webcal for calendar apps, with the plain https feed fused on. */
+  [data-variant-block='v4'] .v4-split {
+    display: inline-flex;
+  }
+  [data-variant-block='v4'] .v4-split .v4-btn:first-child {
+    border-radius: 999px 0 0 999px;
+    padding-right: 0.9rem;
+  }
+  [data-variant-block='v4'] .v4-split .v4-btn:last-child {
+    border-radius: 0 999px 999px 0;
+    margin-left: -2px;
+    padding-left: 0.75rem;
+    font-family: var(--v4-cond);
+    font-weight: 600;
+    font-size: 0.9em;
+    color: var(--color-text-muted);
+  }
+  [data-variant-block='v4'] .v4-split .v4-btn:hover {
+    position: relative;
+  }
+  [data-variant-block='v4'] .v4-count {
+    font-family: var(--v4-cond);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    min-width: 1.5rem;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    background: var(--color-bg-subtle);
+    text-align: center;
+  }
+  @media (max-width: 640px) {
+    [data-variant-block='v4'] .v4-head {
+      padding-top: 0.75rem;
+    }
+    [data-variant-block='v4'] .v4-lede {
+      font-size: 1rem;
+    }
+    [data-variant-block='v4'] .v4-actions {
+      width: 100%;
+      padding-bottom: 1rem;
+    }
+    [data-variant-block='v4'] .v4-actions {
+      gap: 0.3rem;
+    }
+    [data-variant-block='v4'] .v4-actions .v4-btn {
+      min-height: 2.5rem;
+      padding: 0.35rem 0.6rem;
+      font-size: 0.85rem;
+    }
+    [data-variant-block='v4'] .v4-actions .v4-split .v4-btn:first-child {
+      padding-right: 0.45rem;
+    }
+    [data-variant-block='v4'] .v4-actions .v4-split .v4-btn:last-child {
+      padding-left: 0.45rem;
+    }
+    [data-variant-block='v4'] .v4-actions .v4-count {
+      min-width: 1.25rem;
+      padding: 0 0.3rem;
+    }
+  }
+
+  /* --- The line map ------------------------------------------------------ */
+
+  [data-variant-block='v4'] .v4-map {
+    --lane: 52px;
+    --line-y: 26px;
+    --head: 50px;
+    margin-top: 0.75rem;
+  }
+  [data-variant-block='v4'] .v4-board {
+    display: flex;
+    background: var(--v4-surface);
+    border: 1.5px solid var(--color-border);
+    border-radius: 16px;
+    box-shadow: var(--v4-shadow);
+    overflow: hidden;
+  }
+  [data-variant-block='v4'] .v4-names {
+    flex: none;
+    width: 7.25rem;
+    padding-top: var(--head);
+    border-right: 1.5px solid var(--color-border);
+    background: var(--v4-surface);
+    position: relative;
+    z-index: 1;
+  }
+  [data-variant-block='v4'] .v4-lane-name {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: var(--lane);
+    padding: 0 0.75rem;
+  }
+  [data-variant-block='v4'] .v4-lane-name .v4-badge {
+    font-size: 0.85rem;
+    line-height: 1.5rem;
+    padding: 0 0.55rem;
+  }
+  [data-variant-block='v4'] .v4-lane-name:hover .v4-badge {
+    box-shadow: 0 0 0 2px var(--v4-surface), 0 0 0 4px var(--line);
+  }
+  [data-variant-block='v4'] .v4-lane-name[aria-current] .v4-badge {
+    box-shadow: 0 0 0 2px var(--v4-surface), 0 0 0 4px var(--color-text);
+  }
+  [data-variant-block='v4'] [data-dim] {
+    opacity: 0.3;
+  }
+
+  [data-variant-block='v4'] .v4-scroll {
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+  [data-variant-block='v4'] .v4-canvas {
+    position: relative;
+    isolation: isolate;
+    padding: var(--head) 0 10px;
+    font-family: var(--v4-cond);
+  }
+
+  /* Month ticks and the faint grid they hang down the map. */
+  [data-variant-block='v4'] .v4-grid span {
+    position: absolute;
+    top: 26px;
+    bottom: 0;
+    width: 0;
+    border-left: 1px solid var(--v4-grid);
+    padding: 3px 0 0 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    z-index: -1;
+  }
+  [data-variant-block='v4'] .v4-grid .v4-year {
+    border-left-color: var(--color-border);
+  }
+  [data-variant-block='v4'] .v4-grid b {
+    margin-left: 0.3em;
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  [data-variant-block='v4'] .v4-lane {
+    position: relative;
+    height: var(--lane);
+  }
+  [data-variant-block='v4'] .v4-lane[data-focus] {
+    background: color-mix(in oklab, var(--line) 9%, transparent);
+  }
+  [data-variant-block='v4'] .v4-line {
+    position: absolute;
+    top: calc(var(--line-y) - 3.5px);
+    height: 7px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--line-faded) calc(var(--now-x) - var(--x0)), var(--line) 0);
+  }
+  [data-variant-block='v4'] [data-mode='past'] .v4-line {
+    background: linear-gradient(90deg, var(--line) calc(var(--now-x) - var(--x0)), var(--line-faded) 0);
+  }
+
+  /* Stations: white with a ring of the line's colour. */
+  [data-variant-block='v4'] .v4-stn {
+    position: absolute;
+    top: calc(var(--line-y) - 12px);
+    width: 24px;
+    height: 24px;
+    margin-left: -12px;
+    border-radius: 50%;
+    z-index: 2;
+  }
+  [data-variant-block='v4'] .v4-dot {
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--v4-surface);
+    border: 4px solid var(--line);
+    transition: transform 0.12s ease-out;
+  }
+  [data-variant-block='v4'] .v4-stn:hover .v4-dot,
+  [data-variant-block='v4'] .v4-stn:focus-visible .v4-dot {
+    transform: scale(1.25);
+  }
+  [data-variant-block='v4'] .v4-stn:focus-visible {
+    outline-offset: 1px;
+    border-radius: 50%;
+  }
+  [data-variant-block='v4'] .v4-stn[data-state='today'] .v4-dot {
+    background: radial-gradient(circle, var(--line) 0 2.5px, var(--v4-surface) 3px);
+  }
+  [data-variant-block='v4'] .v4-stn[data-state='now'] .v4-dot {
+    background: var(--line);
+    border-color: var(--v4-surface);
+    box-shadow: 0 0 0 3px var(--line);
+    animation: v4-pulse 1.8s ease-out infinite;
+  }
+  @keyframes v4-pulse {
+    0% {
+      box-shadow: 0 0 0 3px var(--line), 0 0 0 3px color-mix(in oklab, var(--line) 55%, transparent);
+    }
+    100% {
+      box-shadow: 0 0 0 3px var(--line), 0 0 0 13px color-mix(in oklab, var(--line) 0%, transparent);
+    }
+  }
+  [data-variant-block='v4'] .v4-map[data-mode='upcoming'] .v4-stn[data-state='past'] .v4-dot,
+  [data-variant-block='v4'] .v4-map[data-mode='past'] .v4-stn:not([data-state='past']) .v4-dot {
+    border-color: var(--line-faded);
+  }
+  [data-variant-block='v4'] .v4-map[data-mode='upcoming'] .v4-stn[data-state='past'] .v4-label,
+  [data-variant-block='v4'] .v4-map[data-mode='past'] .v4-stn:not([data-state='past']) .v4-label {
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+
+  [data-variant-block='v4'] .v4-label {
+    position: absolute;
+    left: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--color-text);
+    /* A halo in the map's paper colour, so a label stays readable where the now marker or a line crosses it. */
+    text-shadow:
+      -1.5px 0 var(--v4-surface),
+      1.5px 0 var(--v4-surface),
+      0 -1.5px var(--v4-surface),
+      0 1.5px var(--v4-surface),
+      -1px -1px var(--v4-surface),
+      1px 1px var(--v4-surface),
+      -1px 1px var(--v4-surface),
+      1px -1px var(--v4-surface);
+    padding: 0 2px;
+    margin-left: -2px;
+  }
+  [data-variant-block='v4'] [data-row='0'] .v4-label {
+    bottom: calc(100% - 2px);
+  }
+  [data-variant-block='v4'] [data-row='1'] .v4-label {
+    top: 22px;
+  }
+  [data-variant-block='v4'] .v4-stn:hover .v4-label {
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 2px;
+  }
+
+  /* Full name on hover and keyboard focus. */
+  [data-variant-block='v4'] .v4-tip {
+    display: none;
+    position: absolute;
+    left: -6px;
+    width: max-content;
+    max-width: 16rem;
+    padding: 0.55rem 0.75rem 0.6rem;
+    border-radius: 10px;
+    background: var(--v4-surface);
+    border: 1.5px solid var(--color-text);
+    border-top: 5px solid var(--line);
+    box-shadow: var(--v4-shadow);
+    font-family: var(--v4-sans);
+    font-size: 0.85rem;
+    line-height: 1.35;
+    color: var(--color-text-muted);
+    pointer-events: none;
+  }
+  [data-variant-block='v4'] .v4-tip strong {
+    display: block;
+    margin-bottom: 0.15rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+  [data-variant-block='v4'] .v4-tip span {
+    display: block;
+  }
+  [data-variant-block='v4'] .v4-tip[data-side='below'] {
+    top: 30px;
+  }
+  [data-variant-block='v4'] .v4-tip[data-side='above'] {
+    bottom: 30px;
+  }
+  [data-variant-block='v4'] .v4-tip[data-align='end'] {
+    left: auto;
+    right: -6px;
+  }
+  [data-variant-block='v4'] .v4-stn:hover,
+  [data-variant-block='v4'] .v4-stn:focus-visible {
+    z-index: 10;
+  }
+  [data-variant-block='v4'] .v4-stn:hover .v4-tip,
+  [data-variant-block='v4'] .v4-stn:focus-visible .v4-tip {
+    display: block;
+  }
+
+  /* "Now": a flag on a pole through every line. */
+  [data-variant-block='v4'] .v4-now {
+    position: absolute;
+    top: 4px;
+    bottom: 0;
+    left: var(--now-x);
+    width: 2px;
+    margin-left: -1px;
+    background: var(--color-text);
+    z-index: 1;
+    pointer-events: none;
+  }
+  [data-variant-block='v4'] .v4-now-flag {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0 0.5rem 0 0.4rem;
+    border-radius: 0 6px 6px 0;
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1.25rem;
+    white-space: nowrap;
+  }
+  [data-variant-block='v4'] .v4-now-flag b {
+    font-weight: 500;
+    margin-left: 0.2rem;
+  }
+
+  [data-variant-block='v4'] .v4-map-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    padding: 0.75rem 0.25rem 0;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+  }
+  [data-variant-block='v4'] .v4-key {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+  }
+  [data-variant-block='v4'] .v4-key li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  [data-variant-block='v4'] .v4-key i {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 3.5px solid var(--color-text);
+    background: var(--v4-surface);
+  }
+  [data-variant-block='v4'] .v4-key .v4-key-now {
+    background: var(--color-text);
+    border-color: var(--v4-surface);
+    box-shadow: 0 0 0 2.5px var(--color-text);
+  }
+  [data-variant-block='v4'] .v4-key .v4-key-past {
+    border-color: var(--color-border);
+  }
+  [data-variant-block='v4'] .v4-pan {
+    display: inline-flex;
+    gap: 0.25rem;
+  }
+  [data-variant-block='v4'] .v4-pan[hidden] {
+    display: none;
+  }
+  [data-variant-block='v4'] .v4-pan button {
+    font: inherit;
+    font-weight: 600;
+    color: var(--color-text);
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--color-border);
+    background: var(--v4-surface);
+    cursor: pointer;
+  }
+  [data-variant-block='v4'] .v4-pan button:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  /* --- Phone overview: the whole network, small, above the list --------- */
+
+  [data-variant-block='v4'] .v4-mini {
+    display: none;
+  }
+  @media (max-width: 640px) {
+    [data-variant-block='v4'] .v4-board,
+    [data-variant-block='v4'] .v4-map-foot {
+      display: none;
+    }
+    [data-variant-block='v4'] .v4-mini {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0 0.6rem;
+      padding: 0.6rem 0.9rem 0.7rem 0.75rem;
+      background: var(--v4-surface);
+      border: 1.5px solid var(--color-border);
+      border-radius: 14px;
+      font-family: var(--v4-cond);
+    }
+  }
+  [data-variant-block='v4'] .v4-mini-names {
+    padding-top: 18px;
+  }
+  [data-variant-block='v4'] .v4-mini-names span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    height: 17px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  [data-variant-block='v4'] .v4-mini-names i {
+    width: 0.6rem;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--line);
+  }
+  [data-variant-block='v4'] .v4-mini-tracks {
+    position: relative;
+    padding: 18px 0 16px;
+  }
+  [data-variant-block='v4'] .v4-mini-years span {
+    position: absolute;
+    top: 14px;
+    bottom: 0;
+    border-left: 1px solid var(--color-border);
+    padding-left: 3px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 14px;
+    display: flex;
+    align-items: flex-end;
+    color: var(--color-text-muted);
+  }
+  [data-variant-block='v4'] .v4-mini-row {
+    position: relative;
+    height: 17px;
+  }
+  [data-variant-block='v4'] .v4-mini-line {
+    position: absolute;
+    top: 6.5px;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--line-faded) calc((var(--now-n) - var(--l)) / var(--w) * 100%),
+      var(--line) 0
+    );
+  }
+  [data-variant-block='v4'] [data-mode='past'] .v4-mini-line {
+    background: linear-gradient(
+      90deg,
+      var(--line) calc((var(--now-n) - var(--l)) / var(--w) * 100%),
+      var(--line-faded) 0
+    );
+  }
+  [data-variant-block='v4'] .v4-mini-dot {
+    position: absolute;
+    top: 4.5px;
+    width: 8px;
+    height: 8px;
+    margin-left: -4px;
+    border-radius: 50%;
+    background: var(--v4-surface);
+    border: 2px solid var(--line);
+  }
+  [data-variant-block='v4'] [data-mode='upcoming'] .v4-mini-dot[data-state='past'],
+  [data-variant-block='v4'] [data-mode='past'] .v4-mini-dot:not([data-state='past']) {
+    border-color: var(--line-faded);
+  }
+  [data-variant-block='v4'] .v4-mini-dot[data-state='now'] {
+    background: var(--line);
+  }
+  [data-variant-block='v4'] .v4-mini-now {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--now-p);
+    width: 2px;
+    margin-left: -1px;
+    background: var(--color-text);
+  }
+  [data-variant-block='v4'] .v4-mini-now b {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0 0.35rem 0 0.3rem;
+    border-radius: 0 4px 4px 0;
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-size: 0.7rem;
+    line-height: 14px;
+  }
+
+  /* --- The list: each event a leg of the journey ------------------------ */
+
+  [data-variant-block='v4'] .v4-list {
+    max-width: 52rem;
+    margin-top: 2.75rem;
+  }
+  [data-variant-block='v4'] .v4-bucket + .v4-bucket,
+  [data-variant-block='v4'] .v4-group + .v4-group {
+    margin-top: 2rem;
+  }
+  [data-variant-block='v4'] .v4-when-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    margin-bottom: 0.6rem;
+  }
+  [data-variant-block='v4'] [data-tag='now'] .v4-when-head::before {
+    content: '';
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--color-text);
+    box-shadow: 0 0 0 3px var(--color-bg), 0 0 0 5px var(--color-text);
+    margin: 0 0.25rem 0 0.2rem;
+  }
+  [data-variant-block='v4'] .v4-month {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    margin: 0.75rem 0 0.35rem;
+  }
+  [data-variant-block='v4'] h2.v4-month {
+    font-size: 1.35rem;
+    color: var(--color-text);
+  }
+
+  [data-variant-block='v4'] .v4-row {
+    display: grid;
+    grid-template-columns: 8.75rem 2.25rem 1fr;
+    align-items: start;
+  }
+  [data-variant-block='v4'] .v4-row-when {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.7rem 0.25rem 0 0;
+    font-family: var(--v4-cond);
+    font-size: 1.05rem;
+    font-weight: 500;
+    line-height: 1.35;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  [data-variant-block='v4'] .v4-row-time {
+    font-weight: 700;
+  }
+  [data-variant-block='v4'] .v4-tba {
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+  [data-variant-block='v4'] .v4-row-rail {
+    position: relative;
+    align-self: stretch;
+    min-height: 4.5rem;
+  }
+  [data-variant-block='v4'] .v4-row-rail::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 3px;
+    bottom: 3px;
+    width: 7px;
+    margin-left: -3.5px;
+    border-radius: 999px;
+    background: var(--line);
+  }
+  [data-variant-block='v4'] .v4-row-rail i {
+    position: absolute;
+    left: 50%;
+    top: 0.85rem;
+    width: 18px;
+    height: 18px;
+    margin-left: -9px;
+    border-radius: 50%;
+    background: var(--v4-surface);
+    border: 4px solid var(--line);
+  }
+  [data-variant-block='v4'] .v4-row[data-when~='now'] .v4-row-rail i {
+    background: var(--line);
+    border-color: var(--v4-surface);
+    box-shadow: 0 0 0 3px var(--line);
+    animation: v4-pulse 1.8s ease-out infinite;
+  }
+  [data-variant-block='v4'] .v4-row-body {
+    padding: 0.55rem 0 1rem 0.4rem;
+    min-width: 0;
+  }
+  [data-variant-block='v4'] .v4-row-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+    text-wrap: pretty;
+  }
+  [data-variant-block='v4'] .v4-row-title:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--line);
+  }
+  [data-variant-block='v4'] .v4-row-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.8rem;
+    margin-top: 0.3rem;
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+  }
+  [data-variant-block='v4'] .v4-rel {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  [data-variant-block='v4'] [data-when~='past'] .v4-rel {
+    font-weight: 500;
+    color: var(--color-text-muted);
+  }
+  @media (max-width: 640px) {
+    [data-variant-block='v4'] .v4-list {
+      margin-top: 2rem;
+    }
+    [data-variant-block='v4'] .v4-row {
+      grid-template-columns: 1.75rem 1fr;
+      grid-template-areas: 'rail when' 'rail body';
+    }
+    [data-variant-block='v4'] .v4-row-rail {
+      grid-area: rail;
+      min-height: 0;
+    }
+    [data-variant-block='v4'] .v4-row-rail i {
+      top: 0.7rem;
+    }
+    [data-variant-block='v4'] .v4-row-when {
+      grid-area: when;
+      justify-content: flex-start;
+      padding: 0.55rem 0 0 0.5rem;
+      font-size: 1rem;
+    }
+    [data-variant-block='v4'] .v4-row-body {
+      grid-area: body;
+      padding: 0.1rem 0 1rem 0.5rem;
+    }
+    [data-variant-block='v4'] .v4-row-title {
+      font-size: 1.1rem;
+    }
+  }
+
+  [data-variant-block='v4'] .v4-empty {
+    max-width: 34rem;
+    font-size: 1.1rem;
+  }
+  [data-variant-block='v4'] .v4-empty-line {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  [data-variant-block='v4'] .v4-empty-line i {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 4px solid var(--color-text);
+    background: var(--v4-surface);
+  }
+  [data-variant-block='v4'] .v4-empty-line span {
+    width: 8rem;
+    height: 0;
+    border-top: 6px dashed var(--color-border);
+  }
+</style>
