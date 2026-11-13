@@ -8,7 +8,7 @@ See [aarhus.dev/add-event](https://aarhus.dev/add-event): one Markdown file per 
 
 ## Setup
 
-Requires [Bun](https://bun.sh) and Node.js 22.23.4 or newer.
+Requires [Bun](https://bun.sh) and Node.js 26 (`engines` in `package.json`; Vercel and CI build with it).
 
 ```sh
 bun install

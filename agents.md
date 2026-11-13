@@ -6,7 +6,8 @@ Community-driven timetable of tech events in Aarhus, Denmark. Static site, deplo
 
 - **Astro 7** — static site generator with content collections
 - **Tailwind CSS 4** — styling
-- **Bun** — package manager and script runner (Node.js 22.23.4+ for Astro itself)
+- **Bun** — package manager and script runner
+- **Node.js 26** — set in `package.json` `engines.node`; Vercel and CI both build with it
 - **TypeScript** — type safety
 
 No UI framework: everything is `.astro` components plus one small inline script.

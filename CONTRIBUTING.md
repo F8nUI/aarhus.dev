@@ -8,7 +8,7 @@ In short: one Markdown file per event in `src/content/event/<topic>/`, added by 
 
 ## Working on the site
 
-Requires [Bun](https://bun.sh) and Node.js 22.23.4 or newer.
+Requires [Bun](https://bun.sh) and Node.js 26 (`engines` in `package.json`; Vercel and CI build with it).
 
 ```sh
 bun install
