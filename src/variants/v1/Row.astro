@@ -1,0 +1,44 @@
+---
+// One line on the board: day+time │ topic │ title (organizer beneath) │ venue │ status.
+// The title link covers the whole row; the organizer link sits above it.
+import type { ADEvent } from '@lib/event'
+import { eventAttrs, topicColor, topicName } from '../shared'
+import { boardDate, machineDate, townOutsideAarhus } from './format'
+import Status from './Status.astro'
+
+interface Props {
+  event: ADEvent
+}
+
+const { event } = Astro.props
+const { title, subtitle, venue, startTime } = event.data
+const town = townOutsideAarhus(event)
+---
+
+<li class="row" {...eventAttrs(event)}>
+  <time class="when" datetime={machineDate(event)}>
+    <span class="when-day">{boardDate(event)}</span>
+    <span class:list={['when-time', { tba: !startTime }]}>{startTime ?? 'TBA'}</span>
+  </time>
+  <span class="topic">
+    <span class="dot" style={`--dot: ${topicColor(event.topic)}`} aria-hidden="true"></span>
+    <span class="topic-name">{topicName(event.topic)}</span>
+  </span>
+  <div class="main">
+    <a class="title" href={event.url}
+      >{title}{subtitle && <span class="sub"><span class="sr">, </span>{subtitle}</span>}</a
+    >
+    <a class="org" href={`/organizer/${event.organizer.id}`}>{event.organizer.data.name}</a>
+    <span class:list={['venue', { tba: !venue }]}>
+      <span class="venue-name">{venue?.title ?? 'Venue TBA'}</span>{
+        town && (
+          <span class="town">
+            <span class="sr">, </span>
+            {town}
+          </span>
+        )
+      }
+    </span>
+  </div>
+  <Status event={event} />
+</li>

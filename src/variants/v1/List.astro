@@ -1,7 +1,11 @@
 ---
-// Placeholder — replaced by the variant's design.
+// The timetable: today's board (now + later today), then this week, next week and
+// later by month. The archive (/past) is the same rows, newest first, by month.
+// Every event is rendered into each bucket it could fall in; the runtime tags each
+// row with data-when on every visit and the bucket CSS shows it in the right place.
 import type { ADEvent } from '@lib/event'
-import { eventAttrs, formatShort, relativeAtBuild } from '../shared'
+import { calendarFeed, eventAttrs, formatMonth, groupBy, topicName } from '../shared'
+import Row from './Row.astro'
 
 interface Props {
   events: ADEvent[]
@@ -9,18 +13,567 @@ interface Props {
   past: boolean
 }
 
-const { events, past } = Astro.props
-const ordered = past ? [...events].reverse() : events
+const { events, topic, past } = Astro.props
+
+// What had ended at build time can never be upcoming again: leave it out of the
+// upcoming buckets, but keep a bare entry so the past count still sees it.
+const buildTime = Date.now()
+const live = events.filter((e) => e.end.valueOf() >= buildTime)
+const ended = events.filter((e) => e.end.valueOf() < buildTime)
+
+const name = topic ? topicName(topic) : undefined
+const pastHref = topic ? `/past/${topic}` : '/past'
+const upcomingHref = topic ? `/${topic}` : '/'
+const heading = past ? (name ? `Past ${name} events` : 'Past events') : name ? `${name} events in Aarhus` : 'Tech events in Aarhus'
+
+const laterMonths = groupBy(live, (e) => formatMonth(e.start))
+const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start))
 ---
 
-<p class="mb-4 opacity-60">Variant 1 placeholder</p>
-<ul data-bucket={past ? 'past' : 'upcoming'}>
+<div class="tt">
+  <div class="tt-title">
+    <h1>{heading}</h1>
+    <p class="tt-tools">
+      {
+        past ? (
+          <a href={upcomingHref}>Upcoming</a>
+        ) : (
+          <a class="tt-past" href={pastHref}>
+            Past events <span class="count">(<span data-count="past">{ended.length}</span>)</span>
+          </a>
+        )
+      }
+      <span class="tt-feed">
+        <a href={calendarFeed.webcal}>Subscribe</a>
+        <a class="tt-https" href={calendarFeed.https} title="The calendar feed's web address, for apps that ask for a URL">
+          (.ics)
+        </a>
+      </span>
+      <a href="/add-event">Add event</a>
+    </p>
+  </div>
+
+  <div class="cols" aria-hidden="true">
+    <span class="when"><span>Day</span><span>Time</span></span>
+    <span class="col-topic">Topic</span>
+    <span class="col-event">Event</span>
+    <span class="col-venue">Venue</span>
+    <span class="col-status">Status</span>
+  </div>
+
   {
-    ordered.map((event) => (
-      <li {...eventAttrs(event)}>
-        <a href={event.url}>{event.data.title}</a> — {formatShort(event)} · <span data-rel>{relativeAtBuild(event)}</span>
-      </li>
-    ))
+    past ? (
+      <>
+        <section class="sect" data-bucket="past" aria-label="Past events">
+          {archiveMonths.map((month) => (
+            <div class="month" data-group>
+              <h2 class="month-head">{month.key}</h2>
+              <ol class="rows">
+                {month.items.map((event) => (
+                  <Row event={event} />
+                ))}
+              </ol>
+            </div>
+          ))}
+        </section>
+        <div class="empty" data-empty="past">
+          <p>Nothing in the archive yet.</p>
+          <p class="empty-sub">
+            Events move here the day after they end. <a href={upcomingHref}>See what's coming up</a>
+          </p>
+        </div>
+      </>
+    ) : (
+      <>
+        <section class="board" aria-label="Today">
+          <h2 class="board-head">Today</h2>
+          <ol class="rows" data-bucket="now">
+            {live.map((event) => (
+              <Row event={event} />
+            ))}
+          </ol>
+          <ol class="rows" data-bucket="today">
+            {live.map((event) => (
+              <Row event={event} />
+            ))}
+          </ol>
+        </section>
+
+        <section class="sect" data-bucket="week">
+          <h2 class="sect-head">This week</h2>
+          <ol class="rows">
+            {live.map((event) => (
+              <Row event={event} />
+            ))}
+          </ol>
+        </section>
+
+        <section class="sect" data-bucket="nextweek">
+          <h2 class="sect-head">Next week</h2>
+          <ol class="rows">
+            {live.map((event) => (
+              <Row event={event} />
+            ))}
+          </ol>
+        </section>
+
+        <section class="sect" data-bucket="later">
+          <h2 class="sect-head">Later</h2>
+          {laterMonths.map((month) => (
+            <div class="month" data-group>
+              <h3 class="month-head">{month.key}</h3>
+              <ol class="rows">
+                {month.items.map((event) => (
+                  <Row event={event} />
+                ))}
+              </ol>
+            </div>
+          ))}
+        </section>
+
+        <div class="empty" data-empty="upcoming">
+          <p>No {name ? `${name} ` : ''}events on the board yet.</p>
+          <p class="empty-sub">
+            Know of one coming up? <a href="/add-event">Add an event</a>
+          </p>
+        </div>
+
+        <p class="tt-end">
+          <a class="tt-past" href={pastHref}>
+            Past {name ? `${name} ` : ''}events (<span data-count="past">{ended.length}</span>)
+          </a>
+        </p>
+
+        <div hidden>
+          {ended.map((event) => (
+            <i {...eventAttrs(event)} />
+          ))}
+        </div>
+      </>
+    )
   }
-</ul>
-<p data-empty="upcoming">No upcoming events.</p>
+</div>
+
+<style is:global>
+  [data-variant-block='v1'] {
+    /* ---------- title line ---------- */
+    .tt-title {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem 2rem;
+      margin-bottom: 1.75rem;
+    }
+    .tt-title h1 {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+    .tt-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem 1.5rem;
+      font-size: 0.875rem;
+    }
+    .tt-tools a {
+      color: var(--color-text-muted);
+    }
+    .tt-tools a:hover {
+      color: var(--color-text);
+    }
+    .tt-feed {
+      display: inline-flex;
+      gap: 0.5ch;
+    }
+    .tt-https {
+      text-decoration: none;
+    }
+    .count {
+      font-variant-numeric: tabular-nums;
+    }
+    /* No past events: no link to them. */
+    &:not(:has([data-when~='past'])) .tt-past {
+      display: none;
+    }
+
+    /* ---------- the column grid, shared by the header and every row ---------- */
+    .cols,
+    .row {
+      display: grid;
+      grid-template-columns: 17ch 12ch minmax(0, 1fr) 20ch 13ch;
+      column-gap: 2ch;
+      padding-inline: 0.75rem;
+    }
+    .when {
+      display: grid;
+      grid-template-columns: 10ch 5ch;
+      column-gap: 2ch;
+      align-content: start;
+    }
+
+    .cols {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      padding-block: 0.5rem;
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      /* the grid is sized in the rows' ch; only the labels are small */
+      font-size: 0.9375rem;
+      color: var(--color-text-muted);
+    }
+    .cols > :not(.when),
+    .cols .when > span {
+      font-size: 0.75rem;
+    }
+    .col-status {
+      text-align: right;
+    }
+    &:not(:has([data-when~='upcoming'])) .cols {
+      display: none;
+    }
+
+    /* ---------- rows ---------- */
+    .row {
+      position: relative;
+      grid-template-areas:
+        'when topic title venue status'
+        'when topic org venue status';
+      align-items: start;
+      padding-block: 0.7rem;
+      border-top: 1px solid var(--color-border);
+      font-size: 0.9375rem;
+      line-height: 1.45;
+    }
+    .row:hover {
+      background: var(--color-bg-subtle);
+    }
+    .row .when {
+      grid-area: when;
+      white-space: pre;
+    }
+    .when-time.tba,
+    .venue.tba {
+      color: var(--color-text-muted);
+    }
+    .row .topic {
+      grid-area: topic;
+      display: flex;
+      align-items: baseline;
+      gap: 0.75ch;
+      color: var(--color-text-muted);
+      font-size: 0.8125rem;
+      line-height: calc(0.9375rem * 1.45);
+    }
+    .main {
+      display: contents;
+    }
+    .title {
+      grid-area: title;
+      color: var(--v1-title);
+      font-weight: 700;
+      text-decoration: none;
+      text-wrap: pretty;
+    }
+    .title::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+    }
+    .title:hover {
+      color: var(--v1-title);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    .title:focus-visible {
+      outline: none;
+    }
+    .row:has(.title:focus-visible) {
+      outline: 2px solid var(--v1-focus);
+      outline-offset: -2px;
+    }
+    .sub {
+      margin-left: 1ch;
+      font-weight: 400;
+      color: var(--color-text-muted);
+    }
+    .org {
+      grid-area: org;
+      position: relative;
+      z-index: 1;
+      justify-self: start;
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+      text-decoration: none;
+    }
+    .org:hover {
+      color: var(--color-text);
+      text-decoration: underline;
+    }
+    .venue {
+      grid-area: venue;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .town {
+      display: block;
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+    }
+
+    /* ---------- status ---------- */
+    .row .status {
+      grid-area: status;
+      justify-self: end;
+      text-align: right;
+    }
+    .status {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      line-height: calc(0.9375rem * 1.45);
+      color: var(--color-text-muted);
+    }
+    .st-now,
+    .st-today,
+    .st-ended {
+      display: none;
+    }
+    [data-when~='now'] .st-now {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6ch;
+      padding: 0 0.6ch;
+      background: var(--v1-accent);
+      color: #17140f;
+    }
+    [data-when~='today'] .st-today {
+      display: inline;
+      color: var(--v1-accent-text);
+    }
+    [data-when~='now'] .st-rel,
+    [data-when~='today'] .st-rel {
+      display: none;
+    }
+    [data-when~='tomorrow'] .st-rel {
+      color: var(--color-text);
+    }
+    .st-lamp {
+      width: 0.45em;
+      height: 0.45em;
+      background: currentColor;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .st-lamp {
+        animation: v1-lamp 2.4s steps(1, end) infinite;
+      }
+    }
+
+    /* ---------- the board: today, lit amber on black in both themes ---------- */
+    .board {
+      --color-bg-subtle: var(--v1-board-hover);
+      --color-border: var(--v1-board-rule);
+      --color-text: var(--v1-board-lit);
+      --color-text-muted: var(--v1-board-dim);
+      --v1-title: var(--v1-board-bright);
+      --v1-accent-text: var(--v1-board-bright);
+      --v1-focus: var(--v1-board-bright);
+      margin-top: 1rem;
+      padding: 1.1rem 0 0.4rem;
+      background: var(--v1-board-bg);
+      color: var(--v1-board-lit);
+      box-shadow: inset 0 0 0 1px var(--v1-board-edge);
+    }
+    .board:not(:has([data-when~='now'], [data-when~='today'])) {
+      display: none;
+    }
+    .board-head {
+      padding-inline: 0.75rem;
+      margin-bottom: 0.5rem;
+      font-family: var(--v1-display);
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.01em;
+      color: var(--v1-board-lit);
+    }
+
+    /* ---------- sections ---------- */
+    .sect {
+      margin-top: 2.75rem;
+    }
+    .board + .sect {
+      margin-top: 1.75rem;
+    }
+    .cols + .sect {
+      margin-top: 1rem;
+    }
+    .sect-head {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 0.6rem 0.75rem 0.5rem;
+      border-top: 2px solid var(--v1-ink);
+      font-family: var(--v1-display);
+      font-size: 2.25rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.01em;
+    }
+    .month + .month {
+      margin-top: 1.25rem;
+    }
+    .month-head {
+      padding: 0.75rem 0.75rem 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--color-text-muted);
+    }
+    .cols + .sect[data-bucket='past'] {
+      margin-top: 0.5rem;
+    }
+
+    /* ---------- empty state and end of board ---------- */
+    .empty {
+      margin-top: 1.75rem;
+      padding: 1.5rem 0.75rem;
+      border-top: 2px solid var(--v1-ink);
+    }
+    .empty p:first-child {
+      font-family: var(--v1-display);
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1.05;
+    }
+    .empty-sub {
+      margin-top: 0.5rem;
+      color: var(--color-text-muted);
+    }
+    .tt-end {
+      margin-top: 2.5rem;
+      padding: 0.9rem 0.75rem 0;
+      border-top: 1px solid var(--color-border);
+      font-size: 0.875rem;
+    }
+    .tt-end a {
+      color: var(--color-text-muted);
+    }
+    .tt-end a:hover {
+      color: var(--color-text);
+    }
+
+    /* ---------- narrower: venue folds under the title ---------- */
+    @media (max-width: 64rem) {
+      .cols {
+        display: none;
+      }
+      .row {
+        grid-template-columns: 17ch 0.55rem minmax(0, 1fr) auto;
+        grid-template-areas: 'when topic main status';
+        column-gap: 1.5ch;
+      }
+      .row .topic {
+        align-self: start;
+        align-items: center;
+        height: calc(0.9375rem * 1.45);
+      }
+      .topic-name {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      .main {
+        display: block;
+        grid-area: main;
+        min-width: 0;
+      }
+      .title {
+        display: block;
+      }
+      .org,
+      .venue {
+        display: inline;
+        font-size: 0.8125rem;
+        color: var(--color-text-muted);
+      }
+      .venue::before {
+        content: ' @ ';
+        white-space: pre;
+      }
+      .town {
+        display: inline;
+      }
+      .town::before {
+        content: ', ';
+      }
+      .town .sr {
+        display: none;
+      }
+    }
+
+    /* ---------- phones: date, time and status on the first line ---------- */
+    @media (max-width: 40rem) {
+      .tt-title {
+        margin-bottom: 1.25rem;
+      }
+      .tt-tools {
+        gap: 0.25rem 2ch;
+        font-size: 0.8125rem;
+      }
+      .row {
+        grid-template-columns: 0.55rem minmax(0, 1fr) auto;
+        grid-template-areas:
+          'when when status'
+          'topic main main';
+        column-gap: 1.25ch;
+        row-gap: 0.2rem;
+        padding-inline: 0;
+      }
+      .row .when {
+        grid-template-columns: auto auto;
+        justify-content: start;
+        font-size: 0.875rem;
+        color: var(--color-text-muted);
+      }
+      .row .when-time {
+        color: var(--color-text);
+        font-weight: 700;
+      }
+      .row .when-time.tba {
+        color: var(--color-text-muted);
+        font-weight: 400;
+      }
+      .board {
+        margin-inline: -1rem;
+        padding-inline: 1rem;
+      }
+      .board-head,
+      .sect-head,
+      .month-head {
+        padding-inline: 0;
+      }
+      .board-head {
+        font-size: 2.25rem;
+      }
+      .sect-head {
+        font-size: 2rem;
+      }
+      .empty,
+      .tt-end {
+        padding-inline: 0;
+      }
+    }
+  }
+
+  @keyframes v1-lamp {
+    50% {
+      opacity: 0.25;
+    }
+  }
+</style>

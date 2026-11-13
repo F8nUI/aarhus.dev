@@ -1,0 +1,22 @@
+---
+// The status cell: NOW while it runs, TONIGHT / TODAY later today, otherwise the
+// live relative label ("tomorrow", "in 6 days", "2 months ago"). CSS on the event
+// root's data-when picks which one shows, so it stays right on every visit.
+import type { ADEvent } from '@lib/event'
+import { relativeAtBuild } from '../shared'
+import { todayWord } from './format'
+
+interface Props {
+  event: ADEvent
+  class?: string
+}
+
+const { event, class: className } = Astro.props
+---
+
+<span class:list={['status', className]}>
+  <span class="st-now"><span class="st-lamp" aria-hidden="true"></span>Now</span>
+  <span class="st-today">{todayWord(event)}</span>
+  <span class="st-ended">Ended</span>
+  <span class="st-rel" data-rel>{relativeAtBuild(event)}</span>
+</span>
