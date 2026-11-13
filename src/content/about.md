@@ -7,7 +7,7 @@ description: A community-driven timetable of tech events in Aarhus, Denmark.
 
 A single place to find tech events and meetups in Aarhus — JavaScript, Rust, Swift, .NET, AI, Ruby, and more.
 
-Built with Astro, Preact, and Tailwind CSS. Fully open source.
+Built with Astro and Tailwind CSS. Fully open source.
 
 ## Add your event
 

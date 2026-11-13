@@ -1,5 +1,5 @@
 blank_issues_enabled: true
 contact_links:
-  - name: Questions & Discussions
-    url: https://github.com/yourusername/aarhus.dev/discussions
-    about: Ask questions or discuss ideas with the community
+  - name: How to add an event by pull request
+    url: https://aarhus.dev/add-event
+    about: The guide, with the template and every field explained

@@ -1,67 +1,94 @@
 ---
 title: Add Event
-description: How to add your tech event to aarhus.dev
+description: How to get your tech event on aarhus.dev
 ---
 
-Events are stored as markdown files in our [GitHub repository](https://github.com/f8nui/aarhus.dev). To add one, you open a pull request.
+Any developer or tech event in or around Aarhus that is open to the public belongs here — meetups, talk nights, workshops, hackathons and conferences, free or paid.
 
-## Quick way (GitHub UI)
+There are three ways to add one. All of them need a free [GitHub](https://github.com) account.
 
-1. Go to [`src/content/event/`](https://github.com/f8nui/aarhus.dev/tree/main/src/content/event/) on GitHub
-2. Pick a topic folder (`js/`, `rust/`, `swift/`, `ai/`, `dotnet/`, etc.) or create one
-3. Click **Add file** → **Create new file**
-4. Paste the template below, fill in your event details
-5. Commit — GitHub will create a PR automatically
+## 1. Fill in a form
 
-## Template
+Open an [Add Event issue](https://github.com/f8nui/aarhus.dev/issues/new?template=add_event.yml), fill in the details and submit it. A maintainer turns it into an event on the site. No Git or Markdown needed.
 
-```yaml
----
-organizer: 'organizer-id'
-title: "Event Title"
-date: 2026-01-01
-startTime: 17:00
-endTime: 20:00
-venue:
-  title: 'Venue Name'
-  address: 'Street Address, Aarhus'
-learnMoreURL: https://example.com/event
----
+## 2. Add the file on GitHub
 
-Event description in markdown.
-```
+1. Open the topic folder under [`src/content/event/`](https://github.com/f8nui/aarhus.dev/tree/main/src/content/event/), such as `rust/` or `ai/`.
+2. Click **Add file** → **Create new file**.
+3. Name the file after the event and its month: `talk-night-eiva-26-nov.md`. The name becomes the event's address on the site.
+4. Paste the [template](#template) and fill it in.
+5. Click **Commit changes…** → **Propose changes** → **Create pull request**. If you can't write to the repository, GitHub makes a copy (a fork) for you first.
 
-**Fields:**
-- `organizer` — must match a file in `src/content/organizer/` (e.g. `rust-aarhus`). Create one if it doesn't exist
-- `date` — event date (YYYY-MM-DD)
-- `startTime` / `endTime` — 24h format (HH:MM)
-- `venue` — name and street address
-- `learnMoreURL` — link to RSVP or event page
+**A topic that isn't there yet:** start the file name with the folder name and a slash, for example `python/intro-workshop-27-jan.md`, and GitHub creates the folder.
 
-Optional: `subtitle`, `endDate` (for multi-day events).
+Every pull request is checked by building the site with your file. If the check fails, click **Details**: the error names the file and the field. Fix it in the same pull request. For first-time contributors GitHub waits for a maintainer to start the check.
 
-## Adding an organizer
-
-Create a file in [`src/content/organizer/`](https://github.com/f8nui/aarhus.dev/tree/main/src/content/organizer/):
-
-```yaml
----
-name: 'Organizer Name'
-website: https://example.com
----
-
-Short description of the community.
-```
-
-## Local development
+## 3. Work locally
 
 ```sh
 git clone https://github.com/f8nui/aarhus.dev.git
 cd aarhus.dev
 bun install
-bun run dev     # localhost:4321
-bun run build   # verify before PR
+bun run dev     # the site at localhost:4321
+bun run build   # the same check the pull request runs
 ```
+
+Add your file, then open a pull request.
+
+## Template
+
+```yaml
+---
+organizer: 'rust-aarhus'
+title: 'Talk Night at EIVA'
+date: 2026-11-19
+startTime: 18:00
+endTime: 21:00
+venue:
+  title: 'EIVA'
+  address: 'Niels Bohrs Vej 17, 8660 Skanderborg'
+learnMoreURL: https://www.meetup.com/rust-aarhus/events/316938696/
+---
+
+What the event is about, in a few short paragraphs. Markdown works.
+```
+
+## Fields
+
+Required:
+
+- `organizer` — the organizer's file name in [`src/content/organizer/`](https://github.com/f8nui/aarhus.dev/tree/main/src/content/organizer/), without `.md`. Not there yet? [Add one](#adding-an-organizer) in the same pull request.
+- `title`
+- `date` — `YYYY-MM-DD`. The first day, for an event that runs several days.
+- `learnMoreURL` — where people sign up or read more.
+
+Optional:
+
+- `subtitle` — a line under the title, such as `Morning Meetup`.
+- `endDate` — the last day of a multi-day event.
+- `startTime`, `endTime` — Aarhus local time, 24-hour: `18:00`. Leave out what isn't announced yet; the site shows "time TBA".
+- `venue` — `title` and `address`. Leave it out until it's announced; the site shows "venue TBA".
+
+The folder is the event's topic: everything in `rust/` is listed at [aarhus.dev/rust](/rust). A new topic shows its folder name and a grey dot until it gets a display name and a color in [`src/lib/topics.ts`](https://github.com/f8nui/aarhus.dev/blob/main/src/lib/topics.ts).
+
+## Adding an organizer
+
+One file per community or company in [`src/content/organizer/`](https://github.com/f8nui/aarhus.dev/tree/main/src/content/organizer/). Its file name, without `.md`, is the id events refer to: `rust-aarhus.md` → `organizer: 'rust-aarhus'`.
+
+```yaml
+---
+name: 'Rust Aarhus'
+website: https://www.meetup.com/rust-aarhus/
+---
+
+A short description of the community: who it's for and what its events are like.
+```
+
+`website` is optional.
+
+## After you submit
+
+A maintainer reviews every issue and pull request. Once a pull request is merged, the site updates within a few minutes.
 
 ## Questions?
 

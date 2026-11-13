@@ -1,47 +1,59 @@
 # AI Agent Context for aarhus.dev
 
-Community-driven timetable of tech events in Aarhus, Denmark.
+Community-driven timetable of tech events in Aarhus, Denmark. Static site, deployed on Vercel from `main`.
 
 ## Tech Stack
 
-- **Astro** (v5.13+) — static site generator with content collections
-- **Preact** (v10.27+) — interactive UI components
-- **Tailwind CSS** (v4.1+) — styling
-- **Bun** — runtime and package manager (v1.3.1+)
+- **Astro 7** — static site generator with content collections
+- **Tailwind CSS 4** — styling
+- **Bun** — package manager and script runner (Node.js 22.23.4+ for Astro itself)
 - **TypeScript** — type safety
+
+No UI framework: everything is `.astro` components plus one small inline script.
 
 ## Project Structure
 
 ```
 src/
 ├── content/
-│   ├── event/         # Events organized by topic (js/, rust/, swift/, ruby/, dotnet/, ai/)
-│   └── organizer/     # Community profiles
-├── pages/
-│   ├── [topic]/       # Topic listing and event detail pages
-│   ├── organizer/     # Organizer pages
-│   ├── about.astro
-│   └── add-event.astro
-├── components/        # .astro and .tsx (Preact)
-├── layouts/           # Layout components
-├── lib/               # Utilities (event parsing, topic helpers)
-└── styles/            # Global CSS with design tokens
+│   ├── event/<topic>/   # events; the folder name is the topic
+│   ├── organizer/       # community profiles
+│   ├── about.md         # About page text
+│   └── add-event.md     # Add Event page text — the contributor guide
+├── components/
+│   ├── EventList.astro  # list pages; inline script sorts rows by the visitor's clock
+│   ├── EventRow.astro   # one row
+│   ├── Header.astro     # site title, topic links, theme toggle
+│   └── TopicDot.astro
+├── layouts/             # Layout.astro (every page), ContentPage.astro (about, add-event)
+├── lib/
+│   ├── event.ts         # getEvents, getTopics, date formatting (Europe/Copenhagen)
+│   └── topics.ts        # display name + color per topic folder
+├── pages/               # routes (below)
+└── styles/global.css    # color tokens, light/dark, prose
 ```
 
 ## Content Collections
 
-- **Events**: `src/content/event/[topic]/event-name.md` — topic directory determines category
-- **Organizers**: `src/content/organizer/organizer-id.md`
-- **Pages**: `src/content/about.md`, `src/content/add-event.md`
+Schema: `src/content.config.ts` (Zod, from `astro/zod`).
 
-Templates: `src/content/event/_template.md`, `src/content/organizer/_template.md`
+- **Events**: `src/content/event/<topic>/<name>.md`. `startTime`, `endTime` and `venue` are optional — leave them out until announced; the site shows "TBA". Times are Aarhus local time, 24-hour.
+- **Organizers**: `src/content/organizer/<id>.md`; events reference them by id.
+- **Pages**: `src/content/about.md`, `src/content/add-event.md`.
+
+Files starting with `_` are ignored by the loaders.
+
+## How the event lists work
+
+The build renders every row with `data-start` / `data-end` timestamps. An inline script in `EventList.astro` runs on every visit and moves rows into happening now / today / upcoming, or out to past, by the visitor's clock — so lists stay correct between deploys. Without JavaScript the page shows the state at build time.
 
 ## Routing
 
-- `/` — all events
-- `/[topic]/` — filtered by topic (js, rust, swift, ai, dotnet, etc.)
-- `/[topic]/[event]` — event detail page
-- `/organizer/[organizer]` — organizer profile
+- `/` — upcoming events
+- `/<topic>/` — upcoming events for one topic
+- `/<topic>/<event>` — event page
+- `/past/`, `/past/<topic>` — past events
+- `/organizer/<id>` — organizer page
 - `/about`, `/add-event` — static pages
 
 ## Commands
@@ -53,9 +65,11 @@ bun run build        # production build
 bun run astro check  # type checking
 ```
 
+CI (`.github/workflows/build.yml`) runs `astro check` and the build on every pull request.
+
 ## Conventions
 
-- PascalCase for components, kebab-case for content files
-- Plain descriptive commit messages, no prefixes
+- PascalCase for components, kebab-case for content files (`talk-night-eiva-26-nov.md`)
+- Plain descriptive commit messages, no prefixes, no version numbers (the site isn't versioned)
 - Content changes via PR, reviewed before merging
 - Bun only (not npm/yarn)

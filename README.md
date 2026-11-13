@@ -2,43 +2,43 @@
 
 A community-driven timetable of tech events in Aarhus, Denmark.
 
+## Adding an event
+
+See [aarhus.dev/add-event](https://aarhus.dev/add-event): one Markdown file per event by pull request, or fill in the [Add Event form](https://github.com/f8nui/aarhus.dev/issues/new?template=add_event.yml).
+
 ## Setup
+
+Requires [Bun](https://bun.sh) and Node.js 22.23.4 or newer.
 
 ```sh
 bun install
-bun run dev       # localhost:4321
-bun run build     # production build
-bun run preview   # preview build
+bun run dev          # localhost:4321
+bun run astro check  # type check
+bun run build        # production build
+bun run preview      # preview the build
 ```
-
-Requires [Bun](https://bun.sh) v1.3.1+.
 
 ## Project structure
 
 ```
 src/
 ├── content/
-│   ├── event/         # Events organized by topic
-│   │   ├── js/
-│   │   ├── rust/
-│   │   ├── swift/
-│   │   ├── ruby/
-│   │   ├── dotnet/
-│   │   └── ai/
-│   └── organizer/     # Community profiles
-├── pages/             # Astro pages
-│   └── [topic]/       # Topic and event routes
-├── components/        # UI components (.astro, .tsx)
-└── layouts/           # Layout components
+│   ├── event/<topic>/   # one Markdown file per event; the folder is its topic
+│   ├── organizer/       # one file per community or company
+│   ├── about.md         # text of the About page
+│   └── add-event.md     # text of the Add Event page
+├── components/          # Astro components (event list, rows, header)
+├── layouts/             # page layouts
+├── lib/                 # loading events, date formatting, topic names and colors
+├── pages/               # routes
+└── styles/              # global CSS and color tokens
 ```
 
-## Adding content
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) or the [Add Event](https://aarhus.dev/add-event) page on the site.
+More in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Tech stack
 
-[Astro](https://astro.build) · [Preact](https://preactjs.com) · [Tailwind CSS](https://tailwindcss.com) · [Bun](https://bun.sh)
+[Astro](https://astro.build) · [Tailwind CSS](https://tailwindcss.com) · [Bun](https://bun.sh) · deployed on [Vercel](https://vercel.com) from `main`
 
 ## License
 

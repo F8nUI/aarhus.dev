@@ -8,14 +8,14 @@ body:
       value: |
         Thanks for adding an organizer! You can either:
         1. Fill out this form, and we'll create the organizer file for you, OR
-        2. Create a PR directly by adding a file to `src/content/organizer/` using the template
+        2. Open a pull request with a file in `src/content/organizer/` — see https://aarhus.dev/add-event#adding-an-organizer
 
   - type: input
     id: name
     attributes:
       label: Organizer Name
       description: The name of the community or organization
-      placeholder: e.g., Aarhus JavaScript User Group
+      placeholder: e.g., Rust Aarhus
     validations:
       required: true
 
@@ -24,7 +24,7 @@ body:
     attributes:
       label: Organizer ID
       description: A unique identifier (lowercase, no spaces, use hyphens)
-      placeholder: e.g., aarhus-js
+      placeholder: e.g., rust-aarhus
     validations:
       required: true
 

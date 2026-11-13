@@ -1,52 +1,42 @@
 # Contributing
 
-## Adding an event
+## Adding an event or organizer
 
-Events are markdown files in `src/content/event/[topic]/` (e.g. `js/`, `rust/`, `ai/`).
+The guide, with the template and every field, is on the site: **[aarhus.dev/add-event](https://aarhus.dev/add-event)** (source: [`src/content/add-event.md`](src/content/add-event.md)).
 
-**Via GitHub UI:**
+In short: one Markdown file per event in `src/content/event/<topic>/`, added by pull request — or fill in the [Add Event form](https://github.com/f8nui/aarhus.dev/issues/new?template=add_event.yml) and a maintainer adds it for you.
 
-1. Go to [`src/content/event/`](https://github.com/f8nui/aarhus.dev/tree/main/src/content/event/)
-2. Pick a topic folder or create one
-3. Click **Add file** → **Create new file**
-4. Copy the [template](src/content/event/_template.md), fill in details
-5. Commit — creates a PR automatically
+## Working on the site
 
-**Locally:**
-
-```sh
-cp src/content/event/_template.md src/content/event/js/my-event.md
-# edit the file
-bun run dev    # test
-bun run build  # verify
-# commit and open a PR
-```
-
-## Adding an organizer
-
-Create a file in `src/content/organizer/` using the [template](src/content/organizer/_template.md).
-
-## Development
+Requires [Bun](https://bun.sh) and Node.js 22.23.4 or newer.
 
 ```sh
 bun install
 bun run dev          # dev server at localhost:4321
+bun run astro check  # type check
 bun run build        # production build
-bun run astro check  # type checking
 ```
+
+Every pull request runs `astro check` and the build ([`.github/workflows/build.yml`](.github/workflows/build.yml)).
+
+How it fits together:
+
+- `src/content.config.ts` — the schema every event and organizer file is checked against.
+- `src/lib/event.ts` — loads events and formats their dates (always Aarhus time).
+- `src/lib/topics.ts` — display name and color per topic folder.
+- `src/components/EventList.astro` — the event lists. The build renders the rows; a small inline script sorts them into happening now, today, upcoming and past by the visitor's clock, so the lists stay right between deploys.
 
 ## Code style
 
-- PascalCase for components: `MyComponent.astro`
-- kebab-case for content: `my-event.md`
-- TypeScript with proper types
-- Tailwind CSS for styling
+- Components in PascalCase (`EventRow.astro`), content files in kebab-case (`talk-night-eiva-26-nov.md`).
+- TypeScript, Tailwind CSS for styling.
+- Plain descriptive commit messages, no prefixes.
 
 ## Pull requests
 
-1. Fork and create a branch
-2. Make changes, test with `bun run build`
-3. Open a PR against `main`
+1. Fork the repository and create a branch.
+2. Make your change; `bun run build` should pass.
+3. Open a pull request against `main`.
 
 ## Code of Conduct
 
