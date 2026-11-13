@@ -2,12 +2,6 @@
 
 @theme {
   --breakpoint-layout: 72rem;
-  --color-topic-swift: #f05138;
-  --color-topic-js: #f7df1e;
-  --color-topic-rust: #dea584;
-  --color-topic-ruby: #cc342d;
-  --color-topic-dotnet: #512bd4;
-  --color-topic-ai: #d97706;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo,
     Consolas, 'DejaVu Sans Mono', monospace;
 }

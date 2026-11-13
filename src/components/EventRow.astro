@@ -1,0 +1,39 @@
+---
+import { formatShort, type ADEvent } from '@lib/event'
+import TopicDot from './TopicDot.astro'
+
+interface Props {
+  event: ADEvent
+  hidden?: boolean
+}
+
+const { event, hidden } = Astro.props
+---
+
+<!-- The title link stretches over the whole row (after:inset-0); the organizer link sits above it. -->
+<div
+  class="group relative py-2 px-3 -mx-3 rounded-sm hover-row flex items-start gap-2.5"
+  data-start={event.start.toISOString()}
+  data-end={event.end.toISOString()}
+  hidden={hidden}
+>
+  <TopicDot topic={event.topic} class="mt-[0.45em]" />
+  <div class="flex-1 min-w-0">
+    <a class="no-underline! group-hover:underline! after:absolute after:inset-0" href={event.url}>
+      {event.data.title}
+    </a>
+    <div class="text-sm mt-0.5 flex items-center gap-1.5 flex-wrap" style="color: var(--color-text-muted);">
+      <span>
+        by <a
+          class="relative no-underline hover:underline"
+          style="color: inherit;"
+          href={`/organizer/${event.organizer.id}`}>{event.organizer.data.name}</a
+        >
+      </span>
+      <span>&middot;</span>
+      <span>{formatShort(event)}</span>
+      <span>&middot;</span>
+      <span>{event.data.venue?.title ?? 'venue TBA'}</span>
+    </div>
+  </div>
+</div>

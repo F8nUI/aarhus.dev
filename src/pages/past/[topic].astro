@@ -1,27 +1,20 @@
 ---
 import Layout from '@layouts/Layout.astro'
-import Events from '@components/Events.astro'
-import { getEvents, getTopicName } from '@lib/event'
+import EventList from '@components/EventList.astro'
+import { getEvents, getTopics } from '@lib/event'
+import { topicName } from '@lib/topics'
 
 export async function getStaticPaths() {
-  const events = await getEvents()
-  let topics = events.flatMap((e) => e.id.split('/')[0]).filter((t) => t)
-  topics = [...new Set(topics)]
-
-  return topics.map((topic) => ({
-    params: { topic },
-    props: { topic },
-  }))
+  return (await getTopics()).map((topic) => ({ params: { topic } }))
 }
 
-const { topic } = Astro.props
-const topicName = getTopicName(topic)
+const { topic } = Astro.params
 const metadata = {
-  title: `Past ${topicName} Events`,
-  description: `Past ${topicName} tech events and meetups in Aarhus, Denmark`,
+  title: `Past ${topicName(topic)} Events`,
+  description: `Past ${topicName(topic)} tech events and meetups in Aarhus, Denmark`,
 }
 ---
 
-<Layout topic={topic} {metadata}>
-  <Events {topic} pastOnly />
+<Layout {topic} {metadata}>
+  <EventList events={await getEvents(topic)} past {topic} />
 </Layout>

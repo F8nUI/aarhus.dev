@@ -2,129 +2,89 @@ import { getCollection, getEntry, type CollectionEntry } from 'astro:content'
 
 export type ADEvent = CollectionEntry<'events'> & {
   topic: string
-  eventId: string
-  startDate: Date
-  startDateFormatted: string
-  endDate: Date
-  endDateFormatted: string
-  dateFormatted: {
-    date: string
-    time: string
-  }
+  url: string
+  start: Date
+  end: Date
   organizer: CollectionEntry<'organizers'>
 }
 
-export async function getEvents(): Promise<ADEvent[]> {
-  const events = await getCollection('events')
+const CPH = 'Europe/Copenhagen'
 
-  const adEvents: ADEvent[] = []
+// The folder an event sits in is its topic: `rust/talk-night` → `rust`.
+const topicOf = (event: CollectionEntry<'events'>) => event.id.split('/')[0]
 
-  for (const event of events) {
-    adEvents.push(await parseEvent(event))
-  }
-
-  return adEvents.sort((a, b) => b.startDate.valueOf() - a.startDate.valueOf())
-}
-
-export async function parseEvent(event: CollectionEntry<'events'>): Promise<ADEvent> {
-  const [topic, eventId] = event.id.split('/')
-  const startDate = toCphDate(event.data.date, event.data.startTime)
-  const endDate = toCphDate(event.data.endDate ?? event.data.date, event.data.endTime)
-  return {
-    ...event,
-    topic,
-    eventId,
-    startDate,
-    endDate,
-    startDateFormatted: formatEventDate(startDate),
-    endDateFormatted: formatEventDate(endDate),
-    dateFormatted: formatEventDateRange(startDate, endDate),
-    organizer: await getEntry(event.data.organizer),
-  }
+/** All events, or one topic's, oldest first. */
+export async function getEvents(topic?: string): Promise<ADEvent[]> {
+  const entries = await getCollection('events', (e) => !topic || topicOf(e) === topic)
+  const events = await Promise.all(entries.map(parseEvent))
+  return events.sort((a, b) => a.start.valueOf() - b.start.valueOf())
 }
 
 export async function getTopics(): Promise<string[]> {
   const events = await getCollection('events')
-  const topics = [...new Set(events.map((e) => e.id.split('/')[0]))]
-  return topics.sort().reverse()
+  return [...new Set(events.map(topicOf))].sort().reverse()
 }
 
-export function getTopicName(topicCode: string): string {
-  const topicMap: Record<string, string> = {
-    js: 'JavaScript',
-    rust: 'Rust',
-    swift: 'Swift',
-    ruby: 'Ruby',
-    python: 'Python',
-    go: 'Go',
-    java: 'Java',
-    kotlin: 'Kotlin',
-    cpp: 'C++',
-    csharp: 'C#',
-    php: 'PHP',
-    typescript: 'TypeScript',
-    dotnet: '.NET',
-    ai: 'AI',
+export async function parseEvent(event: CollectionEntry<'events'>): Promise<ADEvent> {
+  const { date, endDate, startTime, endTime } = event.data
+  return {
+    ...event,
+    topic: topicOf(event),
+    url: `/${event.id}`,
+    start: cphTime(date, startTime ?? '00:00'),
+    // No end time given: the event counts as running until the end of its day.
+    end: cphTime(endDate ?? date, endTime ?? '23:59'),
+    organizer: await getEntry(event.data.organizer),
   }
-
-  return topicMap[topicCode.toLowerCase()] || topicCode
 }
 
-const CPH_TIMEZONE = 'Europe/Copenhagen'
+/** "tue, 18 aug · 17:00" — a row in the event lists. */
+export function formatShort(event: ADEvent): string {
+  const weekday = event.start.toLocaleDateString('en-GB', { weekday: 'short', timeZone: CPH })
+  const dayMonth = event.start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: CPH })
+  const date = `${weekday}, ${dayMonth}`.toLowerCase()
+  return event.data.startTime ? `${date} · ${event.data.startTime}` : date
+}
+
+/** "Tuesday 18 August 2026" and "17:00 – 19:00" — the event page. */
+export function formatLong(event: ADEvent): { date: string; time: string } {
+  const { startTime, endTime } = event.data
+  const day = (d: Date) =>
+    d.toLocaleDateString('en-GB', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      timeZone: CPH,
+    })
+
+  const startDay = day(event.start)
+  const endDay = day(event.end)
+  const date = startDay === endDay ? startDay : `${startDay} – ${endDay}`
+
+  let time = 'time TBA'
+  if (startTime && endTime) time = `${startTime} – ${endTime}`
+  else if (startTime) time = `from ${startTime}`
+
+  return { date, time }
+}
+
+/** "August 2026" */
+export function formatMonth(date: Date): string {
+  return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: CPH })
+}
 
 const cphOffsetFormatter = new Intl.DateTimeFormat('en-US', {
-  timeZone: CPH_TIMEZONE,
+  timeZone: CPH,
   timeZoneName: 'longOffset',
 })
 
-function toCphDate(date: Date, time: string): Date {
+// A calendar date plus an Aarhus wall-clock time, as an exact instant.
+function cphTime(date: Date, time: string): Date {
   const dateStr = date.toISOString().split('T')[0]
-  // Determine the Copenhagen UTC offset for this specific date
+  // Copenhagen's UTC offset on this date (+01:00 in winter, +02:00 in summer)
   const noonUtc = new Date(`${dateStr}T12:00:00Z`)
-  const parts = cphOffsetFormatter.formatToParts(noonUtc)
-  const tzPart = parts.find((p) => p.type === 'timeZoneName')
+  const tzPart = cphOffsetFormatter.formatToParts(noonUtc).find((p) => p.type === 'timeZoneName')
   const offset = tzPart?.value.replace('GMT', '') || '+01:00'
   return new Date(`${dateStr}T${time}:00${offset}`)
-}
-
-function formatEventDate(date: Date): string {
-  const options = { timeZone: CPH_TIMEZONE } as const
-  const weekday = date.toLocaleDateString('en-US', { weekday: 'long', ...options })
-  const day = date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', ...options })
-  const time = date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    ...options,
-  })
-
-  return `${weekday}, ${day} at ${time}`
-}
-
-function formatEventDateRange(startDate: Date, endDate: Date): { date: string; time: string } {
-  const options = { timeZone: CPH_TIMEZONE } as const
-
-  const weekday = startDate.toLocaleDateString('en-US', { weekday: 'long', ...options })
-  const day = startDate.toLocaleDateString('en-US', {
-    day: 'numeric',
-    month: 'short',
-    ...options,
-  })
-  const startTime = startDate.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    ...options,
-  })
-  const endTime = endDate.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    ...options,
-  })
-
-  return {
-    date: `${weekday}, ${day}`,
-    time: `${startTime} – ${endTime}`,
-  }
 }

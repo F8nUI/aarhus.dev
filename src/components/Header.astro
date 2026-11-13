@@ -1,4 +1,6 @@
 ---
+import TopicDot from './TopicDot.astro'
+
 interface Props {
   topic?: string
   topics: string[]
@@ -10,7 +12,7 @@ const { topic, topics } = Astro.props
 <nav>
   <div class="flex items-center justify-between">
     <div>
-      <a class="hover:opacity-50 no-underline!" href="/">aarhus.dev</a>{topic && <><span style="color: var(--color-text-muted);">/</span><a class="no-underline! hover:opacity-50" style="color: var(--color-text-muted);" href={'/' + topic}>{topic}</a><span class="inline-block w-2 h-2 rounded-full ml-1.5 align-[0.15em]" style={`background-color: var(--color-topic-${topic});`}></span></>}
+      <a class="hover:opacity-50 no-underline!" href="/">aarhus.dev</a>{topic && <><span style="color: var(--color-text-muted);">/</span><a class="no-underline! hover:opacity-50" style="color: var(--color-text-muted);" href={'/' + topic}>{topic}</a><TopicDot topic={topic} class="ml-1.5 align-[0.15em]" /></>}
     </div>
     <div class="flex items-center gap-3 text-sm">
       <a
@@ -63,7 +65,7 @@ const { topic, topics } = Astro.props
       </button>
     </div>
   </div>
-  <div class="flex gap-3 mt-1 text-sm">
+  <div class="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-sm">
     {
       (topic ? topics.filter((t) => t !== topic) : topics).map((t) => (
         <a

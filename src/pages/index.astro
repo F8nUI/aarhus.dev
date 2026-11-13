@@ -1,8 +1,9 @@
 ---
 import Layout from '@layouts/Layout.astro'
-import Events from '@components/Events.astro'
+import EventList from '@components/EventList.astro'
+import { getEvents } from '@lib/event'
 ---
 
 <Layout>
-  <Events />
+  <EventList events={await getEvents()} />
 </Layout>

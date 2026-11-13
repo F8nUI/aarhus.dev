@@ -1,34 +1,5 @@
 ---
-import Layout from '@layouts/Layout.astro'
-import { getEntry, render } from 'astro:content'
-
-const page = await getEntry('pages', 'add-event')
-
-if (!page) {
-  return Astro.redirect('/404')
-}
-
-const { Content } = await render(page)
-
-const metadata = {
-  title: page.data.title,
-  description: page.data.description,
-}
+import ContentPage from '@layouts/ContentPage.astro'
 ---
 
-<Layout {metadata}>
-  <div class="mb-6">
-    <h1 class="font-semibold text-2xl md:text-3xl">{page.data.title}</h1>
-    {
-      page.data.description && (
-        <p class="text-sm mt-2" style="color: var(--color-text-muted);">
-          {page.data.description}
-        </p>
-      )
-    }
-  </div>
-  <div class="h-px w-full" style="background-color: var(--color-border);"></div>
-  <article class="prose mt-6">
-    <Content />
-  </article>
-</Layout>
+<ContentPage id="add-event" />

@@ -1,0 +1,165 @@
+---
+import { formatMonth, type ADEvent } from '@lib/event'
+import EventRow from './EventRow.astro'
+
+interface Props {
+  /** Every event for this page (all, or one topic's), oldest first. */
+  events: ADEvent[]
+  /** The archive of past events instead of what's coming up. */
+  past?: boolean
+  topic?: string
+}
+
+const { events, past = false, topic } = Astro.props
+
+// The build renders the rows; which ones are past, happening now or today is
+// decided in the browser on every visit (the script below), so the page stays
+// right between deploys. Without JavaScript it shows the state at build time.
+const buildTime = Date.now()
+const isPast = (e: ADEvent) => e.end.valueOf() < buildTime
+
+// Upcoming: what hadn't ended at build time, soonest first.
+// Past: everything, newest first, with the not-yet-ended rows hidden until they end.
+const rows = past ? [...events].reverse() : events.filter((e) => !isPast(e))
+const pastCount = events.filter(isPast).length
+
+const months: { label: string; events: ADEvent[] }[] = []
+for (const event of rows) {
+  const label = formatMonth(event.start)
+  const last = months.at(-1)
+  if (last?.label === label) last.events.push(event)
+  else months.push({ label, events: [event] })
+}
+
+const hideRow = (e: ADEvent) => past && !isPast(e)
+---
+
+<div class="flex flex-col gap-8" data-event-list={past ? 'past' : 'upcoming'} data-past-count={pastCount}>
+  {
+    !past &&
+      [
+        ['now', 'happening right now'],
+        ['today', 'today'],
+      ].map(([id, title]) => (
+        <section class="flex flex-col gap-2" data-section={id} hidden>
+          <h2 class="text-sm flex items-center" style="color: var(--color-text-muted);">
+            <span class="shrink-0 w-[18px]">//</span>
+            <span class="shrink-0">{title}</span>
+            <span class="h-px flex-1" style="background-color: var(--color-border);" />
+          </h2>
+          <div data-rows />
+        </section>
+      ))
+  }
+
+  <section class="flex flex-col gap-3" data-section="later">
+    {
+      !past && (
+        <h2 class="text-sm flex items-center" style="color: var(--color-text-muted);" data-heading hidden>
+          <span class="shrink-0 w-[18px]">//</span>
+          <span class="shrink-0">upcoming</span>
+          <span class="h-px flex-1" style="background-color: var(--color-border);" />
+        </h2>
+      )
+    }
+    {
+      months.map((month) => (
+        <div data-month hidden={month.events.every(hideRow)}>
+          <div class="flex items-center gap-2 mb-1" style="color: var(--color-text-muted); opacity: 0.7;">
+            <span class="h-px w-[18px] shrink-0" style="background-color: var(--color-border);" />
+            <span class="text-xs uppercase tracking-wide shrink-0">{month.label}</span>
+            <span class="h-px flex-1" style="background-color: var(--color-border);" />
+          </div>
+          {month.events.map((event) => (
+            <EventRow event={event} hidden={hideRow(event)} />
+          ))}
+        </div>
+      ))
+    }
+  </section>
+
+  {
+    !past && (
+      <div
+        class="py-2 px-3 -mx-3 flex items-start gap-2.5"
+        style="color: var(--color-text-muted);"
+        data-empty
+        hidden={rows.length > 0}
+      >
+        <span class="w-2 h-2 rounded-full shrink-0 mt-[0.45em]" style="background-color: var(--color-border);" />
+        <div>
+          <p>No upcoming events yet.</p>
+          <p class="text-sm mt-1">
+            Know something coming up? <a href="/add-event">Add an event</a>
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    !past && (
+      <div data-past-link hidden={pastCount === 0}>
+        <div class="h-px mb-4" style="background-color: var(--color-border); opacity: 0.7;" />
+        <a
+          class="no-underline! py-2 px-3 -mx-3 rounded-sm hover-row flex items-start gap-2.5"
+          style="color: var(--color-text-muted); opacity: 0.6;"
+          href={topic ? `/past/${topic}` : '/past'}
+        >
+          <span class="w-2 h-2 rounded-full shrink-0 mt-[0.45em]" style="background-color: var(--color-border);" />
+          <span>
+            Past events (<span data-past-number>{pastCount}</span>)
+          </span>
+        </a>
+      </div>
+    )
+  }
+</div>
+<script is:inline>
+  // Sorts the rows by the visitor's clock. Inline, so it runs before the list is painted.
+  ;(function () {
+    var list = document.currentScript.previousElementSibling
+    var now = Date.now()
+    // The Aarhus calendar day of a timestamp, e.g. "2026-11-19".
+    var day = function (t) {
+      return new Date(t).toLocaleDateString('en-CA', { timeZone: 'Europe/Copenhagen' })
+    }
+    var rows = Array.prototype.slice.call(list.querySelectorAll('[data-start]'))
+    var count = function (selector) {
+      return list.querySelectorAll(selector + ' [data-start]:not([hidden])').length
+    }
+
+    if (list.dataset.eventList === 'past') {
+      rows.forEach(function (row) {
+        row.hidden = Date.parse(row.dataset.end) >= now
+      })
+    } else {
+      var pastCount = Number(list.dataset.pastCount)
+      rows.forEach(function (row) {
+        var start = Date.parse(row.dataset.start)
+        var end = Date.parse(row.dataset.end)
+        if (end < now) {
+          row.remove()
+          pastCount++
+        } else if (start <= now) {
+          list.querySelector('[data-section="now"] [data-rows]').append(row)
+        } else if (day(start) === day(now)) {
+          list.querySelector('[data-section="today"] [data-rows]').append(row)
+        }
+      })
+      var nowCount = count('[data-section="now"]')
+      var todayCount = count('[data-section="today"]')
+      var laterCount = count('[data-section="later"]')
+      list.querySelector('[data-section="now"]').hidden = nowCount === 0
+      list.querySelector('[data-section="today"]').hidden = todayCount === 0
+      list.querySelector('[data-heading]').hidden = laterCount === 0 || nowCount + todayCount === 0
+      list.querySelector('[data-empty]').hidden = nowCount + todayCount + laterCount > 0
+      list.querySelector('[data-past-link]').hidden = pastCount === 0
+      list.querySelector('[data-past-number]').textContent = pastCount
+    }
+
+    list.querySelectorAll('[data-month]').forEach(function (month) {
+      month.hidden = !month.querySelector('[data-start]:not([hidden])')
+    })
+  })()
+</script>

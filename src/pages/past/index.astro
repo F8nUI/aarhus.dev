@@ -1,6 +1,7 @@
 ---
 import Layout from '@layouts/Layout.astro'
-import Events from '@components/Events.astro'
+import EventList from '@components/EventList.astro'
+import { getEvents } from '@lib/event'
 
 const metadata = {
   title: 'Past Events',
@@ -9,5 +10,5 @@ const metadata = {
 ---
 
 <Layout {metadata}>
-  <Events pastOnly />
+  <EventList events={await getEvents()} past />
 </Layout>
