@@ -40,7 +40,8 @@ src/
 │   ├── topics.ts              # per topic folder: display name, color (white text on it), what to call its events
 │   ├── when.ts                # past / now / today / tomorrow / week …, and "in 5 days"
 │   ├── format.ts              # date parts, row and poster helpers
-│   └── calendar.ts            # /calendar.ics and add-to-calendar links
+│   ├── calendar.ts            # /calendar.ics and add-to-calendar links
+│   └── rss.ts                 # /rss.xml
 ├── pages/                     # routes (below)
 └── styles/
     ├── global.css             # Tailwind, color tokens: a printed timetable in light, the lit board in dark
@@ -84,6 +85,7 @@ What's past, today or next week depends on when someone looks, so the browser de
 - `/organizer/<id>` — organizer page
 - `/about`, `/add-event` — static pages
 - `/calendar.ics` — every event, as a calendar to subscribe to
+- `/rss.xml` — every upcoming event, as an RSS feed (`src/lib/rss.ts`); linked in the footer
 
 ## Commands
 

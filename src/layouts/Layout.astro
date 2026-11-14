@@ -45,6 +45,7 @@ const onAllList = !topic && /^\/(past\/?)?$/.test(Astro.url.pathname)
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="alternate" type="application/rss+xml" title="aarhus.dev: upcoming events" href="/rss.xml" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={pageDescription} />
@@ -109,6 +110,7 @@ const onAllList = !topic && /^\/(past\/?)?$/.test(Astro.url.pathname)
             <a href={calendarFeed.webcal}>Subscribe</a>
             <a href={calendarFeed.https} title="The calendar feed's web address, for apps that ask for a URL">(.ics)</a>
           </span>
+          <a href="/rss.xml" title="Every upcoming event, for your feed reader">RSS</a>
           <button class="theme-toggle toggle" type="button" aria-label="Switch between light and dark">
             <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true">
               <circle cx="12" cy="12" r="4.5"></circle>

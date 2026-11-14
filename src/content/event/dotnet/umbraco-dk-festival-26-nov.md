@@ -8,7 +8,6 @@ venue:
   title: 'Tivoli Friheden'
   address: 'Skovbrynet 5, 8000 Aarhus'
 learnMoreURL: https://umbracodkfestival.dk/
-highlight: true
 ---
 
 A full-day conference that brings the Danish Umbraco community together for a deep dive into everything new on the Umbraco platform. Aimed at developers who work with Umbraco day to day, or are about to.
