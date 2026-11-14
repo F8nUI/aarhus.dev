@@ -6,7 +6,9 @@
 // page" (on the event's page, the `actions` slot adds the calendar links under it). Its top row says when ("in 6 days", "now · until 16:30");
 // Featured.astro stacks them beside the board and, with `nav`, puts the controls at
 // that row's right end.
-// Above the board (narrow screens) it's laid out wide; on phones it's compact.
+// Laid out wide (above the board on narrow screens, and on the event's page), the date,
+// place and organizer share one band between two rules, with the link under it on
+// the left; on phones it's compact.
 import type { ADEvent } from '@lib/event'
 import {
   dayNumber,
@@ -150,6 +152,8 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       --date: 1.75rem;
       /* side padding = how far the poster hangs past the page's text edge, so its text lines up on that edge */
       --pad-x: var(--box-pad);
+      /* the body's space above (under the top strip's rule) and below, the same at both ends */
+      --pad-y: 1rem;
       /* one face, three sizes: labels (small capitals), text, and the big title and date */
       --sp-label: 0.8125rem;
       --sp-text: 1.125rem;
@@ -277,8 +281,7 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
          one's), so date, place, organizer and button sit at the same spot on each */
       grid-template-rows: 1fr auto auto auto;
       gap: 1.1rem;
-      /* the bottom matches the sides */
-      padding: 1rem var(--pad-x) var(--pad-x);
+      padding: var(--pad-y) var(--pad-x);
     }
 
     .sp-topic {
@@ -463,22 +466,48 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
 
     /* ---------- above the board, laid out wide ---------- */
     @container (min-width: 36rem) {
-      .sp {
-        --date: 2.25rem;
-      }
+      /* set on the body, not .sp: a container query can't style the container itself */
       .sp-body {
-        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+        --date: 2.25rem;
+        --pad-y: 1.5rem;
+      }
+      /*
+       * The title across; under it one band between two rules (the date, then where and
+       * who, side by side, or under each other when there's no room); the link under
+       * the band, on the left.
+       */
+      .sp-body {
+        grid-template-columns: auto minmax(0, 1fr);
         grid-template-rows: 1fr auto auto;
-        column-gap: 2.5rem;
-        padding: 1.5rem var(--pad-x) var(--pad-x);
+        grid-template-areas:
+          'head head'
+          'when facts'
+          'actions actions';
+        column-gap: 0;
       }
 
       .sp-head {
-        grid-column: 1 / -1;
+        grid-area: head;
       }
+      /* as tall as the band (its rules run along it), the date centred in it: one grid row
+         as tall as the day number, which the two lines beside it spread to */
       .sp-when {
-        grid-row: span 2;
-        align-self: start;
+        grid-area: when;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-content: center;
+      }
+      .sp-facts {
+        grid-area: facts;
+        grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+        align-content: center;
+        gap: 0.85rem 2rem;
+        /* the date's band continues under and over it: the same rules and padding */
+        padding: 0.8rem 0 0.8rem 2.5rem;
+        border-block: var(--rule) solid currentColor;
+      }
+      .sp-actions {
+        grid-area: actions;
       }
       .fit-xs .sp-title {
         font-size: clamp(3rem, 11cqi, 6.5rem);
@@ -491,9 +520,6 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       }
       .fit-l .sp-title {
         font-size: clamp(2.25rem, 6.5cqi, 4.25rem);
-      }
-      .sp-facts {
-        gap: 0.85rem;
       }
       .sp-facts > div {
         display: block;
@@ -520,8 +546,7 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
         padding-block: 0.35rem 0.25rem;
       }
       .sp-body {
-        gap: 0.9rem;
-        padding: 0.85rem var(--pad-x) var(--pad-x);
+        row-gap: 0.9rem;
       }
       .sp-topic {
         margin-bottom: 0.3rem;
