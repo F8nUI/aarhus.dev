@@ -11,6 +11,7 @@ import { getEvents, getTopics } from '@lib/event'
 import { topicColor, topicName } from '@lib/topics'
 import RuntimeBody from './RuntimeBody.astro'
 import RuntimeHead from './RuntimeHead.astro'
+import TypeSwitch from './TypeSwitch.astro'
 
 interface Props {
   metadata?: { title?: string; description?: string }
@@ -54,6 +55,7 @@ const onAllList = !topic && /^\/(past\/?)?$/.test(Astro.url.pathname)
     />
     <title>{pageTitle}</title>
     <RuntimeHead />
+    <TypeSwitch />
     <Analytics />
   </head>
   <body>

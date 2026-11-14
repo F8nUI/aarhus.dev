@@ -38,13 +38,14 @@
   .cols,
   .row {
     display: grid;
-    grid-template-columns: 17ch 12ch minmax(0, 1fr) 20ch 13ch;
-    column-gap: 2ch;
+    /* in em, not ch: the same widths whichever font a row is set in (0.6em is one mono character) */
+    grid-template-columns: 10.2em 7.2em minmax(0, 1fr) 12em 7.8em;
+    column-gap: 1.2em;
   }
   .when {
     display: grid;
-    grid-template-columns: 10ch 5ch;
-    column-gap: 2ch;
+    grid-template-columns: 6em 3em;
+    column-gap: 1.2em;
     align-content: start;
   }
 
@@ -347,9 +348,9 @@
       display: none;
     }
     .row {
-      grid-template-columns: 17ch 0.55rem minmax(0, 1fr) auto;
+      grid-template-columns: 10.2em 0.55rem minmax(0, 1fr) auto;
       grid-template-areas: 'when topic main status';
-      column-gap: 1.5ch;
+      column-gap: 0.9em;
     }
     .row .topic {
       align-self: start;
@@ -404,12 +405,12 @@
       grid-template-areas:
         'when topic . status'
         'main main main main';
-      column-gap: 1.5ch;
+      column-gap: 0.9em;
       row-gap: 0.2rem;
     }
     .row .when {
-      grid-template-columns: 10ch 5ch;
-      column-gap: 1.5ch;
+      grid-template-columns: 6em 3em;
+      column-gap: 0.9em;
       font-size: 0.875rem;
       color: var(--color-text-muted);
     }
