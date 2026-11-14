@@ -133,3 +133,33 @@ Works with any of them: a plain-text `/events.txt` in This Week in Rust's pipe f
 JS-rendered pages show nothing visual to a plain fetch, so typefaces came from their CSS
 (local-first: Spline Sans + Passion One; EuroRust: Strenuous; ffconf: BasierSquare;
 Systems Distributed: Space Grotesk). Luma's timeline view and GOTO's agenda couldn't be seen.
+
+## F. Danish-language events in Aarhus (2026-11-14)
+
+**Verdict:** rare. Nearly every active Aarhus tech community announces in English; between now and June 2027
+only a handful of Danish developer events turned up, two of them members-only. Already on the site in Danish:
+Co-coders' "Tech Taster #1: Intro til Python-programmering" (25 Nov).
+
+Upcoming, not on aarhus.dev:
+
+| Event | When | Where | Organizer | Notes |
+|---|---|---|---|---|
+| HC3 @ Jysk | Wed 27 Jan 2027, 08:30–16:00 | JYSK, Sødalsparken 18, 8220 Brabrand | HC3 – Hybrid Cloud Choice Community | Danish, free; hybrid cloud and datacenter. [eventbrite.dk](https://www.eventbrite.dk/e/hc3-jysk-tickets-1999471292460) |
+| Europæisk AI i praksis | Mon 25 Jan 2027, 17–20 | PROSA Aarhus, Søren Frichs Vej 38, Åbyhøj | PROSA | Danish, **members only**. [prosa.dk](https://www.prosa.dk/arrangementer/arrangementer-detalje?eventId=edb4eef0-0bad-f111-9184-426a46ee5e17) |
+| Vibe Coding og AI … (hands-on workshop) | Tue 9 Mar 2027, 17–20 | PROSA Aarhus | PROSA | Danish, **members only**. [prosa.dk](https://www.prosa.dk/arrangementer/arrangementer-detalje?eventId=93014e1a-17c6-f111-9187-426a46ee5e17) |
+| V2 Security Aarhus 2027 | 24–25 Feb 2027 | Aarhus Congress Center | Version2 | Danish site, but the programme reads English; a trade fair and conference. [v2security.dk](https://v2security.dk/aarhus7) |
+
+Also seen, in English and not on the site: 0-Day Aarhus, "MicroArch", 18 Nov 2026 at INCUBA.
+
+Danish-speaking organizers that recur:
+
+- **PROSA Aarhus** — prosa.dk/arrangementer (filter "Jylland"); every month or two at their Åbyhøj office, mostly members only.
+- **Open Space Aarhus** (hackerspace) — osaa.dk; open every Tuesday at Olof Palmes Allé 11, Aarhus N; a "Tech Talk Tuesday" page with nothing scheduled.
+- **HC3** — eventbrite.dk/o/hc3-hybrid-cloud-choice-community-121167740234; vendor-neutral hybrid-cloud community; how often isn't stated.
+- **Vibe Coding Aarhus** (on luma.com) — Danish meetups; #5 was 21 May 2026, nothing newer.
+- **IDA IT Gruppen Østjylland** — a Danish association, but its recent Aarhus IT events were in English.
+
+Checked and English, inactive or out of scope: ANUG, Tech Hub Aarhus, CoderGirls Aarhus, Agile Aarhus, Data to X,
+Laravel Aarhus, Code&Share, CyberSkills, Coding Pirates (children), Den Agile Madklub (social dinners), Dansk IT's
+OffDig (public-sector digitalisation). Not verified: IDA's listings (they render with JavaScript), the language of
+V2 Security's talks, PROSA's exact address (38K or 38M), whether Open Space's talks still run.
