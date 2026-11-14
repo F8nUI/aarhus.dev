@@ -1,0 +1,45 @@
+---
+// An organizer's events, on their page: what's coming up, soonest first, then what's
+// been, newest first. The board's rows and sections (src/styles/board.css); the
+// browser sorts each event into the right one on every visit.
+import type { ADEvent } from '@lib/event'
+import Row from './Row.astro'
+
+interface Props {
+  /** The organizer's events, oldest first. */
+  events: ADEvent[]
+}
+
+const { events } = Astro.props
+---
+
+<div class="tt-board">
+  <section class="sect" data-bucket="upcoming">
+    <h2 class="sect-head">Coming up</h2>
+    <ol class="rows">
+      {
+        events.map((event) => (
+          <Row event={event} />
+        ))
+      }
+    </ol>
+  </section>
+
+  <div class="empty" data-empty="upcoming">
+    <p>Nothing coming up yet.</p>
+    <p class="empty-sub">
+      Know of one? <a href="/add-event">Add an event</a>
+    </p>
+  </div>
+
+  <section class="sect" data-bucket="past">
+    <h2 class="sect-head">Past events</h2>
+    <ol class="rows">
+      {
+        [...events].reverse().map((event) => (
+          <Row event={event} />
+        ))
+      }
+    </ol>
+  </section>
+</div>

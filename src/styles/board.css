@@ -1,0 +1,431 @@
+/*
+ * The board: the event lists on the home, topic, past and organizer pages: rows,
+ * the today board, sections. Loaded on every page by Layout.astro.
+ */
+.site {
+  /* --hang (in Shell.astro): how far backgrounds hang outside the text edge. */
+  /* Space between the big blocks: head event, today, this week, next week, later. */
+  --gap: 2.5rem;
+
+  /* No past events: no link to them. */
+  &:not(:has([data-when~='past'])) .tt-past {
+    display: none;
+  }
+
+  /* ---------- featured events: hidden once none of them is still to come ---------- */
+  .heads {
+    margin-bottom: var(--gap);
+  }
+  .heads > [data-when~='past'],
+  .heads > [data-when~='upcoming'] ~ [data-when~='upcoming'],
+  .heads:not(:has([data-when~='upcoming'])) {
+    display: none;
+  }
+
+  /*
+   * The board's blocks stack with one gap; a hidden block (an empty today board,
+   * a week with nothing on) takes no space. The rows lay out by the board's own
+   * width, so it reads the same full width or beside a head event.
+   */
+  .tt-board {
+    container: board / inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+  }
+
+  /* ---------- the column grid, shared by the header and every row ---------- */
+  .cols,
+  .row {
+    display: grid;
+    grid-template-columns: 17ch 12ch minmax(0, 1fr) 20ch 13ch;
+    column-gap: 2ch;
+  }
+  .when {
+    display: grid;
+    grid-template-columns: 10ch 5ch;
+    column-gap: 2ch;
+    align-content: start;
+  }
+
+  .cols {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    /* sits right on top of the first block, not a whole gap above it */
+    margin-bottom: calc(0.75rem - var(--gap));
+    padding-block: 0.5rem;
+    background: var(--color-bg);
+    /* the page color reaches as far as the rows' hover, so nothing shows beside it when stuck */
+    box-shadow:
+      calc(-1 * var(--hang)) 0 0 var(--color-bg),
+      var(--hang) 0 0 var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    /* the grid is sized in the rows' ch; only the labels are small */
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+  }
+  .cols > :not(.when),
+  .cols .when > span {
+    font-size: 0.75rem;
+  }
+  .col-status {
+    text-align: right;
+  }
+  &:not(:has([data-when~='upcoming'])) .cols {
+    display: none;
+  }
+
+  /* ---------- rows ---------- */
+  .row {
+    position: relative;
+    isolation: isolate;
+    grid-template-areas:
+      'when topic title venue status'
+      'when topic org venue status';
+    align-items: start;
+    padding-block: 0.75rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+  /* hover and focus fill, hanging past the text edge */
+  .row::before {
+    content: '';
+    position: absolute;
+    inset: 0 calc(-1 * var(--hang));
+    z-index: -1;
+  }
+  .row:hover::before {
+    background: var(--color-bg-subtle);
+  }
+  .row:has(.title:focus-visible)::before {
+    outline: 2px solid var(--focus);
+    outline-offset: -2px;
+  }
+  .row .when {
+    grid-area: when;
+    white-space: pre;
+  }
+  .when-time.tba,
+  .venue.tba {
+    color: var(--color-text-muted);
+  }
+  .row .topic {
+    grid-area: topic;
+    display: flex;
+    align-items: baseline;
+    gap: 0.75ch;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    line-height: calc(0.9375rem * 1.45);
+  }
+  .main {
+    display: contents;
+  }
+  .title {
+    grid-area: title;
+    color: var(--title);
+    font-weight: 700;
+    text-decoration: none;
+    text-wrap: pretty;
+  }
+  .title::after {
+    content: '';
+    position: absolute;
+    inset: 0 calc(-1 * var(--hang));
+  }
+  /* hovering underlines the title, not the subtitle beside it */
+  .title:hover {
+    color: var(--title);
+  }
+  .title:hover .title-text {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .title:focus-visible {
+    outline: none;
+  }
+  .sub {
+    margin-left: 1ch;
+    font-weight: 400;
+    color: var(--color-text-muted);
+  }
+  .org {
+    grid-area: org;
+    position: relative;
+    z-index: 1;
+    justify-self: start;
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+  .org:hover {
+    color: var(--color-text);
+    text-decoration: underline;
+  }
+  .venue {
+    grid-area: venue;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .town {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+  }
+
+  /* ---------- status ---------- */
+  .row .status {
+    grid-area: status;
+    justify-self: end;
+    text-align: right;
+  }
+  .status {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: calc(0.9375rem * 1.45);
+    color: var(--color-text-muted);
+  }
+  .st-now,
+  .st-today,
+  .st-ended {
+    display: none;
+  }
+  [data-when~='now'] .st-now {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6ch;
+    padding: 0 0.6ch;
+    background: var(--accent);
+    color: #17140f;
+  }
+  [data-when~='today'] .st-today {
+    display: inline;
+    color: var(--accent-text);
+  }
+  [data-when~='now'] .st-rel,
+  [data-when~='today'] .st-rel {
+    display: none;
+  }
+  [data-when~='tomorrow'] .st-rel {
+    color: var(--color-text);
+  }
+  .st-lamp {
+    width: 0.45em;
+    height: 0.45em;
+    background: currentColor;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .st-lamp {
+      animation: blink 2.4s steps(1, end) infinite;
+    }
+  }
+
+  /* ---------- the board: today, lit amber on black in both themes ---------- */
+  .board {
+    --color-bg-subtle: var(--board-hover);
+    --color-border: var(--board-rule);
+    --color-text: var(--board-lit);
+    --color-text-muted: var(--board-dim);
+    --title: var(--board-bright);
+    --accent-text: var(--board-bright);
+    --focus: var(--board-bright);
+    margin-inline: calc(-1 * var(--hang));
+    padding: 1rem var(--hang) 0.5rem;
+    background: var(--board-bg);
+    color: var(--board-lit);
+    box-shadow: inset 0 0 0 1px var(--board-edge);
+  }
+  .board:not(:has([data-when~='now'], [data-when~='today'])) {
+    display: none;
+  }
+
+  /* ---------- section and board headings: one size, one rhythm ---------- */
+  .board-head,
+  .sect-head {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.01em;
+  }
+  .board-head {
+    padding-bottom: 0.5rem;
+    color: var(--board-lit);
+  }
+  .sect-head {
+    padding: 0.75rem 0 0.5rem;
+    border-top: 2px solid var(--ink);
+  }
+  /*
+   * The header already draws a rule above the list: the first section that's showing
+   * (or the empty state) drops its own. "Showing" mirrors RuntimeHead's section CSS:
+   * a section shows while it holds an item tagged with its bucket.
+   */
+  .tt .tt-board > :is(.sect, .empty):not(
+      :is(
+          .board:has([data-when~='now'], [data-when~='today']),
+          [data-bucket='tomorrow']:has([data-when~='tomorrow']),
+          [data-bucket='week']:has([data-when~='week']:not([data-when~='tomorrow'])),
+          [data-bucket='nextweek']:has([data-when~='nextweek']:not([data-when~='tomorrow'])),
+          [data-bucket='later']:has([data-when~='later']),
+          [data-bucket='past']:has([data-when~='past'])
+        )
+        ~ *
+    ) {
+    &.empty,
+    > .sect-head {
+      padding-top: 0;
+      border-top: 0;
+    }
+  }
+  /* tomorrow has a section of its own: this week and next week leave it out */
+  [data-bucket='week'] [data-when~='tomorrow'],
+  [data-bucket='nextweek'] [data-when~='tomorrow'],
+  [data-bucket='week']:not(:has([data-when~='week']:not([data-when~='tomorrow']))),
+  [data-bucket='nextweek']:not(:has([data-when~='nextweek']:not([data-when~='tomorrow']))) {
+    display: none;
+  }
+
+  /* ---------- empty state and end of board ---------- */
+  .empty {
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--ink);
+  }
+  .empty p:first-child {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.05;
+  }
+  .empty-sub {
+    margin-top: 0.5rem;
+    color: var(--color-text-muted);
+  }
+  .tt-end {
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.875rem;
+  }
+  .tt-end a {
+    color: var(--color-text-muted);
+  }
+  .tt-end a:hover {
+    color: var(--color-text);
+  }
+
+  /* ---------- a narrower board: venue folds under the title ---------- */
+  @container board (max-width: 60rem) {
+    .cols {
+      display: none;
+    }
+    .row {
+      grid-template-columns: 17ch 0.55rem minmax(0, 1fr) auto;
+      grid-template-areas: 'when topic main status';
+      column-gap: 1.5ch;
+    }
+    .row .topic {
+      align-self: start;
+      align-items: center;
+      height: calc(0.9375rem * 1.45);
+    }
+    .topic-name {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .main {
+      display: block;
+      grid-area: main;
+      min-width: 0;
+    }
+    .title {
+      display: block;
+    }
+    .org,
+    .venue {
+      display: inline;
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+    }
+    .venue::before {
+      content: ' @ ';
+      white-space: pre;
+    }
+    .town {
+      display: inline;
+    }
+    .town::before {
+      content: ', ';
+    }
+    .town .sr {
+      display: none;
+    }
+  }
+
+  /*
+   * Phone-width board: date, time, the topic dot and the status on the first line;
+   * title and organizer under it, all from the page's text edge. Day and time keep
+   * fixed widths, so the dots line up in a column.
+   */
+  @container board (max-width: 38rem) {
+    .row {
+      grid-template-columns: auto 0.55rem minmax(0, 1fr) auto;
+      grid-template-areas:
+        'when topic . status'
+        'main main main main';
+      column-gap: 1.5ch;
+      row-gap: 0.2rem;
+    }
+    .row .when {
+      grid-template-columns: 10ch 5ch;
+      column-gap: 1.5ch;
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+    }
+    .row .topic {
+      height: calc(0.875rem * 1.45);
+    }
+    .row .when-time {
+      color: var(--color-text);
+      font-weight: 700;
+    }
+    .row .when-time.tba {
+      color: var(--color-text-muted);
+      font-weight: 400;
+    }
+  }
+
+  /* ---------- phones: the page's own gutter ---------- */
+  @media (max-width: 40rem) {
+    --gap: 2rem;
+
+    /* the board runs edge to edge */
+    .board {
+      margin-inline: -1rem;
+      padding-inline: 1rem;
+    }
+    .board-head,
+    .sect-head {
+      font-size: 2rem;
+    }
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* An organizer's page: their events under the text. */
+.site .text-page + .tt-board {
+  margin-top: var(--gap);
+}

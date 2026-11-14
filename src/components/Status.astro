@@ -3,8 +3,7 @@
 // live relative label ("tomorrow", "in 6 days", "2 months ago"). CSS on the event
 // root's data-when picks which one shows, so it stays right on every visit.
 import type { ADEvent } from '@lib/event'
-import { relativeAtBuild } from '../shared'
-import { todayWord } from './format'
+import { relativeAtBuild, todayWord } from '@lib/format'
 
 interface Props {
   event: ADEvent

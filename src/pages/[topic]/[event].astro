@@ -1,5 +1,6 @@
 ---
-import VariantPage from '@variants/VariantPage.astro'
+import Layout from '@layouts/Layout.astro'
+import EventPage from '@components/EventPage.astro'
 import { getCollection, render } from 'astro:content'
 import { formatLong, parseEvent } from '@lib/event'
 
@@ -22,4 +23,8 @@ const metadata = {
 }
 ---
 
-<VariantPage {metadata} topic={event.topic} {event} {Content} />
+<Layout {metadata} topic={event.topic}>
+  <EventPage {event}>
+    <Content />
+  </EventPage>
+</Layout>

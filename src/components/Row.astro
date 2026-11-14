@@ -2,8 +2,8 @@
 // One line on the board: day+time │ topic │ title (organizer beneath) │ venue │ status.
 // The title link covers the whole row; the organizer link sits above it.
 import type { ADEvent } from '@lib/event'
-import { eventAttrs, topicColor, topicName } from '../shared'
-import { boardDate, machineDate, townOutsideAarhus } from './format'
+import { boardDate, eventAttrs, machineDate, townOutsideAarhus } from '@lib/format'
+import { topicColor, topicName } from '@lib/topics'
 import Status from './Status.astro'
 
 interface Props {
@@ -26,7 +26,7 @@ const town = townOutsideAarhus(event)
   </span>
   <div class="main">
     <a class="title" href={event.url}
-      >{title}{subtitle && <span class="sub"><span class="sr">, </span>{subtitle}</span>}</a
+      ><span class="title-text">{title}</span>{subtitle && <span class="sub"><span class="sr">, </span>{subtitle}</span>}</a
     >
     <a class="org" href={`/organizer/${event.organizer.id}`}>{event.organizer.data.name}</a>
     <span class:list={['venue', { tba: !venue }]}>

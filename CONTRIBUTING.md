@@ -24,11 +24,12 @@ How it fits together:
 - `src/content.config.ts` — the schema every event and organizer file is checked against.
 - `src/lib/event.ts` — loads events and formats their dates (always Aarhus time).
 - `src/lib/topics.ts` — display name and color per topic folder.
-- `src/components/EventList.astro` — the event lists. The build renders the rows; a small inline script sorts them into happening now, today, upcoming and past by the visitor's clock, so the lists stay right between deploys.
+- `src/components/Board.astro` — the event lists: today, tomorrow, this week, next week, then a section per month, with highlighted events as posters beside them (`Featured.astro`). The build renders the rows; a small script sorts them into the right section by the visitor's clock (`src/layouts/RuntimeBody.astro`), so the lists stay right between deploys.
+- `src/components/EventPage.astro` — an event's page.
 
 ## Code style
 
-- Components in PascalCase (`EventRow.astro`), content files in kebab-case (`talk-night-eiva-26-nov.md`).
+- Components in PascalCase (`EventPage.astro`), content files in kebab-case (`talk-night-eiva-26-nov.md`).
 - TypeScript, Tailwind CSS for styling.
 - Plain descriptive commit messages, no prefixes.
 

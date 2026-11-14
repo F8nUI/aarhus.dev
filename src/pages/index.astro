@@ -1,6 +1,9 @@
 ---
-import VariantPage from '@variants/VariantPage.astro'
+import Layout from '@layouts/Layout.astro'
+import Board from '@components/Board.astro'
 import { getEvents } from '@lib/event'
 ---
 
-<VariantPage list={{ events: await getEvents(), past: false }} />
+<Layout heading="tech meetups in Aarhus">
+  <Board events={await getEvents()} past={false} />
+</Layout>

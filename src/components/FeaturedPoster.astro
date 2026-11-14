@@ -1,0 +1,502 @@
+---
+// One featured event as a portrait poster in its topic's color, in both themes: the
+// title stacked in the board's display face (it links to the event page), the date as
+// one big day number with weekday, month and time beside it, then place, organizer and
+// the sign-up button. Its top row says when ("in 6 days", "now · until 16:30");
+// Featured.astro stacks them beside the board and, with `nav`, puts the controls at
+// that row's right end.
+// Above the board (narrow screens) it's laid out wide; on phones it's compact.
+import type { ADEvent } from '@lib/event'
+import {
+  dayNumber,
+  eventAttrs,
+  linkHost,
+  machineDate,
+  mapUrl,
+  monthShort,
+  relativeAtBuild,
+  timeRange,
+  titleFit,
+  topicStyle,
+  weekdayShort,
+  yearOf,
+} from '@lib/format'
+import { topicName } from '@lib/topics'
+
+interface Props {
+  event: ADEvent
+  /** Previous / count / next / pause in the top row, for a stack of several. */
+  nav?: boolean
+}
+
+const { event, nav = false } = Astro.props
+const { title, subtitle, venue, learnMoreURL, endTime } = event.data
+const time = timeRange(event)
+const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.start)}`
+---
+
+<article
+  class:list={['sp', `fit-${titleFit(title)}`]}
+  style={topicStyle(event.topic)}
+  role="group"
+  aria-roledescription="slide"
+  aria-label={title}
+  {...eventAttrs(event)}
+>
+  <div class="sp-strip">
+    <span class="sp-label">
+      <span class="sp-up" data-rel>{relativeAtBuild(event)}</span>
+      <span class="sp-now"><span class="sp-lamp" aria-hidden="true"></span>Now{endTime && ` · until ${endTime}`}</span>
+    </span>
+    {
+      nav && (
+        <span class="sp-nav" hidden data-fx-nav>
+          <button class="sp-navbtn" type="button" aria-label="Previous featured event" data-fx-prev>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
+              <path d="M15 4l-8 8 8 8" />
+            </svg>
+          </button>
+          <span class="sp-count" data-fx-count />
+          <button class="sp-navbtn" type="button" aria-label="Next featured event" data-fx-next>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
+              <path d="M9 4l8 8-8 8" />
+            </svg>
+          </button>
+          <button class="sp-navbtn sp-toggle" type="button" aria-label="Pause" data-fx-toggle>
+            <svg class="i-pause" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <rect x="4" y="3" width="6" height="18" />
+              <rect x="14" y="3" width="6" height="18" />
+            </svg>
+            <svg class="i-play" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M5 3l16 9-16 9z" />
+            </svg>
+          </button>
+        </span>
+      )
+    }
+    {nav && <span class="sp-progress" aria-hidden="true" />}
+  </div>
+
+  <div class="sp-body">
+    <hgroup class="sp-head">
+      <p class="sp-topic"><a href={`/${event.topic}`}>{topicName(event.topic)}</a></p>
+      <h2 class="sp-title"><a href={event.url}>{title}</a></h2>
+      {subtitle && <p class="sp-sub">{subtitle}</p>}
+    </hgroup>
+
+    <time class="sp-when" datetime={machineDate(event)}>
+      <span class="sp-day">{dayNumber(event.start)}</span>
+      <span class="sp-lines">
+        <span>{weekdayShort(event.start)} {monthShort(event.start)}{year}</span>
+        <span class:list={{ tba: !time }}>{time || 'Time TBA'}</span>
+      </span>
+    </time>
+
+    <dl class="sp-facts">
+      <div>
+        <dt>Where</dt>
+        <dd>
+          {
+            venue ? (
+              <>
+                <span class="sp-venue">{venue.title}</span>
+                <a class="sp-address" href={mapUrl(event)}>
+                  {venue.address}
+                </a>
+              </>
+            ) : (
+              <span class="sp-venue">Venue TBA</span>
+            )
+          }
+        </dd>
+      </div>
+      <div>
+        <dt>Organizer</dt>
+        <dd><a href={`/organizer/${event.organizer.id}`}>{event.organizer.data.name}</a></dd>
+      </div>
+    </dl>
+
+    <p class="sp-actions">
+      <a class="sp-signup" href={learnMoreURL}>Sign up&nbsp;→</a>
+      <span class="sp-host">on {linkHost(learnMoreURL)}</span>
+    </p>
+  </div>
+</article>
+
+<style is:global>
+  .site {
+    /* ---------- the poster ---------- */
+    .sp {
+      /* the weight of the rules: under the top row, around the date */
+      --rule: 3px;
+      /* the date's line size; the day number is two lines tall */
+      --date: 1.75rem;
+      /* side padding = how far the poster hangs past the page's text edge, so its text lines up on that edge */
+      --pad-x: var(--hang);
+      container-type: inline-size;
+      display: flex;
+      flex-direction: column;
+      background: var(--p);
+      color: var(--p-on);
+    }
+    .sp a {
+      color: inherit;
+    }
+    .sp a:hover {
+      color: inherit;
+      text-decoration-thickness: 2px;
+    }
+    .sp :focus-visible {
+      outline-color: var(--p-on);
+    }
+
+    /* ---------- top row: when, then the controls ---------- */
+    .sp-strip {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      column-gap: 0.5rem;
+      margin-inline: var(--pad-x);
+      padding-block: 0.5rem 0.35rem;
+      border-bottom: var(--rule) solid currentColor;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      line-height: 1.5rem;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .sp-label {
+      grid-column: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sp-now {
+      display: none;
+      align-items: center;
+      gap: 0.6ch;
+    }
+    [data-when~='now'] .sp-now {
+      display: inline-flex;
+    }
+    [data-when~='now'] .sp-up {
+      display: none;
+    }
+    .sp-lamp {
+      width: 0.55em;
+      height: 0.55em;
+      background: currentColor;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .sp-lamp {
+        animation: blink 2.4s steps(1, end) infinite;
+      }
+    }
+
+    /* the controls: quiet until pointed at */
+    .sp-nav {
+      grid-column: 2;
+      display: flex;
+      align-items: center;
+      margin-right: -0.375rem;
+    }
+    .sp-nav[hidden] {
+      display: none;
+    }
+    .sp-navbtn {
+      display: grid;
+      place-items: center;
+      width: 1.5rem;
+      height: 1.5rem;
+      color: inherit;
+      opacity: 0.7;
+      cursor: pointer;
+    }
+    .sp-navbtn:hover,
+    .sp-navbtn:focus-visible {
+      opacity: 1;
+      background: color-mix(in srgb, currentColor 16%, transparent);
+    }
+    .sp-count {
+      min-width: 4.5ch;
+      text-align: center;
+      letter-spacing: 0.04em;
+      font-variant-numeric: tabular-nums;
+      opacity: 0.7;
+    }
+    .sp-toggle {
+      margin-left: 0.25rem;
+    }
+    .sp-toggle .i-play {
+      display: none;
+    }
+    /* the timer: the top row's rule fills while the poster is shown (Featured.astro runs it) */
+    .sp-progress {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(-1 * var(--rule));
+      height: var(--rule);
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+
+    /* ---------- body: posters in a stack share the tallest one's height; the button keeps to the foot ---------- */
+    .sp-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto auto auto 1fr;
+      gap: 1.1rem;
+      padding: 1rem var(--pad-x) 1.25rem;
+    }
+
+    .sp-topic {
+      margin-bottom: 0.4rem;
+      font-size: 0.8125rem;
+      font-weight: 700;
+    }
+    .sp-topic a {
+      text-decoration: none;
+    }
+    .sp-topic a:hover {
+      text-decoration: underline;
+    }
+    .sp-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      line-height: 0.88;
+      letter-spacing: 0.005em;
+      text-transform: uppercase;
+      text-wrap: balance;
+      overflow-wrap: break-word;
+    }
+    .sp-title a {
+      text-decoration: none;
+    }
+    .sp-title a:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 0.05em;
+      text-underline-offset: 0.08em;
+    }
+    /* the title fills about the same block, short or long */
+    .fit-xs .sp-title {
+      font-size: clamp(3rem, 20cqi, 6.5rem);
+    }
+    .fit-s .sp-title {
+      font-size: clamp(2.6rem, 16cqi, 5.5rem);
+    }
+    .fit-m .sp-title {
+      font-size: clamp(2.4rem, 13cqi, 4.75rem);
+    }
+    .fit-l .sp-title {
+      font-size: clamp(2.1rem, 10.5cqi, 4.25rem);
+    }
+    .sp-sub {
+      margin-top: 0.6rem;
+      font-size: 0.9375rem;
+      font-weight: 700;
+    }
+
+    /*
+     * The date, in the title's face: the day number, and beside it weekday + month over
+     * the time, both at one size. Each line is trimmed to its capitals, so the first
+     * line's top meets the number's top and the last line sits on the number's baseline.
+     */
+    .sp-when {
+      display: flex;
+      align-items: stretch;
+      gap: 0.6rem;
+      padding-block: 0.8rem;
+      border-block: var(--rule) solid currentColor;
+      font-family: var(--font-display);
+      font-weight: 800;
+      line-height: 1;
+      text-transform: uppercase;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    .sp-day {
+      font-size: calc(var(--date) * 2.5);
+      letter-spacing: -0.01em;
+      text-box: trim-both cap alphabetic;
+    }
+    .sp-lines {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+      font-size: var(--date);
+    }
+    .sp-lines > span {
+      text-box: trim-both cap alphabetic;
+    }
+    .sp-lines .tba {
+      opacity: 0.8;
+    }
+
+    /* labels in a column of their own */
+    .sp-facts {
+      display: grid;
+      gap: 0.6rem;
+      font-size: 0.875rem;
+      line-height: 1.45;
+    }
+    .sp-facts > div {
+      display: grid;
+      grid-template-columns: 5.25rem minmax(0, 1fr);
+      align-items: baseline;
+    }
+    .sp-facts dt {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+    .sp-facts dd {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .sp-venue {
+      font-weight: 800;
+    }
+
+    .sp-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      align-self: end;
+    }
+    /* where the button goes, under it */
+    .sp-host {
+      font-size: 0.8125rem;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+      opacity: 0.85;
+    }
+    .sp .sp-signup {
+      display: block;
+      padding: 0.85rem 1rem;
+      background: var(--p-on);
+      color: var(--p);
+      font-size: 0.875rem;
+      font-weight: 800;
+      line-height: 1.35;
+      text-decoration: none;
+      overflow-wrap: anywhere;
+    }
+    .sp .sp-signup:hover {
+      color: var(--p);
+      text-decoration: underline;
+    }
+
+    /* ---------- above the board, laid out wide ---------- */
+    @container (min-width: 36rem) {
+      .sp {
+        --date: 2.25rem;
+      }
+      .sp-body {
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+        grid-template-rows: auto auto 1fr;
+        column-gap: 2.5rem;
+        padding: 1.5rem var(--pad-x) 1.75rem;
+      }
+
+      .sp-head {
+        grid-column: 1 / -1;
+      }
+      .sp-when {
+        grid-row: span 2;
+        align-self: start;
+      }
+      .fit-xs .sp-title {
+        font-size: clamp(3rem, 11cqi, 6.5rem);
+      }
+      .fit-s .sp-title {
+        font-size: clamp(2.75rem, 9cqi, 5.5rem);
+      }
+      .fit-m .sp-title {
+        font-size: clamp(2.5rem, 7.5cqi, 4.75rem);
+      }
+      .fit-l .sp-title {
+        font-size: clamp(2.25rem, 6.5cqi, 4.25rem);
+      }
+      .sp-facts {
+        gap: 0.85rem;
+      }
+      .sp-facts > div {
+        display: block;
+      }
+      .sp-facts dt {
+        margin-bottom: 0.15rem;
+      }
+    }
+
+    /*
+     * Phones: compact. A smaller title and date, venue and organizer side by side, the
+     * address left to the event page.
+     */
+    @media (max-width: 40rem) {
+      .sp {
+        --rule: 2px;
+        --date: 1.25rem;
+        /* edge to edge: the page's gutter */
+        --pad-x: 1rem;
+      }
+      .sp-strip {
+        padding-block: 0.35rem 0.25rem;
+        font-size: 0.6875rem;
+      }
+      .sp-body {
+        grid-template-rows: auto auto auto 1fr;
+        gap: 0.9rem;
+        padding: 0.85rem var(--pad-x) 1rem;
+      }
+      .sp-topic {
+        margin-bottom: 0.3rem;
+        font-size: 0.75rem;
+      }
+      .fit-xs .sp-title {
+        font-size: 2.75rem;
+      }
+      .fit-s .sp-title {
+        font-size: 2.5rem;
+      }
+      .fit-m .sp-title {
+        font-size: 2.125rem;
+      }
+      .fit-l .sp-title {
+        font-size: 1.875rem;
+      }
+      .sp-sub {
+        margin-top: 0.35rem;
+        font-size: 0.8125rem;
+      }
+      .sp-when {
+        padding-block: 0.55rem;
+      }
+      .sp-facts {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 1rem;
+        font-size: 0.8125rem;
+        line-height: 1.35;
+      }
+      .sp-facts > div {
+        display: block;
+      }
+      .sp-facts dt {
+        margin-bottom: 0.15rem;
+      }
+      .sp-address {
+        display: none;
+      }
+      .sp .sp-signup {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.8125rem;
+      }
+    }
+  }
+</style>

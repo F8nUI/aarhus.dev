@@ -1,31 +1,37 @@
 ---
+// Every page: the document, the header (the logo, the page's title, subscribe and
+// add-event icons, the topics), the page, and the footer (with the theme switch). Styles: src/styles/global.css (tokens), site.css (this frame,
+// text pages, prose) and board.css (the event lists).
 import '../styles/global.css'
-import RuntimeHead from '../variants/RuntimeHead.astro'
-import RuntimeBody from '../variants/RuntimeBody.astro'
-import Overlay from '../variants/Overlay.astro'
+import '../styles/site.css'
+import '../styles/board.css'
 import Analytics from '@vercel/analytics/astro'
-
-interface Metadata {
-  title?: string
-  description?: string
-}
+import { calendarFeed } from '@lib/calendar'
+import { getTopics } from '@lib/event'
+import { topicColor, topicName } from '@lib/topics'
+import RuntimeBody from './RuntimeBody.astro'
+import RuntimeHead from './RuntimeHead.astro'
 
 interface Props {
-  metadata?: Metadata
+  metadata?: { title?: string; description?: string }
+  /** The topic the page belongs to: it's marked as the current one in the topic links. */
+  topic?: string
+  /** The list pages' title, shown beside the logo as the page's h1: "Rust events in Aarhus". */
+  heading?: string
 }
 
-// On this branch every page renders all design variants (see src/variants/);
-// each variant brings its own header and footer.
-const { metadata } = Astro.props
+const { metadata, topic, heading } = Astro.props
 
 const siteName = 'aarhus.dev'
 const siteTitle = 'Aarhus Developer Events & Meetups – aarhus.dev'
 const defaultDescription =
   'A timetable of developer events and tech meetups in Aarhus, Denmark. Find Swift, Rust, JavaScript, Ruby and more community gatherings.'
-
 const pageTitle = metadata?.title ? `${metadata.title} – ${siteName}` : siteTitle
 const pageDescription = metadata?.description || defaultDescription
 
+const topics = (await getTopics()).sort((a, b) => topicName(a).localeCompare(topicName(b)))
+// "All topics" is the current one only on the all-topic lists (home and /past), not on text pages.
+const onAllList = !topic && /^\/(past\/?)?$/.test(Astro.url.pathname)
 ---
 
 <html lang="en">
@@ -38,16 +44,74 @@ const pageDescription = metadata?.description || defaultDescription
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Big+Shoulders:opsz,wght@10..72,700..800&family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&display=swap"
       rel="stylesheet"
     />
     <title>{pageTitle}</title>
     <RuntimeHead />
     <Analytics />
   </head>
-  <body class="min-h-screen">
-    <slot />
-    <Overlay />
+  <body>
+    <div class="site">
+      <header class="head">
+        <div class="bar">
+          <a class="mark" href="/">aarhus.dev<span class="cursor" aria-hidden="true"></span></a>
+          {heading ? <h1 class="tagline">{heading}</h1> : <span class="tagline">tech meetups in Aarhus</span>}
+          <span class="tools">
+            <a class="icon-link" href={calendarFeed.webcal} title="Subscribe to the calendar" aria-label="Subscribe to the calendar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M3 4.5h18v17H3zM3 9.5h18M8 2v5M16 2v5"></path>
+                <path d="M7.5 13.5a5 5 0 0 1 5 5M7.5 16.5a2 2 0 0 1 2 2"></path>
+              </svg>
+            </a>
+            <a class="icon-link" href="/add-event" title="Add an event" aria-label="Add an event">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" aria-hidden="true">
+                <path d="M12 4v16M4 12h16"></path>
+              </svg>
+            </a>
+          </span>
+        </div>
+        <nav class="lines" aria-label="Topics">
+          <a href="/" aria-current={onAllList ? 'true' : undefined}>All topics</a>
+          {
+            topics.map((t) => (
+              <a href={`/${t}`} aria-current={t === topic ? 'true' : undefined}>
+                <span class="dot" style={`--dot: ${topicColor(t)}`} aria-hidden="true" />
+                {topicName(t)}
+              </a>
+            ))
+          }
+        </nav>
+      </header>
+
+      <main class="page">
+        <slot />
+      </main>
+
+      <footer class="foot">
+        <p class="foot-about">
+          <a class="mark" href="/">aarhus.dev</a> is a community timetable of tech events in Aarhus, Denmark.
+        </p>
+        <nav class="foot-links" aria-label="Site">
+          <a href="/about">About</a>
+          <a href="/add-event">Add event</a>
+          <a href="https://github.com/f8nui/aarhus.dev">GitHub</a>
+          <span class="foot-feed">
+            <a href={calendarFeed.webcal}>Subscribe</a>
+            <a href={calendarFeed.https} title="The calendar feed's web address, for apps that ask for a URL">(.ics)</a>
+          </span>
+          <button class="theme-toggle toggle" type="button" aria-label="Switch between light and dark">
+            <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true">
+              <circle cx="12" cy="12" r="4.5"></circle>
+              <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"></path>
+            </svg>
+            <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </nav>
+      </footer>
+    </div>
     <RuntimeBody />
   </body>
 </html>

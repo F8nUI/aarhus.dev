@@ -1,20 +1,13 @@
 ---
 // An event as a ticket: board-style fields (When, Status, Where, Organizer) on the
-// left, the sign-up and calendar links on a perforated stub to the right.
+// left; on a perforated stub to the right, the sign-up button beside the first row and
+// the calendar links beside the second, so the rows' rule runs straight across. The whole
+// head of the page, title to ticket, is set in the display face; the description
+// below is in the site's mono.
 import { formatLong, type ADEvent } from '@lib/event'
-import {
-  editUrl,
-  eventAttrs,
-  googleCalendarUrl,
-  icsFileName,
-  icsHref,
-  linkHost,
-  mapUrl,
-  timeRange,
-  topicColor,
-  topicName,
-} from '../shared'
-import { machineDate } from './format'
+import { googleCalendarUrl, icsFileName, icsHref } from '@lib/calendar'
+import { editUrl, eventAttrs, linkHost, machineDate, mapUrl, timeRange } from '@lib/format'
+import { topicColor, topicName } from '@lib/topics'
 import Status from './Status.astro'
 
 interface Props {
@@ -85,17 +78,17 @@ const organizer = event.organizer
       </div>
     </dl>
 
-    <div class="stub">
+    <div class="stub stub-top">
       <a class="btn" href={learnMoreURL}>
-        <span class="btn-live">Sign up on {host}&nbsp;→</span>
-        <span class="btn-past">Event page on {host}&nbsp;→</span>
+        <span class="btn-live">Sign up&nbsp;→</span>
+        <span class="btn-past">Event page&nbsp;→</span>
       </a>
-      <p class="stub-note">{organizer.data.name} runs this event; aarhus.dev lists it.</p>
-      <ul class="stub-links">
-        <li><a href={icsHref(event)} download={icsFileName(event)}>Add to calendar (.ics)</a></li>
-        <li><a href={googleCalendarUrl(event)}>Google Calendar</a></li>
-      </ul>
+      <p class="btn-host">on {host}</p>
     </div>
+    <ul class="stub stub-links">
+      <li><a href={icsHref(event)} download={icsFileName(event)}>Add to calendar (.ics)</a></li>
+      <li><a href={googleCalendarUrl(event)}>Google Calendar</a></li>
+    </ul>
   </div>
 
   <div class="prose ev-body">
@@ -108,15 +101,29 @@ const organizer = event.organizer
 </article>
 
 <style is:global>
-  :is([data-variant-block='v1'], [data-variant-block='v2'], [data-variant-block='v3'], [data-variant-block='v4']) {
+  .site {
     .ev {
       max-width: 60rem;
+    }
+    /* one face for the head of the page: values at one size, then secondary lines, then labels */
+    .ev-back,
+    .ev-head,
+    .ev-ended,
+    .ticket {
+      --ev-value: 1.625rem;
+      --ev-second: 1.0625rem;
+      --ev-label: 0.875rem;
+      font-family: var(--font-display);
+      font-variant-numeric: lining-nums tabular-nums;
     }
     .ev-back {
       display: inline-flex;
       align-items: center;
-      gap: 1ch;
-      font-size: 0.8125rem;
+      gap: 0.6rem;
+      font-size: var(--ev-label);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       color: var(--color-text-muted);
       text-decoration: none;
     }
@@ -128,17 +135,19 @@ const organizer = event.organizer
     }
     .ev-title {
       max-width: 22ch;
-      font-family: var(--v1-display);
+      font-family: var(--font-display);
       font-size: clamp(2.75rem, 7.5vw, 5rem);
       font-weight: 800;
       line-height: 0.92;
       letter-spacing: 0.005em;
       text-wrap: balance;
-      color: var(--v1-title);
+      color: var(--title);
     }
     .ev-sub {
-      margin-top: 0.75rem;
-      font-size: 1.0625rem;
+      margin-top: 0.6rem;
+      font-size: var(--ev-value);
+      font-weight: 700;
+      line-height: 1.1;
       color: var(--color-text-muted);
     }
 
@@ -148,25 +157,26 @@ const organizer = event.organizer
       padding: 0.6rem 0.9rem;
       border: 1px solid var(--color-border);
       background: var(--color-bg-subtle);
-      font-weight: 700;
+      font-size: var(--ev-second);
+      font-weight: 800;
     }
     .ev[data-when~='past'] .ev-ended {
       display: block;
     }
 
-    /* ---------- the ticket ---------- */
+    /* ---------- the ticket: one grid, so the fields and the stub share their rows ---------- */
     .ticket {
       --notch: 0.75rem;
+      --stub: 19rem;
       position: relative;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 19rem;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) var(--stub);
       margin-top: 2rem;
-      background: var(--v1-ticket-bg);
-      border: 1.5px solid var(--v1-ticket-edge);
+      background: var(--ticket-bg);
+      border: 1.5px solid var(--ticket-edge);
     }
     .fields {
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      display: contents;
     }
     .field {
       padding: 1rem 1.25rem;
@@ -179,10 +189,10 @@ const organizer = event.organizer
       border-top: 1px solid var(--color-border);
     }
     .field dt {
-      margin-bottom: 0.4rem;
-      font-size: 0.6875rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
+      margin-bottom: 0.45rem;
+      font-size: var(--ev-label);
+      font-weight: 800;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--color-text-muted);
     }
@@ -190,103 +200,107 @@ const organizer = event.organizer
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 0.2rem;
+      gap: 0.3rem;
     }
-    .f-date {
-      font-weight: 700;
-      color: var(--v1-title);
-    }
-    .f-time {
-      font-size: 1.75rem;
+    .f-date,
+    .f-time,
+    .f-venue,
+    .status-lg {
+      font-size: var(--ev-value);
       font-weight: 800;
-      line-height: 1.15;
-      letter-spacing: -0.01em;
-      color: var(--v1-title);
+      line-height: 1.1;
+      letter-spacing: 0.01em;
+      color: var(--title);
     }
     .f-time.tba,
     .f-venue.tba {
       color: var(--color-text-muted);
     }
-    .f-time.tba {
-      font-size: 1.25rem;
-    }
-    .f-venue {
-      font-weight: 700;
-      color: var(--v1-title);
-    }
     a.f-venue {
       text-decoration: underline;
     }
     .f-map {
-      font-size: 0.875rem;
+      font-size: var(--ev-second);
+      font-weight: 600;
+      line-height: 1.25;
       color: var(--color-text-muted);
       text-decoration: none;
     }
     .f-map:hover {
-      color: var(--v1-accent-text);
+      color: var(--accent-text);
     }
     .f-map-hint {
       margin-left: 1ch;
       padding: 0 0.5ch;
       border: 1px solid currentColor;
-      font-size: 0.75rem;
+      font-size: var(--ev-label);
       white-space: nowrap;
     }
     .f-note {
-      font-size: 0.875rem;
+      font-size: var(--ev-second);
+      font-weight: 600;
       color: var(--color-text-muted);
     }
-    .status-lg {
-      font-size: 1.25rem;
-      line-height: 1.3;
-      letter-spacing: 0.05em;
-    }
     .f-status .status {
-      color: var(--v1-title);
+      color: var(--title);
     }
     .ev[data-when~='past'] .st-ended {
       display: inline;
       margin-right: 1ch;
     }
     .ev[data-when~='past'] .f-status .st-rel {
-      font-size: 0.8125rem;
+      font-size: var(--ev-second);
       color: var(--color-text-muted);
     }
 
-    /* ---------- the stub, behind a perforation ---------- */
+    /* ---------- the stub, behind a perforation: the button by the first row, calendar links by the second ---------- */
     .stub {
-      position: relative;
+      grid-column: 3;
       display: flex;
       flex-direction: column;
-      gap: 0.9rem;
+      min-width: 0;
       padding: 1rem 1.25rem;
       border-left: 2px dashed var(--color-border);
     }
-    .stub::before,
-    .stub::after {
+    .stub-top {
+      grid-row: 1;
+      gap: 0.9rem;
+    }
+    .stub-links {
+      grid-row: 2;
+      gap: 0.35rem;
+      border-top: 1px solid var(--color-border);
+      font-size: var(--ev-second);
+      font-weight: 700;
+    }
+    /* the notches, at both ends of the perforation */
+    .ticket::before,
+    .ticket::after {
       content: '';
       position: absolute;
-      left: calc(-1 * var(--notch) - 1px);
+      left: calc(100% - var(--stub) + 1px - var(--notch));
       width: calc(2 * var(--notch));
       height: calc(2 * var(--notch));
       border-radius: 50%;
       background: var(--color-bg);
-      border: 1.5px solid var(--v1-ticket-edge);
+      border: 1.5px solid var(--ticket-edge);
     }
-    .stub::before {
+    .ticket::before {
       top: calc(-1 * var(--notch) - 1.5px);
       clip-path: inset(50% 0 0 0);
     }
-    .stub::after {
+    .ticket::after {
       bottom: calc(-1 * var(--notch) - 1.5px);
       clip-path: inset(0 0 50% 0);
     }
     .btn {
       display: block;
       padding: 0.85rem 1rem;
-      background: var(--v1-accent);
+      background: var(--accent);
       color: #17140f;
+      font-size: 1.25rem;
       font-weight: 800;
+      line-height: 1.15;
       text-decoration: none;
       overflow-wrap: anywhere;
       box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.18);
@@ -309,19 +323,14 @@ const organizer = event.organizer
     .ev[data-when~='past'] .btn-past {
       display: inline;
     }
-    .stub-note {
-      font-size: 0.75rem;
-      line-height: 1.5;
+    /* where the button goes, under it */
+    .btn-host {
+      margin-top: -0.5rem;
+      font-size: var(--ev-second);
+      font-weight: 600;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
       color: var(--color-text-muted);
-    }
-    .stub-links {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      margin-top: auto;
-      padding-top: 0.75rem;
-      border-top: 1px solid var(--color-border);
-      font-size: 0.875rem;
     }
 
     .ev-body {
@@ -336,26 +345,40 @@ const organizer = event.organizer
       color: var(--color-text-muted);
     }
 
-    /* ---------- tablets: stub below ---------- */
+    /* ---------- tablets: the stub below the fields, perforated across ---------- */
     @media (max-width: 48rem) {
       .ticket {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
       }
       .stub {
+        grid-column: 1 / -1;
+        grid-row: auto;
         border-left: 0;
+      }
+      .stub-top {
+        position: relative;
         border-top: 2px dashed var(--color-border);
       }
-      .stub::before,
-      .stub::after {
-        top: calc(-1 * var(--notch) - 1px);
-        bottom: auto;
+      .ticket::before,
+      .ticket::after {
+        content: none;
       }
-      .stub::before {
+      .stub-top::before,
+      .stub-top::after {
+        content: '';
+        position: absolute;
+        top: calc(-1 * var(--notch) - 1px);
+        width: calc(2 * var(--notch));
+        height: calc(2 * var(--notch));
+        border-radius: 50%;
+        background: var(--color-bg);
+        border: 1.5px solid var(--ticket-edge);
+      }
+      .stub-top::before {
         left: calc(-1 * var(--notch) - 1.5px);
         clip-path: inset(0 0 0 50%);
       }
-      .stub::after {
-        left: auto;
+      .stub-top::after {
         right: calc(-1 * var(--notch) - 1.5px);
         clip-path: inset(0 50% 0 0);
       }
@@ -363,7 +386,7 @@ const organizer = event.organizer
 
     /* ---------- phones: one field per line ---------- */
     @media (max-width: 30rem) {
-      .fields {
+      .ticket {
         grid-template-columns: minmax(0, 1fr);
       }
       .field {

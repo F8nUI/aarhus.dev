@@ -8,11 +8,12 @@ plumbing, not looks: real HTML, subscribable calendar feeds, one consistent date
 structured data. aarhus.dev already has the look; `site-refresh` added the real HTML,
 and this branch adds `/calendar.ics`.
 
-**Second round (2026-11-14):** Departure Board (v1) and Poster's head event (v5) were kept. v2–v4 are now
-variations that combine them: the first upcoming event marked `highlight: true` is drawn as a flyer, an amber
-ticket or a side poster above or beside the board (see `src/variants/README.md`). The first-round Weekly Issue,
-Calendar Wall and Topic Lanes are on the branches `design-v2`, `design-v3` and `design-v4`; section C describes
-that first round.
+**Second round (2026-11-14):** Departure Board (v1) and Poster's head event (v5) were kept, and three
+variations combined them: the upcoming events marked `highlight: true` drawn as a flyer, an amber ticket or
+a side poster beside the board. The side poster won and is now the only design on this branch; the variant
+switcher and the other designs are gone. Every round is in this branch's history (the variants up to commit
+`f8e9acc`), and the first-round Weekly Issue, Calendar Wall and Topic Lanes are also on the branches
+`design-v2`, `design-v3` and `design-v4`. Section C describes the first round.
 
 ## A. Timetable best practices, ranked for aarhus.dev
 

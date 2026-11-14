@@ -27,11 +27,11 @@ src/
 │   ├── organizer/       # one file per community or company
 │   ├── about.md         # text of the About page
 │   └── add-event.md     # text of the Add Event page
-├── components/          # Astro components (event list, rows, header)
-├── layouts/             # page layouts
-├── lib/                 # loading events, date formatting, topic names and colors
+├── components/          # the board, its rows, featured posters, event and text pages
+├── layouts/             # the page frame, and the scripts that keep lists current
+├── lib/                 # loading events, dates, calendar files, topic names and colors
 ├── pages/               # routes
-└── styles/              # global CSS and color tokens
+└── styles/              # color tokens, the frame, the board
 ```
 
 More in [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -1,5 +1,6 @@
 ---
-import VariantPage from '@variants/VariantPage.astro'
+import Layout from '@layouts/Layout.astro'
+import TextPage from '@components/TextPage.astro'
 import { getEntry, render } from 'astro:content'
 
 const entry = (await getEntry('pages', 'add-event'))!
@@ -7,4 +8,8 @@ const { Content } = await render(entry)
 const { title, description } = entry.data
 ---
 
-<VariantPage metadata={{ title, description }} page={{ title, description }} {Content} />
+<Layout metadata={{ title, description }}>
+  <TextPage {title} {description}>
+    <Content />
+  </TextPage>
+</Layout>

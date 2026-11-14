@@ -1,6 +1,9 @@
 ---
-import VariantPage from '@variants/VariantPage.astro'
+import Layout from '@layouts/Layout.astro'
+import OrganizerEvents from '@components/OrganizerEvents.astro'
+import TextPage from '@components/TextPage.astro'
 import { getCollection, render } from 'astro:content'
+import { getEvents } from '@lib/event'
 
 export async function getStaticPaths() {
   return (await getCollection('organizers')).map((organizer) => ({
@@ -12,10 +15,16 @@ export async function getStaticPaths() {
 const { organizer } = Astro.props
 const { Content } = await render(organizer)
 const { name, website } = organizer.data
+const events = (await getEvents()).filter((event) => event.organizer.id === organizer.id)
 const metadata = {
   title: name,
-  description: `Information about ${name}, a tech community organizer in Aarhus, Denmark`,
+  description: `Tech events by ${name} in Aarhus, Denmark: what's coming up and what's been`,
 }
 ---
 
-<VariantPage {metadata} page={{ title: name, website }} {Content} />
+<Layout {metadata}>
+  <TextPage title={name} {website}>
+    <Content />
+  </TextPage>
+  <OrganizerEvents {events} />
+</Layout>

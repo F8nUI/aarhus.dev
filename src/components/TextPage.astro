@@ -1,0 +1,28 @@
+---
+// A text page (About, Add event, an organizer): the title, an optional line under it
+// and a website link, then the Markdown body as prose. Styles: src/styles/site.css.
+interface Props {
+  title: string
+  description?: string
+  website?: string
+}
+
+const { title, description, website } = Astro.props
+---
+
+<article class="text-page">
+  <header class="text-page-head">
+    <h1>{title}</h1>
+    {description && <p class="text-page-description">{description}</p>}
+    {
+      website && (
+        <a class="text-page-website" href={website}>
+          {website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+        </a>
+      )
+    }
+  </header>
+  <div class="prose">
+    <slot />
+  </div>
+</article>

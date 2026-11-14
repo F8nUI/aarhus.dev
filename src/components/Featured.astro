@@ -1,0 +1,264 @@
+---
+// The featured events beside the board: every highlighted event still to come, soonest
+// first, as a stack of side posters shown one at a time. Each poster's top row carries
+// the controls (previous, "1 / 3", next, pause) and its rule fills as the timer runs;
+// every --fx-interval the next poster fades in over the current one. Hovering, keyboard
+// focus, a hidden tab or the pause button holds it; with reduced motion it only changes
+// when asked. Without the script, the first one still to come is shown on its own.
+import type { ADEvent } from '@lib/event'
+import FeaturedPoster from './FeaturedPoster.astro'
+
+interface Props {
+  events: ADEvent[]
+}
+
+const { events } = Astro.props
+const nav = events.length > 1
+---
+
+{
+  events.length > 0 && (
+    <section class="fx" aria-roledescription="carousel" aria-label="Featured events" data-fx>
+      <div class="fx-slides" aria-live="off" data-fx-slides>
+        {events.map((event) => (
+          <FeaturedPoster event={event} nav={nav} />
+        ))}
+      </div>
+
+      <script is:inline>
+        ;(function (root) {
+          if (!root) return
+          var now = window.aarhusNow ? window.aarhusNow() : Date.now()
+          var region = root.querySelector('[data-fx-slides]')
+          // The ones still to come; the rest leave the stack.
+          var live = [].slice.call(region.children).filter(function (slide) {
+            var upcoming = Date.parse(slide.dataset.end) >= now
+            slide.classList.toggle('is-gone', !upcoming)
+            return upcoming
+          })
+          if (live.length < 2) return
+
+          live.forEach(function (slide, k) {
+            slide.querySelector('[data-fx-count]').textContent = k + 1 + ' / ' + live.length
+            slide.querySelector('[data-fx-nav]').hidden = false
+          })
+          var controls = ['data-fx-prev', 'data-fx-next', 'data-fx-toggle']
+          var at = 0
+
+          var show = function (n, byUser) {
+            var before = live[at]
+            // keyboard focus on a control follows to the same control on the new poster
+            var focused = before.contains(document.activeElement) ? document.activeElement : null
+            var which = focused
+              ? controls.filter(function (a) {
+                  return focused.hasAttribute(a)
+                })[0]
+              : null
+            at = (n + live.length) % live.length
+            var after = live[at]
+            // the one going stays opaque underneath while the new one fades in over it
+            after.classList.remove('is-leaving')
+            if (before !== after) {
+              before.classList.add('is-leaving')
+              clearTimeout(before.leaveTimer)
+              before.leaveTimer = setTimeout(function () {
+                before.classList.remove('is-leaving')
+              }, 700)
+            }
+            live.forEach(function (slide, k) {
+              slide.classList.toggle('is-current', k === at)
+              slide.inert = k !== at
+            })
+            // restart the timer on the new poster
+            var bar = after.querySelector('.sp-progress')
+            bar.style.animation = 'none'
+            void bar.offsetWidth
+            bar.style.animation = ''
+            if (which) after.querySelector('[' + which + ']').focus({ preventScroll: true })
+            // announce a poster the visitor asked for, not every timed change
+            region.setAttribute('aria-live', byUser ? 'polite' : 'off')
+          }
+
+          root.classList.add('is-carousel')
+          show(0, false)
+
+          root.addEventListener('animationend', function (e) {
+            if (e.target.classList.contains('sp-progress')) show(at + 1, false)
+          })
+          root.addEventListener('click', function (e) {
+            var button = e.target.closest('button')
+            if (!button || !root.contains(button)) return
+            if (button.hasAttribute('data-fx-prev')) show(at - 1, true)
+            else if (button.hasAttribute('data-fx-next')) show(at + 1, true)
+            else if (button.hasAttribute('data-fx-toggle')) {
+              var paused = root.classList.toggle('is-paused')
+              root.querySelectorAll('[data-fx-toggle]').forEach(function (toggle) {
+                toggle.setAttribute('aria-label', paused ? 'Play' : 'Pause')
+              })
+            }
+          })
+          document.addEventListener('visibilitychange', function () {
+            root.classList.toggle('is-away', document.hidden)
+          })
+
+          // Swipe on touch screens; a swipe that ends on a link doesn't follow it.
+          var x0 = null
+          var y0 = 0
+          var swipedAt = 0
+          region.addEventListener('pointerdown', function (e) {
+            if (e.pointerType === 'mouse') return
+            x0 = e.clientX
+            y0 = e.clientY
+          })
+          region.addEventListener('pointerup', function (e) {
+            if (x0 === null) return
+            var dx = e.clientX - x0
+            var dy = e.clientY - y0
+            x0 = null
+            if (Math.abs(dx) > 48 && Math.abs(dx) > 1.5 * Math.abs(dy)) {
+              swipedAt = Date.now()
+              show(at + (dx < 0 ? 1 : -1), true)
+            }
+          })
+          region.addEventListener('pointercancel', function () {
+            x0 = null
+          })
+          region.addEventListener(
+            'click',
+            function (e) {
+              if (Date.now() - swipedAt < 400) e.preventDefault()
+            },
+            true,
+          )
+        })(document.currentScript.closest('[data-fx]'))
+      </script>
+    </section>
+  )
+}
+
+<style is:global>
+  .site {
+    --fx-interval: 7s;
+
+    /* ---------- beside the board on wide screens ---------- */
+    @media (min-width: 64rem) {
+      .tt-layout.beside {
+        display: grid;
+        grid-template-columns: 21rem minmax(0, 1fr);
+        column-gap: 3rem;
+        align-items: start;
+      }
+      .tt-layout.beside .heads {
+        margin-bottom: 0;
+      }
+      /* the posters hang outside the text edge on the page's side only; toward the board, its own background does */
+      .tt-layout.beside .fx {
+        margin-right: 0;
+      }
+      /* nothing featured is still to come: the board takes the width */
+      .tt-layout.beside:not(:has(.heads [data-when~='upcoming'])) {
+        display: block;
+      }
+    }
+    /* they stay in view while the board scrolls, where the screen is tall enough to show them whole */
+    @media (min-width: 64rem) and (min-height: 40rem) {
+      .tt-layout.beside .heads {
+        position: sticky;
+        top: 1.5rem;
+      }
+    }
+
+    .fx {
+      margin-inline: calc(-1 * var(--hang));
+    }
+
+    /* ---------- the stack: one cell, so the board beside doesn't move when posters change ---------- */
+    .fx-slides {
+      display: grid;
+      touch-action: pan-y;
+    }
+    .fx-slides > .sp {
+      grid-area: 1 / 1;
+    }
+    .fx-slides > .is-gone,
+    .fx-slides > [data-when~='past'] {
+      display: none;
+    }
+    /* without the script: the first one still to come */
+    .fx:not(.is-carousel) .fx-slides > [data-when~='upcoming'] ~ [data-when~='upcoming'] {
+      display: none;
+    }
+    /* a change: the new poster fades in over the old one, which stays opaque underneath */
+    .fx.is-carousel .fx-slides > .sp {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .fx.is-carousel .fx-slides > .sp.is-leaving {
+      opacity: 1;
+      visibility: visible;
+    }
+    .fx.is-carousel .fx-slides > .sp.is-current {
+      z-index: 1;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.5s ease;
+    }
+
+    /* ---------- the timer: the top row's rule is the track, the fill runs over it ---------- */
+    .fx.is-carousel .sp-strip {
+      border-bottom-color: color-mix(in srgb, currentColor 35%, transparent);
+    }
+    /* longhands, so the play state below isn't reset by a shorthand */
+    .fx.is-carousel .sp.is-current .sp-progress {
+      animation-name: fill-up;
+      animation-duration: var(--fx-interval);
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+    }
+    /* held: by the pause button, keyboard focus inside, a hidden tab, or a mouse over it */
+    .fx.is-paused .sp-progress,
+    .fx.is-away .sp-progress,
+    .fx:has(:focus-visible) .sp-progress {
+      animation-play-state: paused;
+    }
+    @media (hover: hover) {
+      .fx:hover .sp-progress {
+        animation-play-state: paused;
+      }
+    }
+    .fx.is-paused .sp-toggle .i-pause {
+      display: none;
+    }
+    .fx.is-paused .sp-toggle .i-play {
+      display: block;
+    }
+    /* reduced motion: no timer, no fade; the rule is whole again and there's nothing to pause */
+    @media (prefers-reduced-motion: reduce) {
+      .fx.is-carousel .sp.is-current .sp-progress {
+        animation-name: none;
+      }
+      .fx.is-carousel .sp-strip {
+        border-bottom-color: currentColor;
+      }
+      .sp-toggle {
+        display: none;
+      }
+      .fx.is-carousel .fx-slides > .sp.is-current {
+        transition: none;
+      }
+    }
+
+    /* phones: the posters run edge to edge */
+    @media (max-width: 40rem) {
+      .fx {
+        margin-inline: -1rem;
+      }
+    }
+  }
+
+  @keyframes fill-up {
+    to {
+      transform: scaleX(1);
+    }
+  }
+</style>

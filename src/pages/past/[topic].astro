@@ -1,5 +1,6 @@
 ---
-import VariantPage from '@variants/VariantPage.astro'
+import Layout from '@layouts/Layout.astro'
+import Board from '@components/Board.astro'
 import { getEvents, getTopics } from '@lib/event'
 import { topicName } from '@lib/topics'
 
@@ -14,4 +15,6 @@ const metadata = {
 }
 ---
 
-<VariantPage {metadata} {topic} list={{ events: await getEvents(topic), past: true }} />
+<Layout {metadata} {topic} heading={`past ${topicName(topic)} events in Aarhus`}>
+  <Board events={await getEvents(topic)} {topic} past={true} />
+</Layout>
