@@ -120,7 +120,7 @@ function eventCard(card: Extract<Card, { kind: 'event' }>): Node {
   const time = timeRange(event, lang)
   const fact = (head: string, value: string) =>
     h(
-      { flexDirection: 'column', width: 290 },
+      { flexDirection: 'column', width: 268 },
       h({ fontSize: 24, fontWeight: 400, opacity: 0.75, marginBottom: 6 }, head),
       h({ display: 'block', fontSize: 32, fontWeight: 700, lineHeight: 1.1, lineClamp: 2 }, value),
     )
