@@ -24,13 +24,16 @@ interface Props {
   topic?: string
   /** The list pages' title, shown beside the logo as the page's h1: "Rust events in Aarhus", "Dev conferences in Aarhus". */
   heading?: string
+  /** The 404 page: no canonical address, share card or other-language version, and kept out of search results. */
+  notFound?: boolean
 }
 
-const { metadata, topic, heading } = Astro.props
+const { metadata, topic, heading, notFound = false } = Astro.props
 const lang = langOf(Astro.url)
 const w = t(lang)
 // the same page in the other language, for the switch and for search engines
-const base = basePath(Astro.url)
+// (the 404 page stands for every missing address: its switch leads to the other language's home page)
+const base = notFound ? '/' : basePath(Astro.url)
 const other: Lang = lang === 'en' ? 'da' : 'en'
 const here = (l: Lang) => localPath(l, base)
 
@@ -50,7 +53,7 @@ const buildTime = Date.now()
 const upcoming = (await getEvents()).filter((e) => e.end.valueOf() >= buildTime)
 const ends = (id?: string) => upcoming.filter((e) => !id || e.topic === id).map((e) => e.end.toISOString())
 // "All topics" is the current one only on the all-topic lists (home and /past), not on text pages.
-const onAllList = !topic && /^\/(past\/?)?$/.test(base)
+const onAllList = !topic && !notFound && /^\/(past\/?)?$/.test(base)
 ---
 
 <html lang={lang}>
@@ -60,29 +63,34 @@ const onAllList = !topic && /^\/(past\/?)?$/.test(base)
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="alternate" type="application/rss+xml" title={w.rssName} href="/rss.xml" />
-    <link rel="alternate" hreflang="en" href={new URL(here('en'), SITE).href} />
-    <link rel="alternate" hreflang="da" href={new URL(here('da'), SITE).href} />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={pageDescription} />
-    <link rel="canonical" href={pageUrl} />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content={siteName} />
-    <meta property="og:locale" content={lang === 'da' ? 'da_DK' : 'en_GB'} />
-    <meta property="og:url" content={pageUrl} />
-    <meta property="og:title" content={metadata?.title ?? w.siteTitle} />
-    <meta property="og:description" content={pageDescription} />
-    <meta property="og:image" content={shareImage} />
-    <meta property="og:image:width" content={String(CARD_WIDTH)} />
-    <meta property="og:image:height" content={String(CARD_HEIGHT)} />
-    <meta property="og:image:alt" content={metadata?.title ?? w.siteTitle} />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@400;700&family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&display=swap"
-      rel="stylesheet"
-    />
+    {
+      notFound ? (
+        <meta name="robots" content="noindex" />
+      ) : (
+        <>
+          <link rel="alternate" hreflang="en" href={new URL(here('en'), SITE).href} />
+          <link rel="alternate" hreflang="da" href={new URL(here('da'), SITE).href} />
+          <link rel="canonical" href={pageUrl} />
+          <meta property="og:type" content="website" />
+          <meta property="og:site_name" content={siteName} />
+          <meta property="og:locale" content={lang === 'da' ? 'da_DK' : 'en_GB'} />
+          <meta property="og:url" content={pageUrl} />
+          <meta property="og:title" content={metadata?.title ?? w.siteTitle} />
+          <meta property="og:description" content={pageDescription} />
+          <meta property="og:image" content={shareImage} />
+          <meta property="og:image:width" content={String(CARD_WIDTH)} />
+          <meta property="og:image:height" content={String(CARD_HEIGHT)} />
+          <meta property="og:image:alt" content={metadata?.title ?? w.siteTitle} />
+          <meta name="twitter:card" content="summary_large_image" />
+        </>
+      )
+    }
+    <!-- the fonts every page needs first (global.css serves them from /fonts/) -->
+    <link rel="preload" href="/fonts/jetbrains-mono-variable-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/plex-sans-condensed-700-latin.woff2" as="font" type="font/woff2" crossorigin />
     <title>{pageTitle}</title>
     <RuntimeHead />
     <Analytics />

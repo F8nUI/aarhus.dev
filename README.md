@@ -28,7 +28,7 @@ src/
 │   ├── about.md         # text of the About page
 │   ├── add-event.md     # text of the Add Event page
 │   └── da/              # the same two texts in Danish
-├── assets/fonts/        # the two fonts, for drawing the share cards
+├── assets/fonts/        # the two fonts as TrueType, for drawing the share cards (the site serves its own copies from public/fonts/)
 ├── components/          # the board, its rows, featured posters, event and text pages
 ├── layouts/             # the page frame, and the scripts that keep lists current
 ├── lib/                 # loading events, dates, calendar files, topic names and colors, the English and Danish interface text
@@ -44,4 +44,4 @@ More in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-MIT. The fonts in `src/assets/fonts/` (IBM Plex Sans Condensed, JetBrains Mono) are under the SIL Open Font License; their licences are beside them.
+MIT. The fonts in `public/fonts/` and `src/assets/fonts/` (IBM Plex Sans Condensed, JetBrains Mono) are under the SIL Open Font License; their licences are beside them.

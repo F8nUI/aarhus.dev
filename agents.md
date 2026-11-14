@@ -51,7 +51,7 @@ src/
 │   └── rss.ts                 # /rss.xml
 ├── pages/                     # routes (below); da/ wraps each page for its Danish address; og/ writes the share cards
 └── styles/
-    ├── global.css             # Tailwind, color tokens: a printed timetable in light, a night departure board (navy, amber) in dark
+    ├── global.css             # Tailwind, the fonts (self-hosted, public/fonts/), color tokens: a printed timetable in light, a night departure board (navy, amber) in dark
     ├── site.css               # the page frame, text pages, prose
     └── board.css              # the event lists
 ```
@@ -83,6 +83,8 @@ What's past, today or next week depends on when someone looks, so the browser de
 
 **Share cards.** Every page has a 1200×630 card for links shared in Slack, LinkedIn, iMessage and so on, in its language: an event as its poster (topic color, title, date, place, organizer), a topic's list or archive in the topic's color, an organizer or the site's own pages on the dark board's navy. `src/lib/cards.ts` lists them (`cardPath` names a page's file; Layout.astro points `og:image` at it), `src/lib/cardImage.ts` lays one out with satori in the site's fonts (`src/assets/fonts/`, TrueType because satori can't read woff2) and sharp turns it into a PNG. A new kind of page needs a card in `cardPaths`, or its `og:image` points at nothing.
 
+**Fonts.** IBM Plex Sans Condensed (headings, posters) and JetBrains Mono (everything else) are served from the site (`public/fonts/`, woff2, Latin and Latin Extended), not from Google, so a visit doesn't send the visitor's address to a third party. `global.css` declares them; Layout.astro preloads the two every page needs. The share cards use TrueType copies in `src/assets/fonts/`.
+
 **Layout.** Two left edges. Every piece of text starts on the text edge; every rule, row line and box (the header's rule, section rules, a hovered row, the posters, the event page's poster) starts `--hang` further out and pads its text back in, so text and lines each share one edge. On phones the outer edge is the screen's. The current topic is underlined rather than boxed. The board lays out its rows by its own width (a container query), so they fold the same beside a poster as on a narrow screen.
 
 ## Routing
@@ -94,6 +96,7 @@ What's past, today or next week depends on when someone looks, so the browser de
 - `/organizer/<id>` — organizer page
 - `/about` — what the site is, live numbers, how to follow and add events, every community with its next event
 - `/add-event` — the contributor guide
+- any other address — `src/pages/404.astro`, served by Vercel with status 404 (also for `/da/…`, so it's in English and Danish); kept out of search results and link previews
 - `/calendar.ics` — every event, as a calendar to subscribe to
 - `/rss.xml` — every upcoming event, as an RSS feed (`src/lib/rss.ts`); linked in the footer
 - `/og/<page>.png`, `/og/da/<page>.png` — each page's share card (`/og/index.png` for the home page)

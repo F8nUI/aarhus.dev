@@ -112,6 +112,10 @@ const en = {
   fixPrompt: 'Something wrong or missing?',
   fixLink: 'Edit on GitHub',
 
+  // the 404 page (src/pages/404.astro)
+  notFoundTitle: 'Page not found',
+  notFoundText: "There's no page at this address. The event may have moved, or the link has a typo.",
+
   // page titles and descriptions (src/pages/)
   inAarhus: (what: string) => `${what} in Aarhus`,
   topicDescription: (what: string) =>
@@ -199,6 +203,9 @@ const da: typeof en = {
   googleCalendar: 'Google Kalender',
   fixPrompt: 'Er der noget galt, eller mangler der noget?',
   fixLink: 'Ret det på GitHub',
+
+  notFoundTitle: 'Siden findes ikke',
+  notFoundText: 'Der er ingen side på denne adresse. Eventet kan være flyttet, eller der er en tastefejl i linket.',
 
   inAarhus: (what) => `${what} i Aarhus`,
   topicDescription: (what) => `${what} i Aarhus: hvad der er på vej, med datoer, steder og tilmelding`,

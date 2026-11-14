@@ -48,8 +48,10 @@ const w = t(langOf(Astro.url))
           })
           // Every poster's organizer block and link as tall as the tallest one's: with
           // the title's row taking the spare height, the date, organizer and link then
-          // sit at the same height on each. Again whenever the stack changes size (a
-          // new width rewraps a long organizer name).
+          // sit at the same height on each. Again once the fonts have loaded, and when
+          // the stack's width changes (it rewraps a long organizer name), a frame later:
+          // levelling changes the stack's height, which inside the observer's callback
+          // would set it off again.
           var level = function () {
             ;['.sp-facts', '.sp-actions'].forEach(function (part) {
               var blocks = live.map(function (slide) {
@@ -71,7 +73,16 @@ const w = t(langOf(Astro.url))
             })
           }
           level()
-          if (window.ResizeObserver) new ResizeObserver(level).observe(region)
+          if (document.fonts) document.fonts.ready.then(level)
+          var levelledWidth = region.getBoundingClientRect().width
+          if (window.ResizeObserver) {
+            new ResizeObserver(function (entries) {
+              var width = entries[0].contentRect.width
+              if (width === levelledWidth) return
+              levelledWidth = width
+              requestAnimationFrame(level)
+            }).observe(region)
+          }
           var controls = ['data-fx-prev', 'data-fx-next', 'data-fx-toggle']
           var at = 0
           var KEY = 'aarhus-featured'
