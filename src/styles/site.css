@@ -9,6 +9,8 @@
  */
 .site {
   --hang: 0.75rem;
+  /* the padding inside boxes (the today board, a topic pill, the posters); equal to the hang, so their text meets the text edge */
+  --box-pad: 0.75rem;
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-size: 0.9375rem;
@@ -145,7 +147,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.75ch;
-    padding: 0.2rem var(--hang);
+    padding: 0.2rem var(--box-pad);
     color: var(--color-text-muted);
     text-decoration: none;
   }

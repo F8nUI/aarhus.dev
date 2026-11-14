@@ -1,0 +1,74 @@
+---
+// EXPERIMENT — remove once a left-edge treatment is chosen (with src/styles/edges.css).
+// Sets data-edge on <html> before paint (from ?edge=N, or the last choice), and adds
+// a small switch in the corner: buttons 1–5, the keys 1–5, and the option's name.
+---
+
+<script is:inline>
+  ;(function () {
+    var names = {
+      1: 'Lines + boxes outer',
+      2: 'Boxes flush with rules',
+      3: 'Flush, fewer boxes',
+      4: 'Outer, fewer boxes',
+      5: 'As it was',
+    }
+    var read = function () {
+      try {
+        return localStorage.getItem('aarhus-edge')
+      } catch (e) {
+        return null
+      }
+    }
+    var write = function (v) {
+      try {
+        localStorage.setItem('aarhus-edge', v)
+      } catch (e) {}
+    }
+    var root = document.documentElement
+    var fromUrl = new URLSearchParams(location.search).get('edge')
+    if (names[fromUrl]) write(fromUrl)
+    var edge = names[read()] ? read() : '1'
+    root.dataset.edge = edge
+
+    var set = function (v) {
+      edge = String(v)
+      root.dataset.edge = edge
+      write(edge)
+      render()
+    }
+    var bar = null
+    var render = function () {
+      if (!bar) return
+      bar.querySelectorAll('button').forEach(function (b) {
+        b.setAttribute('aria-pressed', b.dataset.edge === edge ? 'true' : 'false')
+      })
+      bar.querySelector('.edge-switch-name').textContent = names[edge]
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      bar = document.createElement('div')
+      bar.className = 'edge-switch'
+      bar.setAttribute('role', 'group')
+      bar.setAttribute('aria-label', 'Left-edge options')
+      bar.innerHTML =
+        '<span>Edge</span>' +
+        [1, 2, 3, 4, 5]
+          .map(function (n) {
+            return '<button type="button" data-edge="' + n + '" title="' + names[n] + '">' + n + '</button>'
+          })
+          .join('') +
+        '<span class="edge-switch-name"></span>'
+      bar.addEventListener('click', function (e) {
+        var b = e.target.closest('button')
+        if (b) set(b.dataset.edge)
+      })
+      document.body.appendChild(bar)
+      render()
+    })
+    document.addEventListener('keydown', function (e) {
+      if (e.metaKey || e.ctrlKey || e.altKey) return
+      if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable]')) return
+      if (names[e.key]) set(e.key)
+    })
+  })()
+</script>

@@ -10,6 +10,24 @@ venue:
 learnMoreURL: https://www.eventbrite.dk/e/hc3-jysk-tickets-1999471292460
 ---
 
-HC3 visits JYSK's headquarters in Brabrand, where JYSK shares what it has learned from the past years of modernising its infrastructure: the technology choices it made and the challenges along the way. The day mixes community sessions built on practical experience with time for questions, discussion and networking.
+Den 27. januar 2027 er HC3 inviteret indenfor på JYSKs hovedkvarter i Brabrand.
 
-The day is in Danish and free; sign up on Eventbrite. The evening before, 26 January, there's an informal dinner where everyone pays for their own.
+Her vil JYSK dele erfaringer fra deres infrastrukturrejse gennem de seneste år. Vi skal høre om de teknologiske valg, overvejelser og udfordringer, der følger med, når en stor international organisation udvikler og moderniserer sin it-infrastruktur.
+
+Dagen byder også på community sessions med tekniske erfaringer fra virkeligheden. Vi har allerede flere spændende oplæg på plads og offentliggør løbende talere og agenda.
+
+Som altid bliver der god tid til spørgsmål, faglige diskussioner og networking med andre, der arbejder med hybrid cloud, datacenter, virtualisering og platformvalg.
+
+### Kom med til middag aftenen før
+
+Flere af os ankommer til Aarhusområdet allerede den 26. januar. Hvis du er i området, er du meget velkommen til at deltage i en uformel middag sammen med andre fra HC3. Middagen er BYOW, Bring Your Own Wallet. Skriv til os, hvis du vil med, så sender vi mere information.
+
+### Parkering
+
+Der er parkeringsmuligheder ved JYSK. Vi sender praktiske detaljer til alle deltagere inden eventet.
+
+### Om HC3
+
+HC3, Hybrid Cloud Choice Community, er et uafhængigt community for alle, der arbejder med hybrid cloud, datacenter og platformvalg. Vi deler konkrete erfaringer, teknisk viden og de spørgsmål, som endnu ikke nødvendigvis har et færdigt svar.
+
+Tilmeld dig og vær med til årets første HC3 event.

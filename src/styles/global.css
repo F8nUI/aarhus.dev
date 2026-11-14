@@ -32,6 +32,9 @@
   --board-lit: #f5a524;
   --board-bright: #ffc65e;
   --board-dim: #b3832f;
+  /* the sign-up cell: white on burnt orange, in both themes */
+  --signup-bg: #a64f00;
+  --signup-hover: #8a4100;
 }
 
 :root[data-theme='dark'] {

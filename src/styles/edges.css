@@ -1,0 +1,161 @@
+/*
+ * EXPERIMENT — remove once a left-edge treatment is chosen (with EdgeSwitch.astro).
+ *
+ * Five ways to line up the left edge, switched with keys 1–5 or the badge in the
+ * corner (EdgeSwitch.astro sets data-edge on <html>):
+ *
+ *   1  Lines and boxes outer: every rule, row line and box starts on one outer edge,
+ *      every piece of text on one inner edge (--hang in).
+ *   2  Flush: boxes and rules start on the text edge; text inside a box is indented.
+ *   3  Flush, fewer boxes: as 2, with the current topic underlined instead of a
+ *      filled pill, and Today a plain section with an amber heading.
+ *   4  Outer, fewer boxes: as 1, with 3's topic and Today.
+ *   5  As it was: boxes hang outside the text edge, rules start on it.
+ */
+
+/* ---------- 1 and 4: rules and row lines reach the outer edge too ---------- */
+:root:is([data-edge='1'], [data-edge='4']) .site {
+  :is(
+      .head,
+      .sect-head,
+      .row,
+      .tt-end,
+      .empty,
+      .foot,
+      .ev-edit,
+      .ev-ended,
+      .prose h1,
+      .prose h2
+    ) {
+    margin-left: calc(-1 * var(--hang));
+    margin-right: calc(-1 * var(--hang));
+    padding-left: var(--hang);
+    padding-right: var(--hang);
+  }
+  .cols {
+    margin-left: calc(-1 * var(--hang));
+    margin-right: calc(-1 * var(--hang));
+    padding-left: var(--hang);
+    padding-right: var(--hang);
+    box-shadow: none;
+  }
+  /* the row itself now spans to the outer edge: its hover fill and click area too */
+  .row::before,
+  .title::after {
+    inset: 0;
+  }
+  /* the ticket starts on the outer edge; its first column's text on the inner one */
+  .ticket {
+    --cell: 1rem var(--hang);
+    margin-left: calc(-1 * var(--hang));
+    margin-right: calc(-1 * var(--hang));
+  }
+  .prose,
+  .ev-edit {
+    max-width: calc(68ch + 2 * var(--hang));
+  }
+  /* phones: the outer edge is the screen's */
+  @media (max-width: 40rem) {
+    --hang: 1rem;
+    --box-pad: 1rem;
+  }
+}
+
+/* ---------- 2 and 3: nothing hangs; boxes keep their padding inside ---------- */
+:root:is([data-edge='2'], [data-edge='3']) .site {
+  --hang: 0px;
+  --box-pad: 0.75rem;
+
+  /* phones too: boxes stay inside the page's gutter */
+  @media (max-width: 40rem) {
+    .board {
+      margin-inline: 0;
+      padding-inline: var(--box-pad);
+    }
+    .fx {
+      margin-inline: 0;
+    }
+    .sp {
+      --pad-x: var(--box-pad);
+    }
+  }
+}
+
+/* ---------- 3 and 4: the current topic underlined, Today without its black box ---------- */
+:root:is([data-edge='3'], [data-edge='4']) .site {
+  .lines a[aria-current] {
+    background: none;
+    color: var(--color-text);
+    text-decoration-line: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.35em;
+  }
+  .lines a[aria-current] .dot {
+    box-shadow: none;
+  }
+  .board {
+    --color-bg-subtle: inherit;
+    --color-border: inherit;
+    --color-text: inherit;
+    --color-text-muted: inherit;
+    --title: inherit;
+    --accent-text: inherit;
+    --focus: inherit;
+    margin-inline: 0;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    color: inherit;
+  }
+  .board-head {
+    color: var(--accent-text);
+  }
+}
+:root[data-edge='4'] .site .board {
+  margin-inline: calc(-1 * var(--hang));
+  padding-inline: var(--hang);
+}
+:root[data-edge='3'] .site {
+  @media (max-width: 40rem) {
+    .board {
+      padding-inline: 0;
+    }
+  }
+}
+
+/* ---------- the switch itself ---------- */
+.edge-switch {
+  position: fixed;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--ink);
+  color: var(--color-bg);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.3;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.25);
+}
+.edge-switch button {
+  padding: 0.15rem 0.45rem;
+  border: 1px solid currentColor;
+  cursor: pointer;
+  opacity: 0.6;
+}
+.edge-switch button[aria-pressed='true'] {
+  opacity: 1;
+  background: var(--color-bg);
+  color: var(--ink);
+}
+.edge-switch-name {
+  max-width: 16rem;
+}
+@media (max-width: 40rem) {
+  .edge-switch-name {
+    display: none;
+  }
+}

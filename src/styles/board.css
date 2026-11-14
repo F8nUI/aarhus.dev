@@ -236,7 +236,7 @@
     --accent-text: var(--board-bright);
     --focus: var(--board-bright);
     margin-inline: calc(-1 * var(--hang));
-    padding: 0.875rem var(--hang) 0.5rem;
+    padding: 0.875rem var(--box-pad) 0.5rem;
     background: var(--board-bg);
     color: var(--board-lit);
     box-shadow: inset 0 0 0 1px var(--board-edge);

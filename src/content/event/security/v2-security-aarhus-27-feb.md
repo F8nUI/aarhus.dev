@@ -11,6 +11,21 @@ venue:
 learnMoreURL: https://www.v2security.dk/aarhus7
 ---
 
-Two days of keynotes, debates, expert talks and an exhibition on cyber and information security, for people in both the public and the private sector: more than 15 keynotes and debates, about 50 expert talks, and around 50 security companies.
+V2 Security Aarhus samler over to dage mere end 1.500 deltagere og 50 af de førende cybersecurity-virksomheder til en konference dedikeret til vidensdeling, faglig sparring og værdifuld networking.
 
-Open Wednesday 24 February 08:30–18:00 and Thursday 25 February 08:30–15:00. Participation is free with registration. Seats in the sessions are limited, so sign up for the ones you want early.
+Programmet er udviklet af Version2’s redaktion i samarbejde med et advisory board af Danmarks førende eksperter.
+
+Årets konference dækker hele spektret af cybersikkerhed — fra indsigt i i cybertrusler og angreb til styrket kontrol med Governance, Risk & Compliance, smartere Identity Access Management og robust sikring af netværk, infrastruktur og cloud.
+
+Deltagerne kan desuden fordybe sig i Industri- og OT-sikkerhed, udforske hvordan AI, automatisering og nye teknologier forandrer sikkerhedslandskabet, samt blive klogere på Krisehåndtering og robusthed.
+
+Endelig sætter temaet Geopolitik og digital suverænitet fokus på de strategiske og samfundsmæssige dimensioner af cybersikkerhed i en stadig mere forbundet verden.
+
+### Gratis deltagelse
+
+Det er gratis at deltage på V2 Security ved tilmelding. Det anbefales også at tilmelde sig oplæggene da der er et begrænset antal siddepladser.
+
+### Tid og sted
+
+D. 24. februar 2027 kl. 8.30 - 18.00  
+D. 25. februar 2027 kl. 8.30 - 15.00
