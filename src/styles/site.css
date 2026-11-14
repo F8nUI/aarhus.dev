@@ -8,12 +8,10 @@
  * in by the same amount. On phones the outer edge is the screen's.
  */
 .site {
-  /* the body text's face; mono until the type experiment settles it (TypeSwitch.astro) */
-  --font-body: var(--font-mono);
   --hang: 0.75rem;
   /* the padding inside boxes (the posters); equal to the hang, so their text meets the text edge */
   --box-pad: 0.75rem;
-  font-family: var(--font-body);
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-size: 0.9375rem;
   line-height: 1.5;
