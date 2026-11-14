@@ -220,11 +220,11 @@ const nav = events.length > 1
         display: block;
       }
     }
-    /* they stay in view while the board scrolls, where the screen is tall enough to show them whole */
-    @media (min-width: 64rem) and (min-height: 40rem) {
+    /* they stay in view while the board scrolls, below the sticky header, where the screen is tall enough to show them whole */
+    @media (min-width: 64rem) and (min-height: 44rem) {
       .tt-layout.beside .heads {
         position: sticky;
-        top: 1.5rem;
+        top: calc(var(--head-h, 0px) + 1.5rem);
       }
     }
 

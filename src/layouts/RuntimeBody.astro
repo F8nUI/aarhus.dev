@@ -1,7 +1,7 @@
 ---
 // Runs once the page is parsed: re-tags every event item for the current
-// (or overridden) time, keeps relative labels and counts current, and wires
-// every `.theme-toggle` button.
+// (or overridden) time, keeps relative labels and counts current, keeps --head-h
+// at the header's height, and wires every `.theme-toggle` button.
 import { relativeLabel, whenTags } from '@lib/when'
 
 const script = `(function (whenTags, relativeLabel) {
@@ -24,6 +24,17 @@ const script = `(function (whenTags, relativeLabel) {
     })
     counter.textContent = Object.keys(seen).length
   })
+
+  // --head-h: the header's height, for what sticks below it on desktop (the header can
+  // grow a line when the topics wrap)
+  var head = document.querySelector('.head')
+  if (head) {
+    var setHeadHeight = function () {
+      document.documentElement.style.setProperty('--head-h', head.offsetHeight + 'px')
+    }
+    setHeadHeight()
+    if (window.ResizeObserver) new ResizeObserver(setHeadHeight).observe(head)
+  }
 
   document.addEventListener('click', function (e) {
     var button = e.target.closest && e.target.closest('.theme-toggle')

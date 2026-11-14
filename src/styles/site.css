@@ -50,6 +50,23 @@
     padding-top: 1.25rem;
     border-bottom: 2px solid var(--ink);
   }
+  /*
+   * Desktop: the header stays at the top while the page scrolls. Its background
+   * reaches over the page's side gutters (shadows, so its rule stays the width of the
+   * text) and covers whatever hangs out there as it scrolls under. RuntimeBody keeps
+   * --head-h at its height, for what sticks below it.
+   */
+  @media (min-width: 64rem) {
+    .head {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: var(--color-bg);
+      box-shadow:
+        -2rem 0 0 var(--color-bg),
+        2rem 0 0 var(--color-bg);
+    }
+  }
   .bar {
     display: flex;
     flex-wrap: wrap;
@@ -356,6 +373,13 @@
  * the logo recolors the cursor) from the value the animation has at that moment;
  * caught at opacity 0, every step became 0 and the blinking stopped.
  */
+/* Desktop: a jump to an anchor stops below the sticky header. */
+@media (min-width: 64rem) {
+  html {
+    scroll-padding-top: calc(var(--head-h, 0px) + 1rem);
+  }
+}
+
 @keyframes cursor-blink {
   0%,
   49.99% {

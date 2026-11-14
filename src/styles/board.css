@@ -50,6 +50,7 @@
 
   .cols {
     position: sticky;
+    /* below the sticky header on desktop (site.css) */
     top: 0;
     z-index: 2;
     /* sits right on top of the first block, not a whole gap above it */
@@ -433,6 +434,13 @@
     .row .when-time.tba {
       color: var(--color-text-muted);
       font-weight: 400;
+    }
+  }
+
+  /* desktop: the header sticks, so the column header sticks just below it */
+  @media (min-width: 64rem) {
+    .cols {
+      top: var(--head-h, 0px);
     }
   }
 
