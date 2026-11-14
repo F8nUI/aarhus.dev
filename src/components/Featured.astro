@@ -228,20 +228,31 @@ const w = t(langOf(Astro.url))
   .site {
     --fx-interval: 7s;
 
-    /* ---------- beside the board on wide screens ---------- */
+    /*
+     * ---------- beside the board on wide screens, on the right ----------
+     * Out of the way of the topic links above the board's start. They come first in
+     * the page, so narrower screens show them above the board; here the grid puts
+     * them in the second column.
+     */
     @media (min-width: 64rem) {
       .tt-layout.beside {
         display: grid;
-        grid-template-columns: 21rem minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr) 21rem;
         column-gap: 3rem;
         align-items: start;
       }
       .tt-layout.beside .heads {
+        grid-column: 2;
+        grid-row: 1;
         margin-bottom: 0;
+      }
+      .tt-layout.beside .tt-board {
+        grid-column: 1;
+        grid-row: 1;
       }
       /* the posters hang outside the text edge on the page's side only; toward the board, its own background does */
       .tt-layout.beside .fx {
-        margin-right: 0;
+        margin-left: 0;
       }
       /* nothing featured is still to come: the board takes the width */
       .tt-layout.beside:not(:has(.heads [data-when~='upcoming'])) {
