@@ -38,7 +38,9 @@ const pageDescription = metadata?.description || w.siteDescription
 
 const topics = (await getTopics()).sort((a, b) => topicName(a, lang).localeCompare(topicName(b, lang), lang))
 // Each topic link carries the end times of its events still to come at build time;
-// RuntimeBody counts those still to come on the visit and fills in "(3)".
+// RuntimeBody counts those still to come on the visit and fills in "(3)". A topic with
+// none at build time is dimmed in the HTML already (it can't gain any before the next
+// build), so it doesn't show at full strength and then fade on every page.
 const buildTime = Date.now()
 const upcoming = (await getEvents()).filter((e) => e.end.valueOf() >= buildTime)
 const ends = (id?: string) => upcoming.filter((e) => !id || e.topic === id).map((e) => e.end.toISOString())
@@ -99,12 +101,22 @@ const onAllList = !topic && /^\/(past\/?)?$/.test(base)
         </div>
         <nav class="lines" aria-label={w.topics}>
           <div class="lines-list" id="topic-list">
-            <a href={localPath(lang, '/')} aria-current={onAllList ? 'true' : undefined} data-ends={ends().join(' ')}>
+            <a
+              href={localPath(lang, '/')}
+              class:list={{ 'is-empty': ends().length === 0 }}
+              aria-current={onAllList ? 'true' : undefined}
+              data-ends={ends().join(' ')}
+            >
               <span class="topic-label">{w.allTopics}</span> <span class="count" data-upcoming>({ends().length})</span>
             </a>
             {
               topics.map((id) => (
-                <a href={localPath(lang, `/${id}`)} aria-current={id === topic ? 'true' : undefined} data-ends={ends(id).join(' ')}>
+                <a
+                  href={localPath(lang, `/${id}`)}
+                  class:list={{ 'is-empty': ends(id).length === 0 }}
+                  aria-current={id === topic ? 'true' : undefined}
+                  data-ends={ends(id).join(' ')}
+                >
                   <span class="dot" style={`--dot: ${topicColor(id)}`} aria-hidden="true" />
                   <span class="topic-label">{topicName(id, lang)}</span> <span class="count" data-upcoming>({ends(id).length})</span>
                 </a>
