@@ -7,8 +7,11 @@
 }
 
 /*
- * Color tokens. Light is a printed timetable: dark ink on paper. Dark is the lit
- * board: amber on black. Code blocks sit on the board's black in both.
+ * Color tokens. Light is a printed timetable: dark ink on paper. Dark is a departure
+ * board at night: on navy, the times, headings and rules in amber, the event titles in
+ * white, the details in a blue grey. Code blocks sit on the board's dark in both. In
+ * dark, the posters (FeaturedPoster.astro) and topic dots (site.css) have their own
+ * versions of the topic colors.
  */
 :root {
   color-scheme: light;
@@ -28,33 +31,33 @@
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --color-bg: #0d0b07;
-  --color-bg-subtle: #19150d;
-  --color-text: #f5a524;
-  --color-text-muted: #b07f2e;
-  --color-border: #2c2416;
-  --ink: #f5a524;
-  --title: #ffc65e;
-  --prose: #edd4a2;
-  --accent-text: #ffc65e;
+  --color-bg: #0b1322;
+  --color-bg-subtle: #132036;
+  --color-text: #f7b538;
+  --color-text-muted: #8f9cb3;
+  --color-border: #22314d;
+  --ink: #f7b538;
+  --title: #f3f6fb;
+  --prose: #dde4ef;
+  --accent-text: #ffcb66;
   --focus: #ffd27f;
-  --board-bg: #17120a;
+  --board-bg: #08101d;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
-    --color-bg: #0d0b07;
-    --color-bg-subtle: #19150d;
-    --color-text: #f5a524;
-    --color-text-muted: #b07f2e;
-    --color-border: #2c2416;
-    --ink: #f5a524;
-    --title: #ffc65e;
-    --prose: #edd4a2;
-    --accent-text: #ffc65e;
+    --color-bg: #0b1322;
+    --color-bg-subtle: #132036;
+    --color-text: #f7b538;
+    --color-text-muted: #8f9cb3;
+    --color-border: #22314d;
+    --ink: #f7b538;
+    --title: #f3f6fb;
+    --prose: #dde4ef;
+    --accent-text: #ffcb66;
     --focus: #ffd27f;
-    --board-bg: #17120a;
+    --board-bg: #08101d;
   }
 }
 

@@ -144,6 +144,9 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       --sp-label: 0.8125rem;
       --sp-text: 1.125rem;
       /* and two weights: bold for labels, names and the button; regular for the address and caption */
+      /* its colors, from the topic's (format.ts topicStyle): the background and the ink on it */
+      --p: var(--topic);
+      --p-on: #fff;
       container-type: inline-size;
       display: flex;
       flex-direction: column;
@@ -515,6 +518,24 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       }
       .sp .sp-signup {
         padding: 0.65rem 0.9rem;
+      }
+    }
+  }
+
+  /*
+   * Dark: a dark panel tinted with the topic, its text, rules and buttons lit in a light
+   * tint of it, instead of the bright color glaring off the page. Browsers without
+   * relative colors keep the light theme's poster.
+   */
+  @supports (color: oklch(from red l c h)) {
+    :root[data-theme='dark'] .site .sp {
+      --p: oklch(from var(--topic) 0.27 calc(c * 0.55) h);
+      --p-on: oklch(from var(--topic) 0.86 calc(c * 0.7) h);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme='light']) .site .sp {
+        --p: oklch(from var(--topic) 0.27 calc(c * 0.55) h);
+        --p-on: oklch(from var(--topic) 0.86 calc(c * 0.7) h);
       }
     }
   }

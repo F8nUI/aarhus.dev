@@ -466,6 +466,21 @@
  * the logo recolors the cursor) from the value the animation has at that moment;
  * caught at opacity 0, every step became 0 and the blinking stopped.
  */
+/*
+ * Dark: the topic colors are dark enough for white text on a poster, which leaves some
+ * dots nearly invisible on the navy; they're raised to a lightness that shows.
+ */
+@supports (color: oklch(from red l c h)) {
+  :root[data-theme='dark'] .site .dot {
+    background: oklch(from var(--dot) clamp(0.68, l, 1) c h);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) .site .dot {
+      background: oklch(from var(--dot) clamp(0.68, l, 1) c h);
+    }
+  }
+}
+
 /* Desktop: a jump to an anchor stops below the sticky header. */
 @media (min-width: 64rem) {
   html {

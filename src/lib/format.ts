@@ -127,11 +127,13 @@ export const editUrl = (event: ADEvent) =>
 // --- Featured posters --------------------------------------------------------
 
 /**
- * Inline style that gives an element its topic color (--p) and the ink on it (--p-on):
- * always white; the topic colors are chosen dark enough for it (src/lib/topics.ts).
+ * Inline style that gives a poster its topic's color (--topic). The poster's styles
+ * make its background (--p) and the ink on it (--p-on) from that, per theme; in light,
+ * the color itself with white, which the topic colors are chosen dark enough for
+ * (src/lib/topics.ts).
  */
 export function topicStyle(topic: string): string {
-  return `--p: ${topicColor(topic)}; --p-on: #fff`
+  return `--topic: ${topicColor(topic)}`
 }
 
 /**

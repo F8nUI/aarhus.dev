@@ -7,6 +7,7 @@
 //
 // Highlighted events still to come, from every topic, sit beside the board as featured
 // posters (above it on narrow screens), on every list page alike: home, topics, past.
+// On phones, only the home page shows them.
 // Styles: src/styles/board.css.
 import { getEvents, type ADEvent } from '@lib/event'
 import { eventAttrs, featuredEvents, groupBy, monthTitle } from '@lib/format'
@@ -29,6 +30,7 @@ const live = events.filter((e) => e.end.valueOf() >= buildTime)
 const ended = events.filter((e) => e.end.valueOf() < buildTime)
 
 const featured = featuredEvents(await getEvents())
+const onHome = !topic && !past
 
 // "Swift events", "dev conferences", or just "events" on the all-topic lists
 const what = topic ? topicEvents(topic) : 'events'
@@ -43,7 +45,7 @@ const archiveMonths = groupBy([...events].reverse(), (e) => monthTitle(e.start))
   <div class:list={['tt-layout', { beside: featured.length > 0 }]}>
     {
       featured.length > 0 && (
-        <div class="heads">
+        <div class:list={['heads', { 'not-home': !onHome }]}>
           <Featured events={featured} />
         </div>
       )

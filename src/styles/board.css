@@ -22,6 +22,13 @@
       margin-top: calc(-1 * var(--page-top));
     }
   }
+  /* phones: only on the home page; on a topic's list or the archive they'd push the
+     list a screen down */
+  @media (max-width: 40rem) {
+    .heads.not-home {
+      display: none;
+    }
+  }
   .heads > [data-when~='past'],
   .heads > [data-when~='upcoming'] ~ [data-when~='upcoming'],
   .heads:not(:has([data-when~='upcoming'])) {
