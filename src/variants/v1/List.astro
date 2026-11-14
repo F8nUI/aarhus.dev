@@ -3,6 +3,9 @@
 // later by month. The archive (/past) is the same rows, newest first, by month.
 // Every event is rendered into each bucket it could fall in; the runtime tags each
 // row with data-when on every visit and the bucket CSS shows it in the right place.
+//
+// v2–v4 pass a Head component: the first highlighted event that hasn't ended is
+// drawn with it above the board, or beside it with headBeside.
 import type { ADEvent } from '@lib/event'
 import { calendarFeed, eventAttrs, formatMonth, groupBy, topicName } from '../shared'
 import Row from './Row.astro'
@@ -11,15 +14,22 @@ interface Props {
   events: ADEvent[]
   topic?: string
   past: boolean
+  /** Draws one head event. Its root element carries eventAttrs(event). */
+  Head?: (props: { event: ADEvent }) => any
+  /** The head event beside the board on wide screens; the variant styles `.tt-layout.beside`. */
+  headBeside?: boolean
 }
 
-const { events, topic, past } = Astro.props
+const { events, topic, past, Head, headBeside = false } = Astro.props
 
 // What had ended at build time can never be upcoming again: leave it out of the
 // upcoming buckets, but keep a bare entry so the past count still sees it.
 const buildTime = Date.now()
 const live = events.filter((e) => e.end.valueOf() >= buildTime)
 const ended = events.filter((e) => e.end.valueOf() < buildTime)
+
+// Every highlighted event still to come is drawn; CSS shows the first one not yet past.
+const heads = Head && !past ? live.filter((e) => e.data.highlight) : []
 
 const name = topic ? topicName(topic) : undefined
 const pastHref = topic ? `/past/${topic}` : '/past'
@@ -53,17 +63,16 @@ const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start)
     </p>
   </div>
 
-  <div class="cols" aria-hidden="true">
-    <span class="when"><span>Day</span><span>Time</span></span>
-    <span class="col-topic">Topic</span>
-    <span class="col-event">Event</span>
-    <span class="col-venue">Venue</span>
-    <span class="col-status">Status</span>
-  </div>
-
   {
     past ? (
-      <>
+      <div class="tt-board">
+        <div class="cols" aria-hidden="true">
+          <span class="when"><span>Day</span><span>Time</span></span>
+          <span class="col-topic">Topic</span>
+          <span class="col-event">Event</span>
+          <span class="col-venue">Venue</span>
+          <span class="col-status">Status</span>
+        </div>
         <section class="sect" data-bucket="past" aria-label="Past events">
           {archiveMonths.map((month) => (
             <div class="month" data-group>
@@ -82,80 +91,102 @@ const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start)
             Events move here the day after they end. <a href={upcomingHref}>See what's coming up</a>
           </p>
         </div>
-      </>
+      </div>
     ) : (
-      <>
-        <section class="board" aria-label="Today">
-          <h2 class="board-head">Today</h2>
-          <ol class="rows" data-bucket="now">
-            {live.map((event) => (
-              <Row event={event} />
+      <div class:list={['tt-layout', { beside: headBeside && heads.length > 0 }]}>
+        {heads.length > 0 && Head && (
+          <div class="heads">
+            {heads.map((event) => (
+              <Head event={event} />
             ))}
-          </ol>
-          <ol class="rows" data-bucket="today">
-            {live.map((event) => (
-              <Row event={event} />
+          </div>
+        )}
+
+        <div class="tt-board">
+          <div class="cols" aria-hidden="true">
+            <span class="when"><span>Day</span><span>Time</span></span>
+            <span class="col-topic">Topic</span>
+            <span class="col-event">Event</span>
+            <span class="col-venue">Venue</span>
+            <span class="col-status">Status</span>
+          </div>
+
+          <section class="board" aria-label="Today">
+            <h2 class="board-head">Today</h2>
+            <ol class="rows" data-bucket="now">
+              {live.map((event) => (
+                <Row event={event} />
+              ))}
+            </ol>
+            <ol class="rows" data-bucket="today">
+              {live.map((event) => (
+                <Row event={event} />
+              ))}
+            </ol>
+          </section>
+
+          <section class="sect" data-bucket="week">
+            <h2 class="sect-head">This week</h2>
+            <ol class="rows">
+              {live.map((event) => (
+                <Row event={event} />
+              ))}
+            </ol>
+          </section>
+
+          <section class="sect" data-bucket="nextweek">
+            <h2 class="sect-head">Next week</h2>
+            <ol class="rows">
+              {live.map((event) => (
+                <Row event={event} />
+              ))}
+            </ol>
+          </section>
+
+          <section class="sect" data-bucket="later">
+            <h2 class="sect-head">Later</h2>
+            {laterMonths.map((month) => (
+              <div class="month" data-group>
+                <h3 class="month-head">{month.key}</h3>
+                <ol class="rows">
+                  {month.items.map((event) => (
+                    <Row event={event} />
+                  ))}
+                </ol>
+              </div>
             ))}
-          </ol>
-        </section>
+          </section>
 
-        <section class="sect" data-bucket="week">
-          <h2 class="sect-head">This week</h2>
-          <ol class="rows">
-            {live.map((event) => (
-              <Row event={event} />
-            ))}
-          </ol>
-        </section>
+          <div class="empty" data-empty="upcoming">
+            <p>No {name ? `${name} ` : ''}events on the board yet.</p>
+            <p class="empty-sub">
+              Know of one coming up? <a href="/add-event">Add an event</a>
+            </p>
+          </div>
 
-        <section class="sect" data-bucket="nextweek">
-          <h2 class="sect-head">Next week</h2>
-          <ol class="rows">
-            {live.map((event) => (
-              <Row event={event} />
-            ))}
-          </ol>
-        </section>
-
-        <section class="sect" data-bucket="later">
-          <h2 class="sect-head">Later</h2>
-          {laterMonths.map((month) => (
-            <div class="month" data-group>
-              <h3 class="month-head">{month.key}</h3>
-              <ol class="rows">
-                {month.items.map((event) => (
-                  <Row event={event} />
-                ))}
-              </ol>
-            </div>
-          ))}
-        </section>
-
-        <div class="empty" data-empty="upcoming">
-          <p>No {name ? `${name} ` : ''}events on the board yet.</p>
-          <p class="empty-sub">
-            Know of one coming up? <a href="/add-event">Add an event</a>
+          <p class="tt-end">
+            <a class="tt-past" href={pastHref}>
+              Past {name ? `${name} ` : ''}events (<span data-count="past">{ended.length}</span>)
+            </a>
           </p>
-        </div>
 
-        <p class="tt-end">
-          <a class="tt-past" href={pastHref}>
-            Past {name ? `${name} ` : ''}events (<span data-count="past">{ended.length}</span>)
-          </a>
-        </p>
-
-        <div hidden>
-          {ended.map((event) => (
-            <i {...eventAttrs(event)} />
-          ))}
+          <div hidden>
+            {ended.map((event) => (
+              <i {...eventAttrs(event)} />
+            ))}
+          </div>
         </div>
-      </>
+      </div>
     )
   }
 </div>
 
 <style is:global>
-  [data-variant-block='v1'] {
+  :is([data-variant-block='v1'], [data-variant-block='v2'], [data-variant-block='v3'], [data-variant-block='v4']) {
+    /* --hang (in Shell.astro): how far backgrounds hang outside the text edge. */
+    /* Space between the big blocks: head event, today, this week, next week, later. */
+    --gap: 2.5rem;
+
     /* ---------- title line ---------- */
     .tt-title {
       display: flex;
@@ -163,7 +194,7 @@ const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start)
       align-items: baseline;
       justify-content: space-between;
       gap: 0.5rem 2rem;
-      margin-bottom: 1.75rem;
+      margin-bottom: 2rem;
     }
     .tt-title h1 {
       font-size: 1rem;
@@ -197,13 +228,34 @@ const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start)
       display: none;
     }
 
+    /* ---------- head event: only the first highlighted one still to come ---------- */
+    .heads {
+      margin-bottom: var(--gap);
+    }
+    .heads > [data-when~='past'],
+    .heads > [data-when~='upcoming'] ~ [data-when~='upcoming'],
+    .heads:not(:has(> [data-when~='upcoming'])) {
+      display: none;
+    }
+
+    /*
+     * The board's blocks stack with one gap; a hidden block (an empty today board,
+     * a week with nothing on) takes no space. The rows lay out by the board's own
+     * width, so it reads the same full width or beside a head event.
+     */
+    .tt-board {
+      container: board / inline-size;
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+    }
+
     /* ---------- the column grid, shared by the header and every row ---------- */
     .cols,
     .row {
       display: grid;
       grid-template-columns: 17ch 12ch minmax(0, 1fr) 20ch 13ch;
       column-gap: 2ch;
-      padding-inline: 0.75rem;
     }
     .when {
       display: grid;
@@ -216,8 +268,14 @@ const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start)
       position: sticky;
       top: 0;
       z-index: 2;
+      /* sits right on top of the first block, not a whole gap above it */
+      margin-bottom: calc(0.75rem - var(--gap));
       padding-block: 0.5rem;
       background: var(--color-bg);
+      /* the page color reaches as far as the rows' hover, so nothing shows beside it when stuck */
+      box-shadow:
+        calc(-1 * var(--hang)) 0 0 var(--color-bg),
+        var(--hang) 0 0 var(--color-bg);
       border-bottom: 1px solid var(--color-border);
       /* the grid is sized in the rows' ch; only the labels are small */
       font-size: 0.9375rem;
@@ -237,17 +295,29 @@ const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start)
     /* ---------- rows ---------- */
     .row {
       position: relative;
+      isolation: isolate;
       grid-template-areas:
         'when topic title venue status'
         'when topic org venue status';
       align-items: start;
-      padding-block: 0.7rem;
+      padding-block: 0.75rem;
       border-top: 1px solid var(--color-border);
       font-size: 0.9375rem;
       line-height: 1.45;
     }
-    .row:hover {
+    /* hover and focus fill, hanging past the text edge */
+    .row::before {
+      content: '';
+      position: absolute;
+      inset: 0 calc(-1 * var(--hang));
+      z-index: -1;
+    }
+    .row:hover::before {
       background: var(--color-bg-subtle);
+    }
+    .row:has(.title:focus-visible)::before {
+      outline: 2px solid var(--v1-focus);
+      outline-offset: -2px;
     }
     .row .when {
       grid-area: when;
@@ -279,7 +349,7 @@ const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start)
     .title::after {
       content: '';
       position: absolute;
-      inset: 0;
+      inset: 0 calc(-1 * var(--hang));
     }
     .title:hover {
       color: var(--v1-title);
@@ -289,10 +359,6 @@ const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start)
     }
     .title:focus-visible {
       outline: none;
-    }
-    .row:has(.title:focus-visible) {
-      outline: 2px solid var(--v1-focus);
-      outline-offset: -2px;
     }
     .sub {
       margin-left: 1ch;
@@ -381,8 +447,8 @@ const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start)
       --v1-title: var(--v1-board-bright);
       --v1-accent-text: var(--v1-board-bright);
       --v1-focus: var(--v1-board-bright);
-      margin-top: 1rem;
-      padding: 1.1rem 0 0.4rem;
+      margin-inline: calc(-1 * var(--hang));
+      padding: 1rem var(--hang) 0.5rem;
       background: var(--v1-board-bg);
       color: var(--v1-board-lit);
       box-shadow: inset 0 0 0 1px var(--v1-board-edge);
@@ -390,56 +456,42 @@ const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start)
     .board:not(:has([data-when~='now'], [data-when~='today'])) {
       display: none;
     }
-    .board-head {
-      padding-inline: 0.75rem;
-      margin-bottom: 0.5rem;
-      font-family: var(--v1-display);
-      font-size: 2.5rem;
-      font-weight: 800;
-      line-height: 1;
-      letter-spacing: 0.01em;
-      color: var(--v1-board-lit);
-    }
 
-    /* ---------- sections ---------- */
-    .sect {
-      margin-top: 2.75rem;
-    }
-    .board + .sect {
-      margin-top: 1.75rem;
-    }
-    .cols + .sect {
-      margin-top: 1rem;
-    }
+    /* ---------- section and board headings: one size, one rhythm ---------- */
+    .board-head,
     .sect-head {
-      display: flex;
-      align-items: baseline;
-      gap: 1rem;
-      padding: 0.6rem 0.75rem 0.5rem;
-      border-top: 2px solid var(--v1-ink);
       font-family: var(--v1-display);
       font-size: 2.25rem;
       font-weight: 800;
       line-height: 1;
       letter-spacing: 0.01em;
     }
+    .board-head {
+      padding-bottom: 0.5rem;
+      color: var(--v1-board-lit);
+    }
+    .sect-head {
+      padding: 0.75rem 0 0.5rem;
+      border-top: 2px solid var(--v1-ink);
+    }
     .month + .month {
-      margin-top: 1.25rem;
+      margin-top: 1rem;
     }
     .month-head {
-      padding: 0.75rem 0.75rem 0.4rem;
+      padding: 0.75rem 0 0.4rem;
       font-size: 0.75rem;
       font-weight: 700;
       color: var(--color-text-muted);
     }
-    .cols + .sect[data-bucket='past'] {
-      margin-top: 0.5rem;
+    /* the first month sits right under its heading (or the column header, in the archive) */
+    .sect-head + .month .month-head,
+    .month:first-child .month-head {
+      padding-top: 0.25rem;
     }
 
     /* ---------- empty state and end of board ---------- */
     .empty {
-      margin-top: 1.75rem;
-      padding: 1.5rem 0.75rem;
+      padding-top: 1.5rem;
       border-top: 2px solid var(--v1-ink);
     }
     .empty p:first-child {
@@ -453,8 +505,7 @@ const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start)
       color: var(--color-text-muted);
     }
     .tt-end {
-      margin-top: 2.5rem;
-      padding: 0.9rem 0.75rem 0;
+      padding-top: 0.9rem;
       border-top: 1px solid var(--color-border);
       font-size: 0.875rem;
     }
@@ -465,8 +516,8 @@ const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start)
       color: var(--color-text);
     }
 
-    /* ---------- narrower: venue folds under the title ---------- */
-    @media (max-width: 64rem) {
+    /* ---------- a narrower board: venue folds under the title ---------- */
+    @container board (max-width: 60rem) {
       .cols {
         display: none;
       }
@@ -517,29 +568,27 @@ const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start)
       }
     }
 
-    /* ---------- phones: date, time and status on the first line ---------- */
-    @media (max-width: 40rem) {
-      .tt-title {
-        margin-bottom: 1.25rem;
-      }
-      .tt-tools {
-        gap: 0.25rem 2ch;
-        font-size: 0.8125rem;
-      }
+    /*
+     * Phone-width board: the topic dot marks the row on its first line (date, time,
+     * status); title and organizer line up under the date.
+     */
+    @container board (max-width: 38rem) {
       .row {
         grid-template-columns: 0.55rem minmax(0, 1fr) auto;
         grid-template-areas:
-          'when when status'
-          'topic main main';
+          'topic when status'
+          '. main main';
         column-gap: 1.25ch;
         row-gap: 0.2rem;
-        padding-inline: 0;
       }
       .row .when {
         grid-template-columns: auto auto;
         justify-content: start;
         font-size: 0.875rem;
         color: var(--color-text-muted);
+      }
+      .row .topic {
+        height: calc(0.875rem * 1.45);
       }
       .row .when-time {
         color: var(--color-text);
@@ -549,24 +598,27 @@ const archiveMonths = groupBy([...events].reverse(), (e) => formatMonth(e.start)
         color: var(--color-text-muted);
         font-weight: 400;
       }
+    }
+
+    /* ---------- phones: the page's own gutter ---------- */
+    @media (max-width: 40rem) {
+      --gap: 2rem;
+
+      .tt-title {
+        margin-bottom: 1.5rem;
+      }
+      .tt-tools {
+        gap: 0.25rem 2ch;
+        font-size: 0.8125rem;
+      }
+      /* the board runs edge to edge */
       .board {
         margin-inline: -1rem;
         padding-inline: 1rem;
       }
       .board-head,
-      .sect-head,
-      .month-head {
-        padding-inline: 0;
-      }
-      .board-head {
-        font-size: 2.25rem;
-      }
       .sect-head {
         font-size: 2rem;
-      }
-      .empty,
-      .tt-end {
-        padding-inline: 0;
       }
     }
   }

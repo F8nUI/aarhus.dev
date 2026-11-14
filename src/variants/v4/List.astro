@@ -1,0 +1,15 @@
+---
+// Board + Side Poster: the Departure Board, with the highlighted event as a portrait
+// poster beside it on wide screens and above it on narrow ones.
+import type { ADEvent } from '@lib/event'
+import Board from '../v1/List.astro'
+import SidePoster from './SidePoster.astro'
+
+interface Props {
+  events: ADEvent[]
+  topic?: string
+  past: boolean
+}
+---
+
+<Board {...Astro.props} Head={SidePoster} headBeside />

@@ -1,0 +1,321 @@
+---
+// The head event as a big ticket printed on the board's amber, in both themes:
+// the title in the board's display face, departure-board fields for day, time and
+// status, and a perforated stub with the sign-up button and calendar links.
+import type { ADEvent } from '@lib/event'
+import {
+  eventAttrs,
+  googleCalendarUrl,
+  icsFileName,
+  icsHref,
+  linkHost,
+  mapUrl,
+  timeRange,
+  topicColor,
+  topicName,
+  yearOf,
+} from '../shared'
+import { boardDate, machineDate } from '../v1/format'
+import Status from '../v1/Status.astro'
+
+interface Props {
+  event: ADEvent
+}
+
+const { event } = Astro.props
+const { title, subtitle, venue, learnMoreURL } = event.data
+const time = timeRange(event)
+const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.start)}`
+const host = linkHost(learnMoreURL)
+---
+
+<article class="tk" {...eventAttrs(event)}>
+  <div class="tk-main">
+    <p class="tk-kicker">
+      <span class="tk-flag">Featured</span>
+      <a class="tk-topic" href={`/${event.topic}`}>
+        <span class="dot" style={`--dot: ${topicColor(event.topic)}`} aria-hidden="true"></span>
+        {topicName(event.topic)}
+      </a>
+    </p>
+
+    <hgroup class="tk-head">
+      <h2 class="tk-title"><a href={event.url}>{title}</a></h2>
+      {subtitle && <p class="tk-sub">{subtitle}</p>}
+    </hgroup>
+
+    <dl class="tk-fields">
+      <div>
+        <dt>Day</dt>
+        <dd><time datetime={machineDate(event)}>{boardDate(event).replace(/\s+/g, ' ')}{year}</time></dd>
+      </div>
+      <div>
+        <dt>Time</dt>
+        <dd class:list={{ tba: !time }}>{time || 'TBA'}</dd>
+      </div>
+    </dl>
+
+    <p class="tk-where">
+      {
+        venue ? (
+          <>
+            <span class="tk-venue">{venue.title}</span>
+            <a href={mapUrl(event)}>{venue.address}</a>
+          </>
+        ) : (
+          <span class="tk-venue">Venue TBA</span>
+        )
+      }
+      <a class="tk-org" href={`/organizer/${event.organizer.id}`}>{event.organizer.data.name}</a>
+    </p>
+  </div>
+
+  <div class="tk-stub">
+    <p class="tk-status">
+      <span class="tk-label">Status</span>
+      <Status event={event} />
+    </p>
+    <a class="tk-btn" href={learnMoreURL}>Sign up on {host}&nbsp;→</a>
+    <ul class="tk-links">
+      <li><a href={event.url}>Event details</a></li>
+      <li><a href={icsHref(event)} download={icsFileName(event)}>Add to calendar (.ics)</a></li>
+      <li><a href={googleCalendarUrl(event)}>Google Calendar</a></li>
+    </ul>
+  </div>
+</article>
+
+<style is:global>
+  [data-variant-block='v3'] {
+    .tk {
+      /* printed on the board's amber; the ink stays dark in both themes */
+      --tk-ink: #17140f;
+      --tk-muted: #5c3f0c;
+      --tk-rule: rgb(23 20 15 / 0.28);
+      --notch: 0.8rem;
+      --color-text: var(--tk-ink);
+      --color-text-muted: var(--tk-muted);
+      --v1-title: var(--tk-ink);
+      --v1-accent-text: var(--tk-ink);
+      --v1-focus: var(--tk-ink);
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 20rem;
+      margin-inline: calc(-1 * var(--hang));
+      background: var(--v1-accent);
+      color: var(--tk-ink);
+    }
+    .tk a:hover {
+      color: var(--tk-ink);
+    }
+
+    /* ---------- the ticket ---------- */
+    .tk-main {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      min-width: 0;
+      padding: 1.25rem var(--hang) 1.5rem calc(var(--hang) + 0.5rem);
+    }
+    .tk-kicker {
+      display: flex;
+      align-items: center;
+      gap: 2ch;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .tk-flag {
+      padding: 0.1rem 0.6ch;
+      background: var(--tk-ink);
+      color: var(--v1-accent);
+    }
+    .tk-topic {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75ch;
+      text-decoration: none;
+    }
+    .tk-topic:hover {
+      text-decoration: underline;
+    }
+    .tk-topic .dot {
+      box-shadow: 0 0 0 1.5px var(--tk-ink);
+    }
+    .tk-title {
+      max-width: 20ch;
+      font-family: var(--v1-display);
+      font-size: clamp(3rem, 7vw, 5.75rem);
+      font-weight: 800;
+      line-height: 0.9;
+      letter-spacing: 0.005em;
+      text-wrap: balance;
+    }
+    .tk-title a {
+      text-decoration: none;
+    }
+    .tk-title a:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 0.05em;
+      text-underline-offset: 0.08em;
+    }
+    .tk-sub {
+      margin-top: 0.5rem;
+      font-size: 1.0625rem;
+      color: var(--tk-muted);
+    }
+
+    /* day, time and status, like the board's columns */
+    .tk-fields {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 3rem;
+      padding-top: 1rem;
+      border-top: 2px solid var(--tk-ink);
+    }
+    .tk-fields dt,
+    .tk-label {
+      margin-bottom: 0.2rem;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--tk-muted);
+    }
+    .tk-fields dd {
+      font-size: clamp(1.375rem, 2.6vw, 2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+    .tk-fields dd.tba {
+      color: var(--tk-muted);
+    }
+    .tk-label {
+      display: block;
+    }
+    .tk-status {
+      margin-bottom: auto;
+      padding-bottom: 1rem;
+    }
+    .tk-status .status {
+      display: block;
+      font-size: clamp(1.375rem, 2.6vw, 2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: 0.02em;
+      color: var(--tk-ink);
+    }
+    .tk .st-now {
+      background: var(--tk-ink);
+      color: var(--v1-accent);
+    }
+    .tk .st-today {
+      color: var(--tk-ink);
+    }
+
+    .tk-where {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.25rem 2ch;
+      font-size: 0.875rem;
+    }
+    .tk-venue {
+      font-weight: 800;
+    }
+    .tk-where a {
+      color: var(--tk-muted);
+    }
+    .tk-org {
+      flex-basis: 100%;
+    }
+
+    /* ---------- the stub, behind a perforation ---------- */
+    .tk-stub {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1.25rem calc(var(--hang) + 0.5rem) 1.5rem;
+      border-left: 2px dashed var(--tk-rule);
+    }
+    .tk-stub::before,
+    .tk-stub::after {
+      content: '';
+      position: absolute;
+      left: calc(-1 * var(--notch) - 1px);
+      width: calc(2 * var(--notch));
+      height: calc(2 * var(--notch));
+      border-radius: 50%;
+      background: var(--color-bg);
+    }
+    .tk-stub::before {
+      top: calc(-1 * var(--notch));
+    }
+    .tk-stub::after {
+      bottom: calc(-1 * var(--notch));
+    }
+    .tk-btn {
+      display: block;
+      padding: 0.9rem 1rem;
+      background: var(--tk-ink);
+      color: var(--v1-accent);
+      font-weight: 800;
+      line-height: 1.35;
+      text-decoration: none;
+      overflow-wrap: anywhere;
+    }
+    .tk .tk-btn:hover {
+      color: var(--v1-board-bright);
+      background: #000;
+    }
+    .tk-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--tk-rule);
+      font-size: 0.875rem;
+    }
+
+    /* ---------- tablets and phones: the stub below ---------- */
+    @media (max-width: 52rem) {
+      .tk {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .tk-stub {
+        border-left: 0;
+        border-top: 2px dashed var(--tk-rule);
+      }
+      .tk-stub::before,
+      .tk-stub::after {
+        top: calc(-1 * var(--notch) - 1px);
+        bottom: auto;
+      }
+      .tk-stub::before {
+        left: calc(-1 * var(--notch));
+      }
+      .tk-stub::after {
+        left: auto;
+        right: calc(-1 * var(--notch));
+      }
+    }
+    @media (max-width: 40rem) {
+      .tk {
+        margin-inline: -1rem;
+      }
+      .tk-main,
+      .tk-stub {
+        padding-inline: 1rem;
+      }
+      .tk-title {
+        font-size: 2.75rem;
+      }
+      .tk-fields {
+        gap: 0.75rem 2rem;
+      }
+    }
+  }
+</style>
