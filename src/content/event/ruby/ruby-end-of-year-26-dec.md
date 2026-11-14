@@ -7,6 +7,7 @@ venue:
   title: 'Dentsu Cantine'
   address: 'Åboulevarden 18, 2nd floor, Aarhus'
 learnMoreURL: https://aarhus-ruby-meetup.com/
+highlight: true
 ---
 
 The last Aarhus Ruby Meetup of 2026 — wrap up the year with fellow Ruby enthusiasts in Aarhus.
