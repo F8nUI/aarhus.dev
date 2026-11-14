@@ -21,7 +21,7 @@ Der er tre måder at tilføje et på. De kræver alle en gratis [GitHub](https:/
 
 **Et emne, der ikke findes endnu:** start filnavnet med mappens navn og en skråstreg, fx `python/intro-workshop-27-jan.md`, så opretter GitHub mappen.
 
-Hver pull request bliver tjekket ved at bygge siden med din fil. Hvis tjekket fejler, så klik på **Details**: fejlen nævner filen og feltet. Ret det i den samme pull request. For førstegangsbidragydere venter GitHub på, at en maintainer starter tjekket.
+En maintainer tjekker hver pull request, før den bliver merget, og retter små fejl. Vil du selv tjekke din fil først, så byg siden lokalt (nedenfor): en fejl i en arrangementsfil stopper buildet og nævner filen og feltet.
 
 ## 3. Arbejd lokalt
 
@@ -30,7 +30,7 @@ git clone https://github.com/f8nui/aarhus.dev.git
 cd aarhus.dev
 bun install
 bun run dev     # siden på localhost:4321
-bun run build   # det samme tjek, som pull requesten kører
+bun run build   # stopper ved en fejl i en arrangementsfil og nævner filen og feltet
 ```
 
 Tilføj din fil, og åbn så en pull request.

@@ -21,7 +21,7 @@ Open an [Add Event issue](https://github.com/f8nui/aarhus.dev/issues/new?templat
 
 **A topic that isn't there yet:** start the file name with the folder name and a slash, for example `python/intro-workshop-27-jan.md`, and GitHub creates the folder.
 
-Every pull request is checked by building the site with your file. If the check fails, click **Details**: the error names the file and the field. Fix it in the same pull request. For first-time contributors GitHub waits for a maintainer to start the check.
+A maintainer checks every pull request before merging it and fixes small mistakes. To check your file yourself first, build the site locally (below): a mistake in an event file stops the build, naming the file and the field.
 
 ## 3. Work locally
 
@@ -30,7 +30,7 @@ git clone https://github.com/f8nui/aarhus.dev.git
 cd aarhus.dev
 bun install
 bun run dev     # the site at localhost:4321
-bun run build   # the same check the pull request runs
+bun run build   # stops at a mistake in an event file, naming the file and the field
 ```
 
 Add your file, then open a pull request.

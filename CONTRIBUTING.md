@@ -8,7 +8,7 @@ In short: one Markdown file per event in `src/content/event/<topic>/`, added by 
 
 ## Working on the site
 
-Requires [Bun](https://bun.sh) and Node.js 26 (`engines` in `package.json`; Vercel and CI build with it).
+Requires [Bun](https://bun.sh) and Node.js 26 (`engines` in `package.json`; Vercel builds with it).
 
 ```sh
 bun install
@@ -17,7 +17,7 @@ bun run astro check  # type check
 bun run build        # production build
 ```
 
-Every pull request runs `astro check` and the build ([`.github/workflows/build.yml`](.github/workflows/build.yml)).
+There's no automatic check on pull requests: a maintainer reviews each one, and runs `astro check` and the build before merging. A mistake in an event file stops the build with the file and the field.
 
 How it fits together:
 

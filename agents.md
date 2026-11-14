@@ -7,7 +7,7 @@ Community-driven timetable of tech events in Aarhus, Denmark. Static site, deplo
 - **Astro 7** — static site generator with content collections
 - **Tailwind CSS 4** — styling
 - **Bun** — package manager and script runner
-- **Node.js 26** — set in `package.json` `engines.node`; Vercel and CI both build with it
+- **Node.js 26** — set in `package.json` `engines.node`; Vercel builds with it
 - **TypeScript** — type safety
 
 No UI framework: everything is `.astro` components plus a few small inline scripts.
@@ -114,7 +114,7 @@ bun run build        # production build
 bun run astro check  # type checking
 ```
 
-CI (`.github/workflows/build.yml`) runs `astro check` and the build on every pull request.
+There's no CI, by choice: the maintainer reviews every pull request, runs `bun run astro check` and `bun run build`, and fixes what's wrong before merging. Vercel builds `main`.
 
 ## Conventions
 
