@@ -5,6 +5,8 @@
 // every --fx-interval the next poster fades in over the current one. Hovering, keyboard
 // focus, a hidden tab or the pause button holds it; with reduced motion it only changes
 // when asked. Without the script, the first one still to come is shown on its own.
+// Across pages it carries on where it was: which poster, how far its timer had run and
+// whether it was paused, kept for the tab's visit (sessionStorage).
 import type { ADEvent } from '@lib/event'
 import FeaturedPoster from './FeaturedPoster.astro'
 
@@ -44,6 +46,36 @@ const nav = events.length > 1
           })
           var controls = ['data-fx-prev', 'data-fx-next', 'data-fx-toggle']
           var at = 0
+          var KEY = 'aarhus-featured'
+          var interval = (function (v) {
+            return parseFloat(v) * (/ms$/.test(v) ? 1 : 1000) || 7000
+          })(getComputedStyle(root).getPropertyValue('--fx-interval').trim())
+          var still = matchMedia('(prefers-reduced-motion: reduce)').matches
+
+          // How far the current poster's timer has run, in ms.
+          var elapsed = function () {
+            var bar = live[at].querySelector('.sp-progress')
+            var anim = bar.getAnimations ? bar.getAnimations()[0] : null
+            var progress = anim ? anim.effect.getComputedTiming().progress : 0
+            return (progress || 0) * interval
+          }
+          var save = function () {
+            try {
+              sessionStorage.setItem(
+                KEY,
+                JSON.stringify({
+                  id: live[at].dataset.id,
+                  elapsed: elapsed(),
+                  savedAt: Date.now(),
+                  paused: root.classList.contains('is-paused'),
+                }),
+              )
+            } catch (e) {}
+          }
+          var saved = null
+          try {
+            saved = JSON.parse(sessionStorage.getItem(KEY) || 'null')
+          } catch (e) {}
 
           var show = function (n, byUser) {
             var before = live[at]
@@ -77,10 +109,40 @@ const nav = events.length > 1
             if (which) after.querySelector('[' + which + ']').focus({ preventScroll: true })
             // announce a poster the visitor asked for, not every timed change
             region.setAttribute('aria-live', byUser ? 'polite' : 'off')
+            save()
+          }
+
+          var setPaused = function (paused) {
+            root.classList.toggle('is-paused', paused)
+            root.querySelectorAll('[data-fx-toggle]').forEach(function (toggle) {
+              toggle.setAttribute('aria-label', paused ? 'Play' : 'Pause')
+            })
           }
 
           root.classList.add('is-carousel')
-          show(0, false)
+
+          // Carry on from the last page: the same poster, its timer as far along as it was,
+          // plus the time since (unless it was paused), skipping on past any that ran out.
+          var start = 0
+          var offset = 0
+          var index = saved
+            ? live.findIndex(function (slide) {
+                return slide.dataset.id === saved.id
+              })
+            : -1
+          if (index >= 0) {
+            setPaused(!!saved.paused)
+            offset = saved.elapsed + (saved.paused || still ? 0 : Math.max(0, Date.now() - saved.savedAt))
+            start = still ? index : index + Math.floor(offset / interval)
+            offset = still ? 0 : offset % interval
+          }
+          // start there directly: no poster to fade out of on arrival
+          at = start % live.length
+          show(at, false)
+          if (offset) {
+            live[at].querySelector('.sp-progress').style.animationDelay = -offset + 'ms'
+          }
+          addEventListener('pagehide', save)
 
           root.addEventListener('animationend', function (e) {
             if (e.target.classList.contains('sp-progress')) show(at + 1, false)
@@ -91,10 +153,8 @@ const nav = events.length > 1
             if (button.hasAttribute('data-fx-prev')) show(at - 1, true)
             else if (button.hasAttribute('data-fx-next')) show(at + 1, true)
             else if (button.hasAttribute('data-fx-toggle')) {
-              var paused = root.classList.toggle('is-paused')
-              root.querySelectorAll('[data-fx-toggle]').forEach(function (toggle) {
-                toggle.setAttribute('aria-label', paused ? 'Play' : 'Pause')
-              })
+              setPaused(!root.classList.contains('is-paused'))
+              save()
             }
           })
           document.addEventListener('visibilitychange', function () {

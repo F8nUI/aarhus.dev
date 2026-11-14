@@ -63,10 +63,10 @@ What's past, today or next week depends on when someone looks, so the browser de
 
 - The build renders each event into every section it could fall in (today, tomorrow, this week, next week, its month), each item carrying `data-start` / `data-end` (`eventAttrs` in `src/lib/format.ts`).
 - `RuntimeBody.astro` tags every item with `data-when`: space-separated tags from `past upcoming now today soon tomorrow week nextweek later` (`src/lib/when.ts`). It also fills `<span data-rel>` ("in 5 days") and `<span data-count="past">`.
-- The CSS in `RuntimeHead.astro` shows an item only in the section whose `data-bucket` matches its tags, and hides sections left empty. `data-empty="upcoming"` shows only while nothing on the page is upcoming. Tomorrow has its own section, so `board.css` keeps it out of this week and next week.
+- The CSS in `RuntimeHead.astro` shows an item only in the section whose `data-bucket` matches its tags, and hides sections left empty. `data-empty="upcoming"` shows only while nothing in its `data-scope` (the board, not the featured posters beside it) is upcoming; `data-count` counts within its `data-scope` too. Tomorrow has its own section, so `board.css` keeps it out of this week and next week.
 - Without JavaScript the page shows the state at build time.
 
-**Featured events.** Every event with `highlight: true` that hasn't ended is drawn as a poster (`Featured.astro`), soonest first, beside the board on wide screens and above it on narrow ones. They take turns every 7 seconds; hovering, keyboard focus or the pause button holds them, and with reduced motion they only change when asked.
+**Featured events.** Every event with `highlight: true` that hasn't ended, from every topic, is drawn as a poster (`Featured.astro`), soonest first, on every list page (home, topics, past), beside the board on wide screens and above it on narrow ones. They take turns every 7 seconds; hovering, keyboard focus or the pause button holds them, and with reduced motion they only change when asked. Moving between pages, the carousel carries on where it was (poster, timer, pause), kept in `sessionStorage` for the tab's visit.
 
 **Checking a moment.** `?now=2026-11-19T17:30` (Aarhus time) makes the site pretend it's then, for the rest of the tab's visit; `?now=` goes back to the real time.
 

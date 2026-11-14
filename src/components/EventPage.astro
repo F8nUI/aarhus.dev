@@ -1,7 +1,8 @@
 ---
 // An event as a ticket: board-style fields (When, Status, Where, Organizer) on the
-// left; on a perforated stub to the right, the sign-up button beside the first row and
-// the calendar links beside the second, so the rows' rule runs straight across. The whole
+// left; on a perforated stub to the right, the calendar links beside the first row and
+// the sign-up button filling the cell beside the second, so the rows' rule runs
+// straight across and every cell has the same padding. The whole
 // head of the page, title to ticket, is set in the display face; the description
 // below is in the site's mono.
 import { formatLong, type ADEvent } from '@lib/event'
@@ -58,7 +59,6 @@ const organizer = event.organizer
                 <span class="f-venue">{venue.title}</span>
                 <a class="f-map" href={map}>
                   {venue.address}
-                  <span class="f-map-hint">map</span>
                 </a>
               </>
             ) : (
@@ -78,17 +78,15 @@ const organizer = event.organizer
       </div>
     </dl>
 
-    <div class="stub stub-top">
-      <a class="btn" href={learnMoreURL}>
-        <span class="btn-live">Sign up&nbsp;→</span>
-        <span class="btn-past">Event page&nbsp;→</span>
-      </a>
-      <p class="btn-host">on {host}</p>
-    </div>
-    <ul class="stub stub-links">
+    <ul class="stub stub-cal">
       <li><a href={icsHref(event)} download={icsFileName(event)}>Add to calendar (.ics)</a></li>
       <li><a href={googleCalendarUrl(event)}>Google Calendar</a></li>
     </ul>
+    <a class="stub btn" href={learnMoreURL}>
+      <span class="btn-live">Sign up&nbsp;→</span>
+      <span class="btn-past">Event page&nbsp;→</span>
+      <span class="btn-host">on {host}</span>
+    </a>
   </div>
 
   <div class="prose ev-body">
@@ -105,7 +103,10 @@ const organizer = event.organizer
     .ev {
       max-width: 60rem;
     }
-    /* one face for the head of the page: values at one size, then secondary lines, then labels */
+    /*
+     * One face for the head of the page: values at one size, then secondary lines, then
+     * labels; two weights: bold for labels, values and links, regular for what's secondary.
+     */
     .ev-back,
     .ev-head,
     .ev-ended,
@@ -168,6 +169,8 @@ const organizer = event.organizer
     .ticket {
       --notch: 0.75rem;
       --stub: 19rem;
+      /* every cell's padding: fields, calendar links, the sign-up cell */
+      --cell: 1rem 1.25rem;
       position: relative;
       display: grid;
       grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) var(--stub);
@@ -179,7 +182,7 @@ const organizer = event.organizer
       display: contents;
     }
     .field {
-      padding: 1rem 1.25rem;
+      padding: var(--cell);
       min-width: 0;
     }
     .field:nth-child(odd) {
@@ -221,24 +224,16 @@ const organizer = event.organizer
     }
     .f-map {
       font-size: var(--ev-second);
-      font-weight: 600;
+      font-weight: 400;
       line-height: 1.25;
       color: var(--color-text-muted);
-      text-decoration: none;
     }
     .f-map:hover {
       color: var(--accent-text);
     }
-    .f-map-hint {
-      margin-left: 1ch;
-      padding: 0 0.5ch;
-      border: 1px solid currentColor;
-      font-size: var(--ev-label);
-      white-space: nowrap;
-    }
     .f-note {
       font-size: var(--ev-second);
-      font-weight: 600;
+      font-weight: 400;
       color: var(--color-text-muted);
     }
     .f-status .status {
@@ -253,25 +248,20 @@ const organizer = event.organizer
       color: var(--color-text-muted);
     }
 
-    /* ---------- the stub, behind a perforation: the button by the first row, calendar links by the second ---------- */
+    /* ---------- the stub, behind a perforation: calendar links by the first row, the sign-up cell by the second ---------- */
     .stub {
       grid-column: 3;
       display: flex;
       flex-direction: column;
       min-width: 0;
-      padding: 1rem 1.25rem;
+      padding: var(--cell);
       border-left: 2px dashed var(--color-border);
     }
-    .stub-top {
+    .stub-cal {
       grid-row: 1;
-      gap: 0.9rem;
-    }
-    .stub-links {
-      grid-row: 2;
       gap: 0.35rem;
-      border-top: 1px solid var(--color-border);
       font-size: var(--ev-second);
-      font-weight: 700;
+      font-weight: 800;
     }
     /* the notches, at both ends of the perforation */
     .ticket::before,
@@ -293,9 +283,9 @@ const organizer = event.organizer
       bottom: calc(-1 * var(--notch) - 1.5px);
       clip-path: inset(0 0 50% 0);
     }
+    /* the sign-up button is the whole cell: flat, the same padding as every other cell */
     .btn {
-      display: block;
-      padding: 0.85rem 1rem;
+      grid-row: 2;
       background: var(--accent);
       color: #17140f;
       font-size: 1.25rem;
@@ -303,7 +293,6 @@ const organizer = event.organizer
       line-height: 1.15;
       text-decoration: none;
       overflow-wrap: anywhere;
-      box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.18);
     }
     .btn:hover {
       color: #17140f;
@@ -315,7 +304,10 @@ const organizer = event.organizer
     .ev[data-when~='past'] .btn {
       background: transparent;
       color: var(--color-text);
-      box-shadow: inset 0 0 0 1.5px var(--color-border);
+      border-top: 1px solid var(--color-border);
+    }
+    .ev[data-when~='past'] .btn:hover {
+      background: var(--color-bg-subtle);
     }
     .ev[data-when~='past'] .btn-live {
       display: none;
@@ -323,14 +315,14 @@ const organizer = event.organizer
     .ev[data-when~='past'] .btn-past {
       display: inline;
     }
-    /* where the button goes, under it */
+    /* where the button goes: its second line, smaller, regular and faded */
     .btn-host {
-      margin-top: -0.5rem;
+      display: block;
+      margin-top: 0.3rem;
       font-size: var(--ev-label);
-      font-weight: 600;
+      font-weight: 400;
       line-height: 1.25;
-      overflow-wrap: anywhere;
-      color: var(--color-text-muted);
+      opacity: 0.75;
     }
 
     .ev-body {
@@ -355,7 +347,7 @@ const organizer = event.organizer
         grid-row: auto;
         border-left: 0;
       }
-      .stub-top {
+      .stub-cal {
         position: relative;
         border-top: 2px dashed var(--color-border);
       }
@@ -363,8 +355,8 @@ const organizer = event.organizer
       .ticket::after {
         content: none;
       }
-      .stub-top::before,
-      .stub-top::after {
+      .stub-cal::before,
+      .stub-cal::after {
         content: '';
         position: absolute;
         top: calc(-1 * var(--notch) - 1px);
@@ -374,11 +366,11 @@ const organizer = event.organizer
         background: var(--color-bg);
         border: 1.5px solid var(--ticket-edge);
       }
-      .stub-top::before {
+      .stub-cal::before {
         left: calc(-1 * var(--notch) - 1.5px);
         clip-path: inset(0 0 0 50%);
       }
-      .stub-top::after {
+      .stub-cal::after {
         right: calc(-1 * var(--notch) - 1.5px);
         clip-path: inset(0 50% 0 0);
       }
@@ -387,19 +379,14 @@ const organizer = event.organizer
     /* ---------- phones: one field per line ---------- */
     @media (max-width: 30rem) {
       .ticket {
+        --cell: 0.85rem 1rem;
         grid-template-columns: minmax(0, 1fr);
-      }
-      .field {
-        padding: 0.85rem 1rem;
       }
       .field:nth-child(odd) {
         border-right: 0;
       }
       .field:nth-child(n + 2) {
         border-top: 1px solid var(--color-border);
-      }
-      .stub {
-        padding: 1rem;
       }
       .ev-title {
         font-size: 2.75rem;

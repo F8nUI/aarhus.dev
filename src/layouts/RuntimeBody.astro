@@ -14,10 +14,12 @@ const script = `(function (whenTags, relativeLabel) {
       label.textContent = relativeLabel(start, end, now)
     })
   })
-  // <span data-count="past"> → how many distinct events on the page are tagged "past"
+  // <span data-count="past"> → how many distinct events in its board are tagged "past"
+  // (the featured posters beside it show other topics' events too, so they don't count)
   document.querySelectorAll('[data-count]').forEach(function (counter) {
+    var scope = counter.closest('[data-scope]') || document
     var seen = {}
-    document.querySelectorAll('[data-id][data-when~="' + counter.dataset.count + '"]').forEach(function (el) {
+    scope.querySelectorAll('[data-id][data-when~="' + counter.dataset.count + '"]').forEach(function (el) {
       seen[el.dataset.id] = true
     })
     counter.textContent = Object.keys(seen).length

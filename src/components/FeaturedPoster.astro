@@ -99,26 +99,28 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
           {
             venue ? (
               <>
-                <span class="sp-venue">{venue.title}</span>
+                <span class="sp-name">{venue.title}</span>
                 <a class="sp-address" href={mapUrl(event)}>
                   {venue.address}
                 </a>
               </>
             ) : (
-              <span class="sp-venue">Venue TBA</span>
+              <span class="sp-name">Venue TBA</span>
             )
           }
         </dd>
       </div>
       <div>
         <dt>Organizer</dt>
-        <dd><a href={`/organizer/${event.organizer.id}`}>{event.organizer.data.name}</a></dd>
+        <dd><a class="sp-name" href={`/organizer/${event.organizer.id}`}>{event.organizer.data.name}</a></dd>
       </div>
     </dl>
 
     <p class="sp-actions">
-      <a class="sp-signup" href={learnMoreURL}>Sign up&nbsp;→</a>
-      <span class="sp-host">on {linkHost(learnMoreURL)}</span>
+      <a class="sp-signup" href={learnMoreURL}>
+        <span>Sign up&nbsp;→</span>
+        <span class="sp-host">on {linkHost(learnMoreURL)}</span>
+      </a>
     </p>
   </div>
 </article>
@@ -136,6 +138,7 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       /* one face, three sizes: labels (small capitals), text, and the big title and date */
       --sp-label: 0.8125rem;
       --sp-text: 1.125rem;
+      /* and two weights: bold for labels, names and the button; regular for the address and caption */
       container-type: inline-size;
       display: flex;
       flex-direction: column;
@@ -344,7 +347,7 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       display: grid;
       gap: 0.6rem;
       font-size: var(--sp-text);
-      font-weight: 600;
+      font-weight: 400;
       line-height: 1.2;
     }
     .sp-facts > div {
@@ -352,35 +355,33 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       grid-template-columns: 5.25rem minmax(0, 1fr);
       align-items: baseline;
     }
+    /* the labels: the values' size, sentence case, regular and faded */
     .sp-facts dt {
-      font-size: var(--sp-label);
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      opacity: 0.8;
+      font-weight: 400;
+      opacity: 0.75;
     }
     .sp-facts dd {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
     }
-    .sp-venue {
+    /* names bold, the address regular */
+    .sp-name {
       font-weight: 800;
     }
 
     .sp-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
       align-self: end;
     }
-    /* where the button goes, under it: label-sized, quieter than the button */
+    /* where the button goes: its second line, smaller, regular and faded */
     .sp-host {
+      display: block;
+      margin-top: 0.15rem;
       font-size: var(--sp-label);
-      font-weight: 600;
+      font-weight: 400;
       line-height: 1.3;
       overflow-wrap: anywhere;
-      opacity: 0.85;
+      opacity: 0.75;
     }
     .sp .sp-signup {
       display: block;

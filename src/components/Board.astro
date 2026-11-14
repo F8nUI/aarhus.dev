@@ -5,9 +5,10 @@
 // Every event is rendered into each bucket it could fall in; the runtime tags each
 // row with data-when on every visit and the bucket CSS shows it in the right place.
 //
-// Highlighted events still to come sit beside the board as featured posters (above it
-// on narrow screens). Styles: src/styles/board.css.
-import type { ADEvent } from '@lib/event'
+// Highlighted events still to come, from every topic, sit beside the board as featured
+// posters (above it on narrow screens), on every list page alike: home, topics, past.
+// Styles: src/styles/board.css.
+import { getEvents, type ADEvent } from '@lib/event'
 import { eventAttrs, featuredEvents, groupBy, monthTitle } from '@lib/format'
 import { topicName } from '@lib/topics'
 import Featured from './Featured.astro'
@@ -27,7 +28,7 @@ const buildTime = Date.now()
 const live = events.filter((e) => e.end.valueOf() >= buildTime)
 const ended = events.filter((e) => e.end.valueOf() < buildTime)
 
-const featured = past ? [] : featuredEvents(events)
+const featured = featuredEvents(await getEvents())
 
 const name = topic ? topicName(topic) : undefined
 const pastHref = topic ? `/past/${topic}` : '/past'
@@ -38,9 +39,23 @@ const archiveMonths = groupBy([...events].reverse(), (e) => monthTitle(e.start))
 ---
 
 <div class="tt">
+  <div class:list={['tt-layout', { beside: featured.length > 0 }]}>
+    {
+      featured.length > 0 && (
+        <div class="heads">
+          <Featured events={featured} />
+        </div>
+      )
+    }
   {
     past ? (
-      <div class="tt-board">
+      <div class="tt-board" data-scope>
+        <div class="archive-head">
+          <h2 class="archive-title">{name ? `Past ${name} events` : 'Past events'}</h2>
+          <a class="archive-back" href={upcomingHref}>
+            Upcoming {name ? `${name} ` : ''}events&nbsp;→
+          </a>
+        </div>
         <div class="cols" aria-hidden="true">
           <span class="when"><span>Day</span><span>Time</span></span>
           <span class="col-topic">Topic</span>
@@ -66,14 +81,7 @@ const archiveMonths = groupBy([...events].reverse(), (e) => monthTitle(e.start))
         </div>
       </div>
     ) : (
-      <div class:list={['tt-layout', { beside: featured.length > 0 }]}>
-        {featured.length > 0 && (
-          <div class="heads">
-            <Featured events={featured} />
-          </div>
-        )}
-
-        <div class="tt-board">
+        <div class="tt-board" data-scope>
           <div class="cols" aria-hidden="true">
             <span class="when"><span>Day</span><span>Time</span></span>
             <span class="col-topic">Topic</span>
@@ -153,7 +161,7 @@ const archiveMonths = groupBy([...events].reverse(), (e) => monthTitle(e.start))
             ))}
           </div>
         </div>
-      </div>
     )
   }
+  </div>
 </div>

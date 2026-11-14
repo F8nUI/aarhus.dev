@@ -8,15 +8,15 @@
 //
 // Sections: `<section data-bucket="today">` shows only the items tagged "today" (see
 // src/lib/when.ts), hides any `[data-group]` inside it with no such item, and hides
-// itself when empty. `[data-empty="upcoming"]` shows only while the page has no item
-// tagged "upcoming".
+// itself when empty. `[data-empty="upcoming"]` shows only while its `[data-scope]` (the
+// board, not the featured posters beside it) has no item tagged "upcoming".
 const TAGS = ['past', 'upcoming', 'now', 'today', 'soon', 'tomorrow', 'week', 'nextweek', 'later']
 const bucketCss = TAGS.map(
   (t) => `
 [data-bucket="${t}"] [data-start]:not([data-when~="${t}"]),
 [data-bucket="${t}"] [data-group]:not(:has([data-when~="${t}"])),
 [data-bucket="${t}"]:not(:has([data-when~="${t}"])),
-body:has([data-when~="${t}"]) [data-empty="${t}"] { display: none !important; }`,
+[data-scope]:has([data-when~="${t}"]) [data-empty="${t}"] { display: none !important; }`,
 ).join('')
 ---
 
