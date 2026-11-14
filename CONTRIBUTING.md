@@ -26,7 +26,7 @@ How it fits together:
 - `src/lib/topics.ts` — per topic folder: display name, color, and optionally what to call its events ("dev conferences"), with Danish versions under `da` where they differ.
 - `src/lib/i18n.ts` — the site in English (`/…`) and Danish (`/da/…`): every piece of interface text in both. Add new text to both languages; the About and Add event texts have Danish versions in `src/content/da/` to keep in step.
 - `src/components/Board.astro` — the event lists: today, tomorrow, this week, next week, then a section per month, with highlighted events as posters beside them (`Featured.astro`). The build renders the rows; a small script sorts them into the right section by the visitor's clock (`src/layouts/RuntimeBody.astro`), so the lists stay right between deploys.
-- `src/components/EventPage.astro` — an event's page: the event's poster laid out wide, with the sign-up and add-to-calendar buttons in it, then its description.
+- `src/components/EventPage.astro` — an event's page: the event's poster laid out wide, with the sign-up and add-to-calendar links in it, then its description.
 
 ## Code style
 

@@ -1,7 +1,7 @@
 ---
 // Add to calendar: the event as an .ics file (Apple Calendar, Outlook and the rest), and
-// Google Calendar. White buttons in one row under the poster's sign-up button (the
-// event page puts them in FeaturedPoster's `actions` slot); gone once the event is over.
+// Google Calendar. Text links in a row under the poster's sign-up link (the event page
+// puts them in FeaturedPoster's `actions` slot); gone once the event is over.
 import { langOf, t } from '@lib/i18n'
 import type { EventFacts } from './facts'
 
@@ -20,33 +20,24 @@ const w = t(langOf(Astro.url))
 
 <style is:global>
   .site {
+    /* small text links in a row under the sign-up link, in the poster's ink */
     .cal-links {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.5rem;
-      margin-top: 0.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 1.5rem;
+      margin-top: 0.9rem;
     }
-    /* like the sign-up button above them, a size smaller (.sp: over the poster's own link color) */
     .sp .cal-links a {
-      padding: 0.6rem 1rem;
-      background: var(--p-on);
-      color: var(--p);
       font-size: var(--sp-label);
       font-weight: 800;
       line-height: 1.25;
-      text-decoration: none;
+      text-underline-offset: 0.2em;
     }
     .sp .cal-links a:hover {
-      color: var(--p);
-      text-decoration: underline;
+      text-decoration-thickness: 2px;
     }
     .sp[data-when~='past'] .cal-links {
       display: none;
-    }
-    @media (max-width: 40rem) {
-      .sp .cal-links a {
-        padding: 0.55rem 0.9rem;
-      }
     }
   }
 </style>

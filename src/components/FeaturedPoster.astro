@@ -2,7 +2,7 @@
 // One featured event as a portrait poster in its topic's color, in both themes: the
 // title stacked in the board's display face (it links to the event page), the date as
 // one big day number with weekday, month and time beside it, then place, organizer and
-// the sign-up button (on the event's page, the `actions` slot adds the calendar buttons
+// the sign-up link (on the event's page, the `actions` slot adds the calendar links
 // under it). Its top row says when ("in 6 days", "now · until 16:30");
 // Featured.astro stacks them beside the board and, with `nav`, puts the controls at
 // that row's right end.
@@ -131,9 +131,9 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
 
     <div class="sp-actions">
       <a class="sp-signup" href={learnMoreURL}>
-        <span class="sp-live">{w.signUp}&nbsp;→</span>
-        <span class="sp-past">{w.eventPage}&nbsp;→</span>
-        <span class="sp-host">{w.onHost(linkHost(learnMoreURL))}</span>
+        <span class="sp-go"><span class="sp-live">{w.signUp}</span><span class="sp-past">{w.eventPage}</span></span> <span
+          class="sp-host">{w.onHost(linkHost(learnMoreURL))}</span
+        ><svg class="sp-arrow" viewBox="0 0 24 18" aria-hidden="true"><path d="M2 9h18.5M14 2.5 20.5 9 14 15.5" /></svg>
       </a>
       <slot name="actions" />
     </div>
@@ -273,7 +273,9 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       flex: 1;
       display: grid;
       grid-template-columns: minmax(0, 1fr);
-      grid-template-rows: auto auto auto 1fr;
+      /* the title's row takes any spare height (the posters in a stack share the tallest
+         one's), so date, place, organizer and button sit at the same spot on each */
+      grid-template-rows: 1fr auto auto auto;
       gap: 1.1rem;
       /* the bottom matches the sides */
       padding: 1rem var(--pad-x) var(--pad-x);
@@ -391,26 +393,61 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
     .sp-actions {
       align-self: end;
     }
-    /* where the button goes: its second line, smaller, regular and faded */
-    .sp-host {
-      display: block;
-      margin-top: 0.15rem;
-      font-size: var(--sp-label);
-      font-weight: 400;
-      line-height: 1.3;
-      overflow-wrap: anywhere;
-      opacity: 0.75;
-    }
+    /*
+     * The sign-up: a large text link on the poster's own color, on the text edge.
+     * "Sign up" underlined, an arrow, and where it goes on a second line, smaller,
+     * regular and faded.
+     */
     .sp .sp-signup {
-      display: block;
-      padding: 0.75rem 1rem;
-      background: var(--p-on);
-      color: var(--p);
-      font-size: var(--sp-text);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      column-gap: 0.3em;
+      font-size: calc(var(--sp-text) * 1.4);
       font-weight: 800;
       line-height: 1.2;
       text-decoration: none;
       overflow-wrap: anywhere;
+    }
+    .sp-go {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 0.16em;
+    }
+    .sp .sp-signup:hover .sp-go {
+      text-decoration-thickness: 3px;
+    }
+    /*
+     * The arrow, drawn rather than the font's thin "→": a stroke as heavy as the bold
+     * letters, sitting on the baseline (an SVG's baseline is its bottom edge) and
+     * centred on the lowercase letters.
+     */
+    .sp-arrow {
+      order: 1;
+      flex: none;
+      width: 0.8em;
+      height: 0.6em;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 3;
+      stroke-linejoin: miter;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .sp-arrow {
+        transition: translate 0.15s;
+      }
+      .sp .sp-signup:hover .sp-arrow {
+        translate: 0.15em 0;
+      }
+    }
+    .sp-host {
+      order: 2;
+      flex-basis: 100%;
+      margin-top: 0.3rem;
+      font-size: var(--sp-label);
+      font-weight: 400;
+      line-height: 1.3;
+      opacity: 0.75;
     }
     /* an event that has ended (on its own page): the button points to the organizer's page */
     .sp-past,
@@ -421,8 +458,7 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       display: inline;
     }
     .sp .sp-signup:hover {
-      color: var(--p);
-      text-decoration: underline;
+      color: inherit;
     }
 
     /* ---------- above the board, laid out wide ---------- */
@@ -432,7 +468,7 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       }
       .sp-body {
         grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-        grid-template-rows: auto auto 1fr;
+        grid-template-rows: 1fr auto auto;
         column-gap: 2.5rem;
         padding: 1.5rem var(--pad-x) var(--pad-x);
       }
@@ -484,7 +520,6 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
         padding-block: 0.35rem 0.25rem;
       }
       .sp-body {
-        grid-template-rows: auto auto auto 1fr;
         gap: 0.9rem;
         padding: 0.85rem var(--pad-x) var(--pad-x);
       }
@@ -525,9 +560,6 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       /* on the event's own page the address stays */
       .sp.is-page .sp-address {
         display: block;
-      }
-      .sp .sp-signup {
-        padding: 0.65rem 0.9rem;
       }
     }
   }

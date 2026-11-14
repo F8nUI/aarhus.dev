@@ -46,6 +46,32 @@ const w = t(langOf(Astro.url))
             slide.querySelector('[data-fx-count]').textContent = k + 1 + ' / ' + live.length
             slide.querySelector('[data-fx-nav]').hidden = false
           })
+          // Every poster's place-and-organizer block and button as tall as the tallest
+          // one's: with the title's row taking the spare height, the date, place,
+          // organizer and button then sit at the same height on each. Again whenever
+          // the stack changes size (a new width rewraps an address).
+          var level = function () {
+            ;['.sp-facts', '.sp-actions'].forEach(function (part) {
+              var blocks = live.map(function (slide) {
+                return slide.querySelector(part)
+              })
+              blocks.forEach(function (block) {
+                block.style.minHeight = ''
+              })
+              var tallest = Math.max.apply(
+                null,
+                blocks.map(function (block) {
+                  // exact, not offsetHeight's whole pixels, or they can differ by one
+                  return block.getBoundingClientRect().height
+                }),
+              )
+              blocks.forEach(function (block) {
+                block.style.minHeight = tallest + 'px'
+              })
+            })
+          }
+          level()
+          if (window.ResizeObserver) new ResizeObserver(level).observe(region)
           var controls = ['data-fx-prev', 'data-fx-next', 'data-fx-toggle']
           var at = 0
           var KEY = 'aarhus-featured'
