@@ -3,7 +3,7 @@
  * the today board, sections. Loaded on every page by Layout.astro.
  */
 .site {
-  /* --hang (in Shell.astro): how far backgrounds hang outside the text edge. */
+  /* --hang (in site.css): how far backgrounds hang outside the text edge. */
   /* Space between the big blocks: head event, today, this week, next week, later. */
   --gap: 2.5rem;
 
@@ -15,6 +15,12 @@
   /* ---------- featured events: hidden once none of them is still to come ---------- */
   .heads {
     margin-bottom: var(--gap);
+  }
+  /* stacked above the board, they start right at the header's rule */
+  @media (width < 64rem) {
+    .heads {
+      margin-top: calc(-1 * var(--page-top));
+    }
   }
   .heads > [data-when~='past'],
   .heads > [data-when~='upcoming'] ~ [data-when~='upcoming'],

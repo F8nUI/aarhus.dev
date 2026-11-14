@@ -4,7 +4,7 @@
  *
  * Two left edges. Every piece of text starts on the text edge. Every rule, row line
  * and box (the header's rule, section rules, a hovered row, the featured posters, the
- * event ticket) starts --hang further out, on the outer edge, and pads its text back
+ * event page's poster) starts --hang further out, on the outer edge, and pads its text back
  * in by the same amount. On phones the outer edge is the screen's.
  */
 .site {
@@ -121,7 +121,7 @@
     color: var(--color-text);
     background: var(--color-bg-subtle);
   }
-  /* the theme switch, at the end of the footer's links */
+  /* the theme switch, at the footer's top right */
   .toggle {
     display: inline-grid;
     place-items: center;
@@ -139,11 +139,13 @@
 
   /* the topics: the current one bold and underlined; pointing at another underlines it lightly */
   .lines {
+    margin: 1rem 0 0.75rem;
+    font-size: 0.75rem;
+  }
+  .lines-list {
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem 1.25rem;
-    margin: 1rem 0 0.75rem;
-    font-size: 0.75rem;
   }
   .lines a {
     display: inline-flex;
@@ -187,48 +189,88 @@
     border-radius: 50%;
     background: var(--dot);
   }
+  /* the switch that opens the folded topics on phones (see there); not needed elsewhere */
+  .lines-toggle {
+    display: none;
+    flex: none;
+    align-items: center;
+    gap: 0.75ch;
+    padding-block: 0.2rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+  }
+  .lines-toggle:hover {
+    color: var(--color-text);
+  }
+  .lines-toggle[aria-expanded='true'] svg {
+    rotate: 180deg;
+  }
 
   /* ---------- page ---------- */
   .page {
+    /* the space under the header; the featured posters, stacked on top, close it (board.css) */
+    --page-top: 2rem;
     flex: 1;
-    padding-block: 2rem 4rem;
+    padding-block: var(--page-top) 4rem;
   }
 
   /* ---------- footer ---------- */
+  /* what the site is, with the theme switch at its right end; under it (beside it on
+     wider screens) the links in two groups */
   .foot {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.75rem 2rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 1.5rem 3rem;
     margin-inline: calc(-1 * var(--hang));
     padding: 1.25rem var(--hang) 2rem;
     border-top: 2px solid var(--ink);
     font-size: 0.8125rem;
     color: var(--color-text-muted);
   }
+  .foot-about {
+    max-width: 44ch;
+  }
   .foot .mark {
     font-size: inherit;
     color: var(--color-text);
   }
+  .foot .theme-toggle {
+    grid-column: 2;
+    grid-row: 1;
+  }
   .foot-links {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, max-content));
+    gap: 1rem 4ch;
+  }
+  .foot-group {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.25rem 1.75ch;
+    flex-direction: column;
+    align-items: start;
+    gap: 0.3rem;
   }
-  .foot-feed {
-    display: inline-flex;
-    gap: 0.5ch;
-  }
-  .foot-feed a + a {
-    text-decoration: none;
+  .foot-label {
+    margin-bottom: 0.1rem;
   }
   .foot-links a {
     color: var(--color-text);
   }
   .foot-links a:hover {
     color: var(--accent-text);
+  }
+  @media (min-width: 48rem) {
+    .foot {
+      grid-template-columns: minmax(0, 1fr) auto auto;
+    }
+    .foot-links {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .foot .theme-toggle {
+      grid-column: 3;
+    }
   }
 
   /* ---------- text pages: about, add event, organizers (TextPage.astro) ---------- */
@@ -385,7 +427,35 @@
       margin-top: 0.75rem;
     }
     .page {
-      padding-block: 1.5rem 3rem;
+      --page-top: 1.5rem;
+      padding-bottom: 3rem;
+    }
+
+    /*
+     * The topics fold into one line: the current one, and at the right end a "Topics"
+     * switch that opens the rest (RuntimeBody). On a page with no current topic, just
+     * the switch. Only when scripts run (RuntimeHead marks the root .js), since the
+     * switch needs them; without, all the topics show.
+     */
+    .js & {
+      .lines {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.25rem;
+      }
+      .lines-list {
+        flex: 1;
+        min-width: 0;
+      }
+      .lines-toggle {
+        display: inline-flex;
+      }
+      .lines:has([aria-expanded='false']) a:not([aria-current]) {
+        display: none;
+      }
+      .lines:not(:has([aria-current])):has([aria-expanded='false']) .lines-list {
+        display: none;
+      }
     }
   }
 }

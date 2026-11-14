@@ -1,7 +1,9 @@
 ---
 // Every page: the document, the header (the logo, the page's title, subscribe and
-// add-event icons, the topics), the page, and the footer (with the theme switch). Styles: src/styles/global.css (tokens), site.css (this frame,
-// text pages, prose) and board.css (the event lists).
+// add-event icons, the topics, which fold behind a "Topics" switch on phones), the page,
+// and the footer (what the site is, its links in two groups, the theme switch). Styles:
+// src/styles/global.css (tokens), site.css (this frame, text pages, prose) and
+// board.css (the event lists).
 import '../styles/global.css'
 import '../styles/site.css'
 import '../styles/board.css'
@@ -80,17 +82,25 @@ const onAllList = !topic && /^\/(past\/?)?$/.test(Astro.url.pathname)
           </span>
         </div>
         <nav class="lines" aria-label="Topics">
-          <a href="/" aria-current={onAllList ? 'true' : undefined} data-ends={ends().join(' ')}>
-            <span class="topic-label">All topics</span> <span class="count" data-upcoming>({ends().length})</span>
-          </a>
-          {
-            topics.map((t) => (
-              <a href={`/${t}`} aria-current={t === topic ? 'true' : undefined} data-ends={ends(t).join(' ')}>
-                <span class="dot" style={`--dot: ${topicColor(t)}`} aria-hidden="true" />
-                <span class="topic-label">{topicName(t)}</span> <span class="count" data-upcoming>({ends(t).length})</span>
-              </a>
-            ))
-          }
+          <div class="lines-list" id="topic-list">
+            <a href="/" aria-current={onAllList ? 'true' : undefined} data-ends={ends().join(' ')}>
+              <span class="topic-label">All topics</span> <span class="count" data-upcoming>({ends().length})</span>
+            </a>
+            {
+              topics.map((t) => (
+                <a href={`/${t}`} aria-current={t === topic ? 'true' : undefined} data-ends={ends(t).join(' ')}>
+                  <span class="dot" style={`--dot: ${topicColor(t)}`} aria-hidden="true" />
+                  <span class="topic-label">{topicName(t)}</span> <span class="count" data-upcoming>({ends(t).length})</span>
+                </a>
+              ))
+            }
+          </div>
+          <button class="lines-toggle" type="button" aria-expanded="false" aria-controls="topic-list">
+            Topics
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
+              <path d="M4 8l8 8 8-8"></path>
+            </svg>
+          </button>
         </nav>
       </header>
 
@@ -103,24 +113,28 @@ const onAllList = !topic && /^\/(past\/?)?$/.test(Astro.url.pathname)
           <a class="mark" href="/">aarhus.dev</a> is a community timetable of tech events in Aarhus, Denmark.
         </p>
         <nav class="foot-links" aria-label="Site">
-          <a href="/about">About</a>
-          <a href="/add-event">Add event</a>
-          <a href="https://github.com/f8nui/aarhus.dev">GitHub</a>
-          <span class="foot-feed">
-            <a href={calendarFeed.webcal}>Subscribe</a>
-            <a href={calendarFeed.https} title="The calendar feed's web address, for apps that ask for a URL">(.ics)</a>
-          </span>
-          <a href="/rss.xml" title="Every upcoming event, for your feed reader">RSS</a>
-          <button class="theme-toggle toggle" type="button" aria-label="Switch between light and dark">
-            <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true">
-              <circle cx="12" cy="12" r="4.5"></circle>
-              <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"></path>
-            </svg>
-            <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-          </button>
+          <div class="foot-group">
+            <span class="foot-label">Site</span>
+            <a href="/about">About</a>
+            <a href="/add-event">Add event</a>
+            <a href="https://github.com/f8nui/aarhus.dev">GitHub</a>
+          </div>
+          <div class="foot-group">
+            <span class="foot-label">Follow</span>
+            <a href={calendarFeed.webcal}>Subscribe to calendar</a>
+            <a href={calendarFeed.https} title="The calendar feed's web address, for apps that ask for a URL">Calendar URL (.ics)</a>
+            <a href="/rss.xml" title="Every upcoming event, for your feed reader">RSS feed</a>
+          </div>
         </nav>
+        <button class="theme-toggle toggle" type="button" aria-label="Switch between light and dark">
+          <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true">
+            <circle cx="12" cy="12" r="4.5"></circle>
+            <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"></path>
+          </svg>
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
       </footer>
     </div>
     <RuntimeBody />

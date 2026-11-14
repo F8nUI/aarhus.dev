@@ -2,7 +2,8 @@
 // One featured event as a portrait poster in its topic's color, in both themes: the
 // title stacked in the board's display face (it links to the event page), the date as
 // one big day number with weekday, month and time beside it, then place, organizer and
-// the sign-up button. Its top row says when ("in 6 days", "now · until 16:30");
+// the sign-up button (on the event's page, the `actions` slot adds the calendar buttons
+// under it). Its top row says when ("in 6 days", "now · until 16:30");
 // Featured.astro stacks them beside the board and, with `nav`, puts the controls at
 // that row's right end.
 // Above the board (narrow screens) it's laid out wide; on phones it's compact.
@@ -118,13 +119,14 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       </div>
     </dl>
 
-    <p class="sp-actions">
+    <div class="sp-actions">
       <a class="sp-signup" href={learnMoreURL}>
         <span class="sp-live">Sign up&nbsp;→</span>
         <span class="sp-past">Event page&nbsp;→</span>
         <span class="sp-host">on {linkHost(learnMoreURL)}</span>
       </a>
-    </p>
+      <slot name="actions" />
+    </div>
   </div>
 </article>
 

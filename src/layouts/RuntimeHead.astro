@@ -1,6 +1,7 @@
 ---
-// Runs before anything is painted: sets the theme, sets up the clock, and holds the
-// CSS that filters event items into the board's sections.
+// Runs before anything is painted: sets the theme, marks the root `.js` (for what only
+// works with scripts: the topics fold behind a switch on phones), sets up the clock, and
+// holds the CSS that filters event items into the board's sections.
 //
 // The clock is the real time, unless the URL says `?now=2026-11-19T17:30` (Aarhus
 // time, for checking the "now" and "today" states): that sticks for the rest of the
@@ -36,6 +37,7 @@ const bucketCss = TAGS.map(
       } catch (e) {}
     }
     var root = document.documentElement
+    root.classList.add('js')
 
     var theme = read('localStorage', 'theme')
     if (theme === 'dark' || theme === 'light') root.dataset.theme = theme

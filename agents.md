@@ -27,14 +27,14 @@ src/
 │   ├── Status.astro           # a row's status: NOW, TONIGHT, IN 6 DAYS
 │   ├── Featured.astro         # highlighted events beside the board, one at a time: controls, timer, swipe
 │   ├── FeaturedPoster.astro   # an event as a poster in its topic's color (also the event page's head)
-│   ├── EventPage.astro        # an event page: its poster laid out wide, calendar links, description
-│   ├── event/                 # the event page's small parts: calendar links, the edit line
+│   ├── EventPage.astro        # an event page: its poster laid out wide (sign-up and calendar buttons in it), description
+│   ├── event/                 # the event page's small parts: calendar buttons, the edit line
 │   ├── OrganizerEvents.astro  # an organizer's events, coming up and past
 │   └── TextPage.astro         # about, add event, organizer text
 ├── layouts/
-│   ├── Layout.astro           # every page: head, header (logo, page title, subscribe + add-event icons, topics), footer (links, theme switch)
-│   ├── RuntimeHead.astro      # before paint: theme, the clock (?now=), the section CSS
-│   └── RuntimeBody.astro      # after parsing: tags events for the visitor's clock, counts, theme switch
+│   ├── Layout.astro           # every page: head, header (logo, page title, subscribe + add-event icons, topics), footer (about line, two link groups, theme switch)
+│   ├── RuntimeHead.astro      # before paint: theme, the root's .js class, the clock (?now=), the section CSS
+│   └── RuntimeBody.astro      # after parsing: tags events for the visitor's clock, counts, the phone topic switch, theme switch
 ├── lib/
 │   ├── event.ts               # getEvents, getTopics, date formatting (Europe/Copenhagen)
 │   ├── topics.ts              # per topic folder: display name, color (white text on it), what to call its events
@@ -68,13 +68,13 @@ What's past, today or next week depends on when someone looks, so the browser de
 - The CSS in `RuntimeHead.astro` shows an item only in the section whose `data-bucket` matches its tags, and hides sections left empty. `data-empty="upcoming"` shows only while nothing in its `data-scope` (the board, not the featured posters beside it) is upcoming; `data-count` counts within its `data-scope` too. Tomorrow has its own section, so `board.css` keeps it out of this week and next week.
 - Without JavaScript the page shows the state at build time.
 
-**Featured events.** Every event with `highlight: true` that hasn't ended, from every topic, is drawn as a poster (`Featured.astro`), soonest first, on every list page (home, topics, past), beside the board on wide screens and above it on narrow ones. They take turns every 7 seconds; hovering, keyboard focus or the pause button holds them, and with reduced motion they only change when asked. Moving between pages, the carousel carries on where it was (poster, timer, pause), kept in `sessionStorage` for the tab's visit.
+**Featured events.** Every event with `highlight: true` that hasn't ended, from every topic, is drawn as a poster (`Featured.astro`), soonest first, on every list page (home, topics, past), beside the board on wide screens and above it on narrow ones, where they start right at the header's rule. They take turns every 7 seconds; hovering, keyboard focus or the pause button holds them, and with reduced motion they only change when asked. Moving between pages, the carousel carries on where it was (poster, timer, pause), kept in `sessionStorage` for the tab's visit.
 
-**Topic counts.** Each topic link in the header shows how many of its events are still to come, "(3)", and a topic with none is dimmed. The links carry their events' end times (`data-ends`) and `RuntimeBody` counts them on every visit.
+**Topic counts.** Each topic link in the header shows how many of its events are still to come, "(3)", and a topic with none is dimmed. The links carry their events' end times (`data-ends`) and `RuntimeBody` counts them on every visit. On phones the topics fold into one line: the current topic, and a "Topics" switch that opens the rest. The fold needs scripts (RuntimeHead marks the root `.js`), so without them every topic shows.
 
 **Checking a moment.** `?now=2026-11-19T17:30` (Aarhus time) makes the site pretend it's then, for the rest of the tab's visit; `?now=` goes back to the real time.
 
-**Layout.** Two left edges. Every piece of text starts on the text edge; every rule, row line and box (the header's rule, section rules, a hovered row, the posters, the event ticket) starts `--hang` further out and pads its text back in, so text and lines each share one edge. On phones the outer edge is the screen's. The current topic is underlined rather than boxed. The board lays out its rows by its own width (a container query), so they fold the same beside a poster as on a narrow screen.
+**Layout.** Two left edges. Every piece of text starts on the text edge; every rule, row line and box (the header's rule, section rules, a hovered row, the posters, the event page's poster) starts `--hang` further out and pads its text back in, so text and lines each share one edge. On phones the outer edge is the screen's. The current topic is underlined rather than boxed. The board lays out its rows by its own width (a container query), so they fold the same beside a poster as on a narrow screen.
 
 ## Routing
 

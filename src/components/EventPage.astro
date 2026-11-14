@@ -1,7 +1,8 @@
 ---
 // An event's page: the event's poster laid out wide across the page in its topic's
-// color (title, date, where, who, sign-up), a note once it has ended, the calendar
-// links, the description, and where to fix it. The header's topic row marks its topic.
+// color (title, date, where, who, sign-up, and the add-to-calendar buttons under it), a
+// note once it has ended, the description, and where to fix it. The header's topic row
+// marks its topic.
 import type { ADEvent } from '@lib/event'
 import { eventAttrs } from '@lib/format'
 import CalendarLinks from './event/CalendarLinks.astro'
@@ -19,10 +20,11 @@ const f = eventFacts(event)
 
 <article class="ev" {...eventAttrs(event)}>
   <div class="ev-band">
-    <FeaturedPoster event={event} page />
+    <FeaturedPoster event={event} page>
+      <CalendarLinks facts={f} slot="actions" />
+    </FeaturedPoster>
   </div>
   <p class="ev-ended">This event has ended.</p>
-  <CalendarLinks facts={f} />
   <div class="prose ev-body">
     <slot />
   </div>
@@ -33,6 +35,12 @@ const f = eventFacts(event)
   .site {
     .ev-band {
       margin-inline: calc(-1 * var(--hang));
+    }
+    /* below desktop width it starts right at the header's rule, like the featured posters */
+    @media (width < 64rem) {
+      .ev-band {
+        margin-top: calc(-1 * var(--page-top));
+      }
     }
     .ev-ended {
       display: none;
@@ -46,9 +54,6 @@ const f = eventFacts(event)
     }
     .ev[data-when~='past'] .ev-ended {
       display: block;
-    }
-    .ev .cal-links {
-      margin-top: 1rem;
     }
     .ev-body {
       margin-top: 2.5rem;

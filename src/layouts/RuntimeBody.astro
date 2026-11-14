@@ -1,7 +1,7 @@
 ---
 // Runs once the page is parsed: re-tags every event item for the current
 // (or overridden) time, keeps relative labels and counts current, keeps --head-h
-// at the header's height, and wires every `.theme-toggle` button.
+// at the header's height, and wires the topics' switch and every `.theme-toggle` button.
 import { relativeLabel, whenTags } from '@lib/when'
 
 const script = `(function (whenTags, relativeLabel) {
@@ -45,6 +45,14 @@ const script = `(function (whenTags, relativeLabel) {
     setHeadHeight()
     if (window.ResizeObserver) new ResizeObserver(setHeadHeight).observe(head)
   }
+
+  // phones: the "Topics" switch opens and closes the folded topic list (site.css)
+  document.querySelectorAll('.lines-toggle').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var open = button.getAttribute('aria-expanded') === 'true'
+      button.setAttribute('aria-expanded', open ? 'false' : 'true')
+    })
+  })
 
   document.addEventListener('click', function (e) {
     var button = e.target.closest && e.target.closest('.theme-toggle')
