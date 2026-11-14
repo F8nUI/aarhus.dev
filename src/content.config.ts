@@ -34,6 +34,8 @@ const events = defineCollection({
       })
       .optional(),
     learnMoreURL: z.url(),
+    // Feature the event at the top of the list until it has ended.
+    highlight: z.boolean().optional(),
   }),
 })
 

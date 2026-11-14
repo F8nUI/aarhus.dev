@@ -8,6 +8,7 @@ venue:
   title: 'Savværket'
   address: 'Søren Nymarks Vej 8A, 8270 Højbjerg'
 learnMoreURL: https://techhubaarhus.ticketbutler.io/e/tech-hub-aarhus-day-2027/
+highlight: true
 ---
 
 Tech Hub Aarhus's flagship conference returns for its second edition. Businesses, tech communities, students and thought leaders meet for a day of new connections, fresh insights and ideas.

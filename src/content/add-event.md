@@ -68,6 +68,7 @@ Optional:
 - `endDate` — the last day of a multi-day event.
 - `startTime`, `endTime` — Aarhus local time, 24-hour: `18:00`. Leave out what isn't announced yet; the site shows "time TBA".
 - `venue` — `title` and `address`. Leave it out until it's announced; the site shows "venue TBA".
+- `highlight: true` — feature the event at the top of the list until it has ended. When several are coming up, the soonest one is shown.
 
 The folder is the event's topic: everything in `rust/` is listed at [aarhus.dev/rust](/rust). A new topic shows its folder name and a grey dot until it gets a display name and a color in [`src/lib/topics.ts`](https://github.com/f8nui/aarhus.dev/blob/main/src/lib/topics.ts).
 
