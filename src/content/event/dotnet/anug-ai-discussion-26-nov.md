@@ -12,8 +12,14 @@ learnMoreURL: https://www.meetup.com/anugdk/events/317010268/
 linkFor: signup
 ---
 
-This month's ANUG AI discussion meeting has no set topic — it is an Open Space, where the group chooses topics on the day.
+This months meeting have no specific topic but is instead Open Space where we choose topic on the day.
 
-The agenda: welcome and new participants, a round of news since last time, today's topic, and picking the topic for next month.
+Agenda:
+- Welcome
+- New participants?
+- Around the table (news since last time)
+- Today's Topic
+- Topic for next month?
 
-Primarily an in-person event, with remote participation available via MS Teams.
+Format:
+- This is primarily an on-premise meeting, but if someone wishes to participate remotely via MS Teams, will that be offered.

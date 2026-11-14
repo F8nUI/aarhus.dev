@@ -8,6 +8,19 @@ learnMoreURL: https://owaspaarhuschapter.ticketbutler.io/e/owasp-aarhus-chapter-
 linkFor: tickets
 ---
 
-The OWASP Aarhus chapter meets for an evening of application-security talks and networking.
+Join us for the first OWASP Aarhus chapter meeting of 2027. Speaker and topic to be announced.
 
-Host and talks to be announced. Registration is via the chapter's TicketButler page — OWASP retired Meetup in January 2026, so Meetup RSVPs do not transfer.
+⚠️ Registration closes before the event to allow for catering and visitor registration.
+
+**PROGRAM**
+
+- 19:00 - Welcome from OWASP Aarhus
+- 19:15 - Presentation (TBA)
+- 20:00 - Networking break with food and drinks
+- 20:30 - Discussion / Q&A
+- 21:30 - End
+
+**VENUE**
+TBA
+
+OWASP Aarhus hosts free meetups focusing on IT security, AppSec, and networking.

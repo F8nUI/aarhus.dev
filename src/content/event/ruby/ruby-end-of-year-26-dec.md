@@ -10,6 +10,8 @@ learnMoreURL: https://aarhus-ruby-meetup.com/
 highlight: true
 ---
 
-The last Aarhus Ruby Meetup of 2026 — wrap up the year with fellow Ruby enthusiasts in Aarhus.
+Our last meetup of 2026 — wrap up the year with fellow Ruby enthusiasts in Aarhus.
 
-Free and open to Ruby developers of all levels. RSVP on the website; if the door is closed, ping the organizers on Slack.
+Monthly meetups for Ruby developers of all levels. Free.
+
+Door closed? Ping Slack or Augustin on LinkedIn.

@@ -11,6 +11,8 @@ learnMoreURL: https://www.meetup.com/anugdk/events/314057081/
 linkFor: signup
 ---
 
-Casual Friday social for the Aarhus .NET community. Meet up to discuss technology, programming, and whatever else comes to mind over food and drinks.
+It's time for another ANUG Friday Beer Event 😀. Come and have a beer (or whatever you like) with us while we talk tech, nerd, and code.
 
-The format is free — join and leave when it suits you.
+(The format is free, so join/leave when it suits you)
+
+We meet @ Århus Streetfood

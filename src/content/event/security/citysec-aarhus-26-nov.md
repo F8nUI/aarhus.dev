@@ -9,8 +9,18 @@ venue:
 learnMoreURL: https://citysec.dk/
 ---
 
-An informal meetup for local security practitioners. No tickets, no talks, no agenda — just security people, drinks, and conversation.
+Informal meetups for like-minded security professionals. No sign-up needed.
 
-It starts at 16:00 with drinks and snacks; have dinner whenever it fits you. No sign-up needed.
+No tickets required. Just show up. We start at 16:00 with drinks and snacks. Dinner whenever it fits you.
 
-First time? Look for the group at the bar — and if you can't spot them, ask the bartender for "CitySec".
+CitySec is an unaffiliated meetup format where local security practitioners connect over practical conversations. Registration is not required. Show up, talk security, and enjoy the evening.
+
+**The CitySec format**
+
+- No membership, no dues, no cover charge.
+- No corporate sponsorship, no vendor pitches.
+- No recruiter pitches.
+- No RSVP, no agenda, no talks.
+- Publicly announced and open to all security practitioners.
+
+Just security people, drinks, and conversation. First time? Look for the group at the bar — and if you can't spot us, ask the bartender for "CitySec".

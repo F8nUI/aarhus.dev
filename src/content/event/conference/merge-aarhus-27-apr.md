@@ -6,8 +6,9 @@ learnMoreURL: https://merge-aarhus.dk/
 highlight: true
 ---
 
-One day where Aarhus tech communities come together under one roof. Organised by the communities, open to everyone, and completely free.
+One day where Aarhus tech communities come together under one roof.
+Organised by the communities, open to everyone, and completely free.
 
-Communities involved include Aarhus .NET User Group, Rust Aarhus, Claude Code Meetup Aarhus, Aarhus Ruby Meetup, Swift Developers Aarhus, Co-coders, CoderGirls Aarhus, Aarhus C++ User Group and OWASP Aarhus.
+With Aarhus communities like Aarhus .NET User Group, Aarhus C++ User Group, Aarhus Ruby Meetup, Claude Code Meetup Aarhus, Co-coders, CoderGirls Aarhus, OWASP Aarhus, Rust Aarhus and Swift Developers Aarhus.
 
-The organisers are still gauging interest before planning the day. Leave your name and email on the website to be counted and to hear when the programme and venue are announced.
+We're gauging interest before we plan the day. Leave your name and email so we know how many people might come. No commitment, no spam, we'll only email you about the event.

@@ -3,15 +3,15 @@ organizer: 'umbraco-dk-festival'
 title: "Umbraco DK Festival 2026"
 date: 2026-11-25
 startTime: 08:30
-endTime: 16:30
+endTime: 18:00
 venue:
   title: 'Tivoli Friheden'
   address: 'Skovbrynet 5, 8000 Aarhus'
 learnMoreURL: https://umbracodkfestival.dk/
 ---
 
-A full-day conference that brings the Danish Umbraco community together for a deep dive into everything new on the Umbraco platform. Aimed at developers who work with Umbraco day to day, or are about to.
+Umbraco DK Festival er en heldagskonference, der samler det danske Umbraco community til en dag med fokus på alt det nye inden for Umbraco.
 
-The programme opens with a community keynote from Umbraco HQ on where Umbraco goes from here, followed by talks on agentic loops and graphs, observability with .NET Aspire and OpenTelemetry, agent orchestration for Umbraco teams, and coding practices to lay to rest in 2027. The day ends with stand-up comedy and an afterhour with networking until 18:00.
+Vi er mere end 100 deltagere og dermed den største konference for det danske Umbraco community. Det er et fantastisk sted at opbygge og vedligeholde relationer, samtidig med at du bliver faglig klædt på i alt det nye inden for platformen.
 
-Organised by Twoday and Kraftvaerk in collaboration with Umbraco. Tickets cost 900 DKK (excl. VAT) via Eventbrite.
+Uanset om du er en af de mange, der har deltaget før, eller ny i verdens måske venligste fællesskab, så håber vi, at du har lyst til at være med!

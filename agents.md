@@ -61,6 +61,7 @@ src/
 Schema: `src/content.config.ts` (Zod, from `astro/zod`).
 
 - **Events**: `src/content/event/<topic>/<name>.md`. `startTime`, `endTime` and `venue` are optional — leave them out until announced; the site shows "TBA". Times are Aarhus local time, 24-hour. `highlight: true` features the event beside the board until it has ended. `linkFor` (`signup`, `tickets`, `info`) names the event page's link to `learnMoreURL` ("Sign up", "Get tickets", "Read more"; "Event page" without it).
+- **An event's description is the organizer's own text**, copied from their event page in the language they wrote it (Danish or English), not a summary or a translation; the title too. Only the Markdown changes, so it shows as it does there: Meetup's backslash escapes become plain characters, and a line break inside a paragraph ends with `\` (a single newline would join the lines). Both language versions of the site show it as written.
 - **Organizers**: `src/content/organizer/<id>.md`; events reference them by id.
 - **Pages**: `src/content/about.md`, `src/content/add-event.md`, and their Danish versions in `src/content/da/` (ids `da/about`, `da/add-event`). Change both languages together.
 

@@ -1,7 +1,7 @@
 ---
 organizer: 'anug'
-title: "AI Discussion Group"
-subtitle: "Meeting #9 — Mini Demos"
+title: "ANUG AI Diskussions gruppe"
+subtitle: "Møde #9 - Mini Demos"
 date: 2026-04-16
 startTime: 17:00
 endTime: 20:00
@@ -12,6 +12,14 @@ learnMoreURL: https://www.meetup.com/anugdk/events/313883705/
 linkFor: signup
 ---
 
-The ninth ANUG AI discussion meeting, this time with mini demos. The agenda includes a round-table discussion where members share recent developments, followed by attendees presenting brief 5-minute AI demos.
+Møde nummer 9!
 
-Primarily an in-person event, with remote participation available via MS Teams.
+Agenda:
+- Velkommen
+- Nye ansigter?
+- Bordet rundt (noget nyt siden sidst)
+- Dagen Emne: Alle deltagere skal medbringe små 5-min demoer af et eller andet cool AI
+- Næste måneds emne?
+
+Format:
+- Det er primært et on premise møde, men hvis nogen ønsker at deltage remote via MS Teams vil den mulighed blive tilbudt.

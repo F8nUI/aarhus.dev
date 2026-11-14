@@ -11,8 +11,12 @@ learnMoreURL: https://www.meetup.com/aarhus-ai/events/316564212/
 linkFor: signup
 ---
 
-Aarhus AI visits MFT Energy at their new office in Ceres Plaza for an evening about algo-trading and the world of energy trading.
+**Sign up via the link [here](https://techhubaarhus.ticketbutler.io/da/e/aarhus-ai-algo-trading-mft-energy/).**
 
-After the talk, MFT Energy provides a bite to eat — a chance to keep the conversation going and network with fellow AI, data and tech enthusiasts.
+At this Aarhus AI Meetup, we’re visiting MFT Energy at their new office for an evening about algo-trading and the world of energy trading.
 
-Registration is via Tech Hub Aarhus's TicketButler page, linked from the Meetup event.
+After the talk, MFT Energy will provide a bite to eat, giving us a chance to continue the conversation and network with fellow AI, data and tech enthusiasts.
+
+Location: MFT Energy, Ceresbyen 75, 8000 Aarhus C (Ceres Plaza)
+
+Come join us for an evening at MFT Energy and get a glimpse into the world of algo-trading.

@@ -12,8 +12,20 @@ linkFor: tickets
 highlight: true
 ---
 
-Tech Hub Aarhus's flagship conference returns for its second edition. Businesses, tech communities, students and thought leaders meet for a day of new connections, fresh insights and ideas.
+Following the success of our first edition, Tech Hub Aarhus Day returns on 11 March 2027 at Savværket.
 
-The first keynote speaker is Mads Torgersen, Principal Architect at Microsoft and lead designer of C#, who earned his master's degree and PhD at Aarhus University. More speakers to be announced.
+Registration is now open for our flagship conference.
 
-The day runs 8:30–17:00, followed by after drinks. See the ticket page for prices.
+Join businesses, tech communities, students and thought leaders for a day of new connections, fresh insights and ideas that challenge your thinking.
+
+**Keynote:** Mads Torgersen, Principal Architect at Microsoft and lead designer of C#
+
+Take part in keynotes and conversations – and experience the strength of a community that dares to collaborate.
+
+Whether you are a developer, engineer, entrepreneur, student, or decision-maker – or just curious about the future of technology and its local impact. Tech Hub Aarhus Day offers meaningful content, real connections, and shared inspiration across disciplines.
+
+Gain fresh insights from leading local businesses and industry voices shaping Aarhus’ tech future. Connect with professionals, students, and innovators who share a passion for building technology that matters.
+
+Ideas become stronger when they are shared. Tech Hub Aarhus Day creates space for both perspectives and people.
+
+Time: 8:30 – 17:00 + after drinks
