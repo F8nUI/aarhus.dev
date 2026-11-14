@@ -154,8 +154,8 @@ const organizer = event.organizer
 
     .ev-ended {
       display: none;
-      margin-top: 1.5rem;
-      padding: 0.6rem 0.9rem;
+      margin: 1.5rem calc(-1 * var(--hang)) 0;
+      padding: 0.6rem calc(var(--hang) - 1px);
       border: 1px solid var(--color-border);
       background: var(--color-bg-subtle);
       font-size: var(--ev-second);
@@ -169,12 +169,13 @@ const organizer = event.organizer
     .ticket {
       --notch: 0.75rem;
       --stub: 19rem;
-      /* every cell's padding: fields, calendar links, the sign-up cell */
-      --cell: 1rem 1.25rem;
+      /* every cell's padding: fields, calendar links, the sign-up cell. The ticket starts on
+         the outer edge and its cells pad back to the text edge (less its border). */
+      --cell: 1rem calc(var(--hang) - 1.5px);
       position: relative;
       display: grid;
       grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) var(--stub);
-      margin-top: 2rem;
+      margin: 2rem calc(-1 * var(--hang)) 0;
       background: var(--ticket-bg);
       border: 1.5px solid var(--ticket-edge);
     }
@@ -329,9 +330,9 @@ const organizer = event.organizer
       margin-top: 2.5rem;
     }
     .ev-edit {
-      max-width: 68ch;
-      margin-top: 2.5rem;
-      padding-top: 0.9rem;
+      max-width: calc(68ch + 2 * var(--hang));
+      margin: 2.5rem calc(-1 * var(--hang)) 0;
+      padding: 0.9rem var(--hang) 0;
       border-top: 1px solid var(--color-border);
       font-size: 0.8125rem;
       color: var(--color-text-muted);
@@ -376,10 +377,22 @@ const organizer = event.organizer
       }
     }
 
+    /* ---------- phones: edge to edge, so no side borders and no notches at the screen's edge ---------- */
+    @media (max-width: 40rem) {
+      .ticket {
+        --cell: 1rem var(--hang);
+        border-inline-width: 0;
+      }
+      .stub-cal::before,
+      .stub-cal::after {
+        content: none;
+      }
+    }
+
     /* ---------- phones: one field per line ---------- */
     @media (max-width: 30rem) {
       .ticket {
-        --cell: 0.85rem 1rem;
+        --cell: 0.85rem var(--hang);
         grid-template-columns: minmax(0, 1fr);
       }
       .field:nth-child(odd) {

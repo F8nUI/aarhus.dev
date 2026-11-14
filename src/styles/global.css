@@ -8,7 +8,7 @@
 
 /*
  * Color tokens. Light is a printed timetable: dark ink on paper. Dark is the lit
- * board: amber on black. The today board is amber on black in both.
+ * board: amber on black. Code blocks sit on the board's black in both.
  */
 :root {
   color-scheme: light;
@@ -26,12 +26,6 @@
   --ticket-bg: #ffffff;
   --ticket-edge: #17140f;
   --board-bg: #15110a;
-  --board-edge: #15110a;
-  --board-rule: #30271a;
-  --board-hover: #201a10;
-  --board-lit: #f5a524;
-  --board-bright: #ffc65e;
-  --board-dim: #b3832f;
   /* the sign-up cell: white on burnt orange, in both themes */
   --signup-bg: #a64f00;
   --signup-hover: #8a4100;
@@ -52,7 +46,6 @@
   --ticket-bg: #15110a;
   --ticket-edge: #5a4520;
   --board-bg: #17120a;
-  --board-edge: #4a391b;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -71,7 +64,6 @@
     --ticket-bg: #15110a;
     --ticket-edge: #5a4520;
     --board-bg: #17120a;
-    --board-edge: #4a391b;
   }
 }
 

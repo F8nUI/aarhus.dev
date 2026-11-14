@@ -70,7 +70,7 @@ What's past, today or next week depends on when someone looks, so the browser de
 
 **Checking a moment.** `?now=2026-11-19T17:30` (Aarhus time) makes the site pretend it's then, for the rest of the tab's visit; `?now=` goes back to the real time.
 
-**Layout.** All text lines up on the page's left edge; backgrounds that frame text (the today board, a hovered row, the current topic, the posters) hang `--hang` outside it. The board lays out its rows by its own width (a container query), so they fold the same beside a poster as on a narrow screen.
+**Layout.** Two left edges. Every piece of text starts on the text edge; every rule, row line and box (the header's rule, section rules, a hovered row, the posters, the event ticket) starts `--hang` further out and pads its text back in, so text and lines each share one edge. On phones the outer edge is the screen's. The current topic is underlined rather than boxed. The board lays out its rows by its own width (a container query), so they fold the same beside a poster as on a narrow screen.
 
 ## Routing
 

@@ -55,12 +55,9 @@
     z-index: 2;
     /* sits right on top of the first block, not a whole gap above it */
     margin-bottom: calc(0.75rem - var(--gap));
-    padding-block: 0.5rem;
+    margin-inline: calc(-1 * var(--hang));
+    padding: 0.5rem var(--hang);
     background: var(--color-bg);
-    /* the page color reaches as far as the rows' hover, so nothing shows beside it when stuck */
-    box-shadow:
-      calc(-1 * var(--hang)) 0 0 var(--color-bg),
-      var(--hang) 0 0 var(--color-bg);
     border-bottom: 1px solid var(--color-border);
     /* the grid is sized in the rows' ch; only the labels are small */
     font-size: 0.9375rem;
@@ -85,7 +82,8 @@
       'when topic title venue status'
       'when topic org venue status';
     align-items: start;
-    padding-block: 0.75rem;
+    margin-inline: calc(-1 * var(--hang));
+    padding: 0.75rem var(--hang);
     border-top: 1px solid var(--color-border);
     font-size: 0.9375rem;
     line-height: 1.45;
@@ -94,7 +92,7 @@
   .row::before {
     content: '';
     position: absolute;
-    inset: 0 calc(-1 * var(--hang));
+    inset: 0;
     z-index: -1;
   }
   .row:hover::before {
@@ -134,7 +132,7 @@
   .title::after {
     content: '';
     position: absolute;
-    inset: 0 calc(-1 * var(--hang));
+    inset: 0;
   }
   /* hovering underlines the title, not the subtitle beside it */
   .title:hover {
@@ -226,21 +224,7 @@
     }
   }
 
-  /* ---------- the board: today, lit amber on black in both themes ---------- */
-  .board {
-    --color-bg-subtle: var(--board-hover);
-    --color-border: var(--board-rule);
-    --color-text: var(--board-lit);
-    --color-text-muted: var(--board-dim);
-    --title: var(--board-bright);
-    --accent-text: var(--board-bright);
-    --focus: var(--board-bright);
-    margin-inline: calc(-1 * var(--hang));
-    padding: 0.875rem var(--box-pad) 0.5rem;
-    background: var(--board-bg);
-    color: var(--board-lit);
-    box-shadow: inset 0 0 0 1px var(--board-edge);
-  }
+  /* ---------- today: a section like the others, its heading in amber ---------- */
   .board:not(:has([data-when~='now'], [data-when~='today'])) {
     display: none;
   }
@@ -262,10 +246,11 @@
   }
   .board-head {
     padding-bottom: var(--head-space);
-    color: var(--board-lit);
+    color: var(--accent-text);
   }
   .sect-head {
-    padding-block: var(--head-space);
+    margin-inline: calc(-1 * var(--hang));
+    padding: var(--head-space) var(--hang);
     border-top: 2px solid var(--ink);
   }
   /*
@@ -329,6 +314,8 @@
   .empty {
     padding-top: 1.5rem;
     border-top: 2px solid var(--ink);
+    margin-inline: calc(-1 * var(--hang));
+    padding-inline: var(--hang);
   }
   .empty p:first-child {
     font-family: var(--font-display);
@@ -344,6 +331,8 @@
     padding-top: 0.9rem;
     border-top: 1px solid var(--color-border);
     font-size: 0.875rem;
+    margin-inline: calc(-1 * var(--hang));
+    padding-inline: var(--hang);
   }
   .tt-end a {
     color: var(--color-text-muted);
@@ -448,11 +437,6 @@
   @media (max-width: 40rem) {
     --gap: 2rem;
 
-    /* the board runs edge to edge */
-    .board {
-      margin-inline: -1rem;
-      padding-inline: 1rem;
-    }
     .board-head,
     .sect-head {
       font-size: 2rem;

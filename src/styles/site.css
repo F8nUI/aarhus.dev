@@ -2,14 +2,14 @@
  * The site's frame (Layout.astro): header with the logo and topics, the page, the
  * footer; and text pages and prose (page bodies, event descriptions).
  *
- * One left edge for all text: the page's. Backgrounds that frame text (the today
- * board, a hovered row, the current topic, the featured posters) hang --hang outside
- * it instead of pushing the text in, so titles, dates and headings line up all the
- * way down.
+ * Two left edges. Every piece of text starts on the text edge. Every rule, row line
+ * and box (the header's rule, section rules, a hovered row, the featured posters, the
+ * event ticket) starts --hang further out, on the outer edge, and pads its text back
+ * in by the same amount. On phones the outer edge is the screen's.
  */
 .site {
   --hang: 0.75rem;
-  /* the padding inside boxes (the today board, a topic pill, the posters); equal to the hang, so their text meets the text edge */
+  /* the padding inside boxes (the posters); equal to the hang, so their text meets the text edge */
   --box-pad: 0.75rem;
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
@@ -49,7 +49,8 @@
 
   /* ---------- header ---------- */
   .head {
-    padding-top: 1.25rem;
+    margin-inline: calc(-1 * var(--hang));
+    padding: 1.25rem var(--hang) 0;
     border-bottom: 2px solid var(--ink);
   }
   /*
@@ -136,32 +137,35 @@
     color: var(--color-text);
   }
 
+  /* the topics: the current one bold and underlined; pointing at another underlines it lightly */
   .lines {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem 0;
-    margin: 1rem calc(-1 * var(--hang)) 0.75rem;
+    gap: 0.25rem 1.5rem;
+    margin: 1rem 0 0.75rem;
     font-size: 0.8125rem;
   }
   .lines a {
     display: inline-flex;
     align-items: center;
     gap: 0.75ch;
-    padding: 0.2rem var(--box-pad);
+    padding-block: 0.2rem;
     color: var(--color-text-muted);
     text-decoration: none;
+    text-underline-offset: 0.35em;
   }
   .lines a:hover {
     color: var(--color-text);
-    background: var(--color-bg-subtle);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: var(--color-text-muted);
   }
   .lines a[aria-current] {
-    background: var(--ink);
-    color: var(--color-bg);
+    color: var(--color-text);
     font-weight: 700;
-  }
-  .lines a[aria-current] .dot {
-    box-shadow: 0 0 0 2px var(--color-bg);
+    text-decoration-line: underline;
+    text-decoration-thickness: 2px;
+    text-decoration-color: currentColor;
   }
   .dot {
     flex: none;
@@ -184,7 +188,8 @@
     align-items: baseline;
     justify-content: space-between;
     gap: 0.75rem 2rem;
-    padding-block: 1.25rem 2rem;
+    margin-inline: calc(-1 * var(--hang));
+    padding: 1.25rem var(--hang) 2rem;
     border-top: 2px solid var(--ink);
     font-size: 0.8125rem;
     color: var(--color-text-muted);
@@ -255,8 +260,8 @@
     }
     h1,
     h2 {
-      margin: 2.5rem 0 0.75rem;
-      padding-top: 0.5rem;
+      margin: 2.5rem calc(-1 * var(--hang)) 0.75rem;
+      padding: 0.5rem var(--hang) 0;
       border-top: 2px solid var(--ink);
       font-family: var(--font-display);
       font-size: 2rem;
@@ -353,6 +358,9 @@
 
   /* ---------- phones ---------- */
   @media (max-width: 40rem) {
+    /* the outer edge is the screen's */
+    --hang: 1rem;
+    --box-pad: 1rem;
     padding-inline: 1rem;
 
     /* the title gets a line of its own under the logo and the icons */
