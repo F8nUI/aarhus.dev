@@ -22,6 +22,7 @@ src/
 │   ├── about.md         # About page text (its numbers and community list come from components/about/)
 │   ├── add-event.md     # Add Event page text — the contributor guide
 │   └── da/              # the Danish About and Add Event texts
+├── assets/fonts/        # the two fonts as TrueType (with their licences), for drawing share cards
 ├── components/
 │   ├── Board.astro            # the event lists: today, tomorrow, this/next week, a section per month; the archive
 │   ├── Row.astro              # one row on the board
@@ -44,9 +45,11 @@ src/
 │   ├── format.ts              # date parts (English and Danish), row and poster helpers
 │   ├── i18n.ts                # the two languages: which a page is in, its links, every interface string in both
 │   ├── paths.ts               # the pages each dynamic route builds, shared with the Danish ones
+│   ├── cards.ts               # which share card each page gets, and its file
+│   ├── cardImage.ts           # draws a share card as a PNG (satori + sharp)
 │   ├── calendar.ts            # /calendar.ics and add-to-calendar links
 │   └── rss.ts                 # /rss.xml
-├── pages/                     # routes (below); da/ wraps each page for its Danish address
+├── pages/                     # routes (below); da/ wraps each page for its Danish address; og/ writes the share cards
 └── styles/
     ├── global.css             # Tailwind, color tokens: a printed timetable in light, a night departure board (navy, amber) in dark
     ├── site.css               # the page frame, text pages, prose
@@ -78,6 +81,8 @@ What's past, today or next week depends on when someone looks, so the browser de
 
 **Checking a moment.** `?now=2026-11-19T17:30` (Aarhus time) makes the site pretend it's then, for the rest of the tab's visit; `?now=` goes back to the real time.
 
+**Share cards.** Every page has a 1200×630 card for links shared in Slack, LinkedIn, iMessage and so on, in its language: an event as its poster (topic color, title, date, place, organizer), a topic's list or archive in the topic's color, an organizer or the site's own pages on the dark board's navy. `src/lib/cards.ts` lists them (`cardPath` names a page's file; Layout.astro points `og:image` at it), `src/lib/cardImage.ts` lays one out with satori in the site's fonts (`src/assets/fonts/`, TrueType because satori can't read woff2) and sharp turns it into a PNG. A new kind of page needs a card in `cardPaths`, or its `og:image` points at nothing.
+
 **Layout.** Two left edges. Every piece of text starts on the text edge; every rule, row line and box (the header's rule, section rules, a hovered row, the posters, the event page's poster) starts `--hang` further out and pads its text back in, so text and lines each share one edge. On phones the outer edge is the screen's. The current topic is underlined rather than boxed. The board lays out its rows by its own width (a container query), so they fold the same beside a poster as on a narrow screen.
 
 ## Routing
@@ -91,6 +96,7 @@ What's past, today or next week depends on when someone looks, so the browser de
 - `/add-event` — the contributor guide
 - `/calendar.ics` — every event, as a calendar to subscribe to
 - `/rss.xml` — every upcoming event, as an RSS feed (`src/lib/rss.ts`); linked in the footer
+- `/og/<page>.png`, `/og/da/<page>.png` — each page's share card (`/og/index.png` for the home page)
 - `/da/…` — every page above (not the feeds) in Danish: `/da/`, `/da/<topic>`, `/da/<topic>/<event>`, `/da/past/…`, `/da/organizer/<id>`, `/da/about`, `/da/add-event`
 
 **Languages.** English at `/…`, Danish at `/da/…`. Each file in `src/pages/da/` is a few lines that render the English page; every component reads the language from the address (`langOf(Astro.url)` in `src/lib/i18n.ts`) and takes its words from `t(lang)`, so a new piece of interface text goes into both `en` and `da` there (`da` is typed against `en`, so a missing one fails `astro check`). Links inside the site go through `localPath(lang, path)` to stay in the language. Dates come in both from `src/lib/format.ts`, "in 5 days" / "om 5 dage" from `src/lib/when.ts`, Danish topic names from `da` in `src/lib/topics.ts`. Event and organizer descriptions are shown as written, in either language. The DA/EN switch in the header links to the same page in the other language and remembers the choice; only a visit to the bare `aarhus.dev/` follows it (to `/da/`), so a link to an English page still opens in English. The feeds stay English.

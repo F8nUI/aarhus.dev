@@ -11,6 +11,8 @@ import '../styles/board.css'
 import Analytics from '@vercel/analytics/astro'
 import { calendarFeed } from '@lib/calendar'
 import { getEvents, getTopics } from '@lib/event'
+import { cardPath } from '@lib/cards'
+import { CARD_HEIGHT, CARD_WIDTH } from '@lib/cardImage'
 import { basePath, LANG_NAMES, langOf, localPath, SITE, t, type Lang } from '@lib/i18n'
 import { topicColor, topicName } from '@lib/topics'
 import RuntimeBody from './RuntimeBody.astro'
@@ -35,6 +37,9 @@ const here = (l: Lang) => localPath(l, base)
 const siteName = 'aarhus.dev'
 const pageTitle = metadata?.title ? `${metadata.title} – ${siteName}` : w.siteTitle
 const pageDescription = metadata?.description || w.siteDescription
+// what a shared link shows: the page's card (src/lib/cards.ts), title and description
+const pageUrl = new URL(here(lang), SITE).href
+const shareImage = new URL(cardPath(lang, base), SITE).href
 
 const topics = (await getTopics()).sort((a, b) => topicName(a, lang).localeCompare(topicName(b, lang), lang))
 // Each topic link carries the end times of its events still to come at build time;
@@ -60,6 +65,18 @@ const onAllList = !topic && /^\/(past\/?)?$/.test(base)
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={pageUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content={lang === 'da' ? 'da_DK' : 'en_GB'} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:title" content={metadata?.title ?? w.siteTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:image" content={shareImage} />
+    <meta property="og:image:width" content={String(CARD_WIDTH)} />
+    <meta property="og:image:height" content={String(CARD_HEIGHT)} />
+    <meta property="og:image:alt" content={metadata?.title ?? w.siteTitle} />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
