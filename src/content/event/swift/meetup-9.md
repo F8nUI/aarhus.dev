@@ -8,6 +8,7 @@ venue:
   title: 'Dokk1'
   address: 'Undervisningslokale 1(U1), Dokk1, Hack Kampmanns Pl.2, Aarhus C'
 learnMoreURL: 'https://www.meetup.com/swift-developers-aarhus/events/311713247/'
+linkFor: signup
 ---
 
 Join us for the 9th meetup of Swift Developers, Aarhus on Tuesday September 23rd, 2025 at 17:00!

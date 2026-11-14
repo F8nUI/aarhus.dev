@@ -8,6 +8,7 @@ venue:
   title: 'Savværket'
   address: 'Søren Nymarks Vej 8A, 8270 Højbjerg'
 learnMoreURL: https://techhubaarhus.ticketbutler.io/e/tech-hub-aarhus-day-2027/
+linkFor: tickets
 highlight: true
 ---
 

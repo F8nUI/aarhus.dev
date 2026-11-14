@@ -5,6 +5,7 @@ date: 2027-01-19
 startTime: 19:00
 endTime: 21:30
 learnMoreURL: https://owaspaarhuschapter.ticketbutler.io/e/owasp-aarhus-chapter-meeting-january-2027/
+linkFor: tickets
 ---
 
 The OWASP Aarhus chapter meets for an evening of application-security talks and networking.

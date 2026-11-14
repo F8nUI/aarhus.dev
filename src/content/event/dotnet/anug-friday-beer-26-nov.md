@@ -9,6 +9,7 @@ venue:
   title: 'Aarhus Street Food'
   address: 'Ny Banegårdsgade 46, Aarhus'
 learnMoreURL: https://www.meetup.com/anugdk/events/317165368/
+linkFor: signup
 ---
 
 Casual Friday social for the Aarhus .NET community. Have a beer (or whatever you like) and talk tech, nerd, and code.

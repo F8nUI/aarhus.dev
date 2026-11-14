@@ -8,6 +8,7 @@ venue:
   title: 'EIVA'
   address: 'Niels Bohrs Vej 17, 8660 Skanderborg'
 learnMoreURL: https://www.meetup.com/rust-aarhus/events/316938696/
+linkFor: signup
 ---
 
 An evening of talks, food, and networking at EIVA in Skanderborg, with a light dinner sponsored by EIVA and a company tour.

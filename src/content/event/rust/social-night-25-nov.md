@@ -8,6 +8,7 @@ venue:
   title: 'Markedshallen Nicolinehus'
   address: 'Nicoline Kochs Plads 31, Aarhus Ø'
 learnMoreURL: https://www.meetup.com/rust-aarhus/events/311502123/?eventOrigin=group_events_list
+linkFor: signup
 ---
 
 ## 🍻 Rust Aarhus Social Night – Food, Drinks, and Great Conversations! 🦀

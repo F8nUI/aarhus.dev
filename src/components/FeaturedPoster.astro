@@ -2,8 +2,8 @@
 // One featured event as a portrait poster in its topic's color, in both themes: the
 // title stacked in the board's display face (it links to the event page), the date as
 // one big day number with weekday, month and time beside it, then place, organizer and
-// the sign-up link (on the event's page, the `actions` slot adds the calendar links
-// under it). Its top row says when ("in 6 days", "now · until 16:30");
+// its link, named by what it's for: "Sign up", "Get tickets", "Read more", or "Event
+// page" (on the event's page, the `actions` slot adds the calendar links under it). Its top row says when ("in 6 days", "now · until 16:30");
 // Featured.astro stacks them beside the board and, with `nav`, puts the controls at
 // that row's right end.
 // Above the board (narrow screens) it's laid out wide; on phones it's compact.
@@ -34,7 +34,7 @@ interface Props {
 }
 
 const { event, nav = false, page = false } = Astro.props
-const { title, subtitle, venue, learnMoreURL, endTime } = event.data
+const { title, subtitle, venue, learnMoreURL, linkFor, endTime } = event.data
 const lang = langOf(Astro.url)
 const w = t(lang)
 const time = timeRange(event, lang)
@@ -131,7 +131,7 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
 
     <div class="sp-actions">
       <a class="sp-signup" href={learnMoreURL}>
-        <span class="sp-go"><span class="sp-live">{w.signUp}</span><span class="sp-past">{w.eventPage}</span></span> <span
+        <span class="sp-go"><span class="sp-live">{linkFor ? w.linkFor[linkFor] : w.eventPage}</span><span class="sp-past">{w.eventPage}</span></span> <span
           class="sp-host">{w.onHost(linkHost(learnMoreURL))}</span
         ><svg class="sp-arrow" viewBox="0 0 24 18" aria-hidden="true"><path d="M2 9h18.5M14 2.5 20.5 9 14 15.5" /></svg>
       </a>

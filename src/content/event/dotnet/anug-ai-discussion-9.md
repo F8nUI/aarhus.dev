@@ -9,6 +9,7 @@ venue:
   title: "Relewise's Office"
   address: 'Trindsøvej 8, Aarhus'
 learnMoreURL: https://www.meetup.com/anugdk/events/313883705/
+linkFor: signup
 ---
 
 The ninth ANUG AI discussion meeting, this time with mini demos. The agenda includes a round-table discussion where members share recent developments, followed by attendees presenting brief 5-minute AI demos.

@@ -8,6 +8,7 @@ venue:
   title: 'Trifork'
   address: 'Sankt Knuds Torv 3, 8000 Aarhus C'
 learnMoreURL: https://www.meetup.com/owasp-aarhus-chapter/events/
+linkFor: signup
 ---
 
 The OWASP Aarhus chapter meets for an evening of application-security talks and networking, hosted by Trifork.

@@ -8,6 +8,7 @@ venue:
   title: 'The Merchant Room'
   address: 'Frederiksgade 38, 8000 Aarhus'
 learnMoreURL: https://www.meetup.com/cocoders/events/317380352/
+linkFor: signup
 ---
 
 A beginner-friendly taste of Python, one of the world's most popular programming languages. No prior coding experience needed — the session starts from scratch and ends with everyone writing their first small programs together.

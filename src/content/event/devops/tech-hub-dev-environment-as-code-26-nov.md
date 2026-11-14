@@ -9,6 +9,7 @@ venue:
   title: 'Danske Bank'
   address: 'Jægergårdsgade 101B, 8000 Aarhus C'
 learnMoreURL: https://www.meetup.com/techhubaarhus/events/315412164/
+linkFor: signup
 ---
 
 What if your entire dev environment lived in Git? Daniel Berg Frederiksen, Senior Software Engineer at Danske Bank, shows how a Dockerfile, a setup script, and some dotfiles gave him a consistent, portable, terminal-first development workflow — inside a locked-down enterprise.

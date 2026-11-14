@@ -8,6 +8,7 @@ venue:
   title: 'Lunar'
   address: 'Hack Kampmanns Plads 10, 8000 Aarhus'
 learnMoreURL: https://www.meetup.com/go-aarhus/events/313308194/
+linkFor: signup
 ---
 
 Go Aarhus is back. An evening for Go developers of all levels, with talks and networking over food and drinks.

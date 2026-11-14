@@ -8,6 +8,7 @@ venue:
   title: Dentsu's office
   address: Dentsu's office, Åboulevarden 18, Aarhus
 learnMoreURL: https://www.meetup.com/aarhus-ruby-group/events/311583360/
+linkFor: signup
 ---
 
 Join us in our end of the year Ruby Tuesday edition with drinks and snacks!

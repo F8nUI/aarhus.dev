@@ -8,6 +8,7 @@ venue:
   title: 'MFT Energy'
   address: 'Margrethepladsen 4, 3rd floor, 8000 Aarhus'
 learnMoreURL: https://www.meetup.com/rust-aarhus/events/
+linkFor: signup
 ---
 
 Rust Aarhus is celebrating three years! Join us for talks, food, drinks, and a book raffle.

@@ -8,6 +8,7 @@ venue:
   title: 'Cernel'
   address: 'Dalgas Avenue 2E, 3. sal, 8000 Aarhus'
 learnMoreURL: https://www.meetup.com/aarhus-ai/events/312351109/
+linkFor: signup
 ---
 
 An afternoon with Cernel, a Danish AI startup helping companies turn AI and data into real business value.

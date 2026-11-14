@@ -8,6 +8,7 @@ venue:
   title: 'Danske Commodities'
   address: 'Kalkværksvej 16, 8000 Aarhus'
 learnMoreURL: https://www.meetup.com/rust-aarhus/events/314965238/
+linkFor: signup
 ---
 
 An evening of talks, food, and networking, with a light dinner sponsored by Danske Commodities.

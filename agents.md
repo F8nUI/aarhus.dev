@@ -57,7 +57,7 @@ src/
 
 Schema: `src/content.config.ts` (Zod, from `astro/zod`).
 
-- **Events**: `src/content/event/<topic>/<name>.md`. `startTime`, `endTime` and `venue` are optional — leave them out until announced; the site shows "TBA". Times are Aarhus local time, 24-hour. `highlight: true` features the event beside the board until it has ended.
+- **Events**: `src/content/event/<topic>/<name>.md`. `startTime`, `endTime` and `venue` are optional — leave them out until announced; the site shows "TBA". Times are Aarhus local time, 24-hour. `highlight: true` features the event beside the board until it has ended. `linkFor` (`signup`, `tickets`, `info`) names the poster's link to `learnMoreURL` ("Sign up", "Get tickets", "Read more"; "Event page" without it).
 - **Organizers**: `src/content/organizer/<id>.md`; events reference them by id.
 - **Pages**: `src/content/about.md`, `src/content/add-event.md`, and their Danish versions in `src/content/da/` (ids `da/about`, `da/add-event`). Change both languages together.
 

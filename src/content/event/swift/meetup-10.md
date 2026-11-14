@@ -8,6 +8,7 @@ venue:
   title: 'Dokk1'
   address: 'Undervisningslokale 1(U1), Dokk1, Hack Kampmanns Pl.2, Aarhus C'
 learnMoreURL: 'https://www.meetup.com/swift-developers-aarhus/events/311713247/'
+linkFor: signup
 ---
 
 Our next meetup will be an anniversary, as it will be our 10th meetup. :-)

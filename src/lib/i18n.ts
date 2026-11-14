@@ -98,7 +98,8 @@ const en = {
   play: 'Play',
   where: 'Where',
   organizer: 'Organizer',
-  signUp: 'Sign up',
+  /** The event's link, by what it's for (the event's `linkFor`); without one, eventPage. */
+  linkFor: { signup: 'Sign up', tickets: 'Get tickets', info: 'Read more' },
   eventPage: 'Event page',
   onHost: (host: string) => `on ${host}`,
 
@@ -186,7 +187,7 @@ const da: typeof en = {
   play: 'Afspil',
   where: 'Hvor',
   organizer: 'Arrangør',
-  signUp: 'Tilmeld dig',
+  linkFor: { signup: 'Tilmeld dig', tickets: 'Billetter', info: 'Læs mere' },
   eventPage: 'Eventside',
   onHost: (host) => `på ${host}`,
 

@@ -8,6 +8,7 @@ venue:
   title: 'Trifork A/S'
   address: 'Trifork A/S, 9 Sankt Knuds Torv, Aarhus'
 learnMoreURL: https://www.meetup.com/aarhusjs-meetup/events/311884214/
+linkFor: signup
 ---
 
 ## 🎆 First and last AarhusJS meetup of 2025

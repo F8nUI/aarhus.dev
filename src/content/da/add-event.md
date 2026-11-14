@@ -48,6 +48,7 @@ venue:
   title: 'EIVA'
   address: 'Niels Bohrs Vej 17, 8660 Skanderborg'
 learnMoreURL: https://www.meetup.com/rust-aarhus/events/316938696/
+linkFor: signup
 ---
 
 Hvad eventet handler om, i et par korte afsnit. Markdown virker.
@@ -66,6 +67,7 @@ Påkrævet:
 
 Valgfrit:
 
+- `linkFor` — hvad linket er til, hvilket giver det navn på eventets plakat: `signup` ("Tilmeld dig"), `tickets` ("Billetter") eller `info` ("Læs mere"). Udelad det, så hedder linket "Eventside".
 - `subtitle` — en linje under titlen, fx `Morning Meetup`.
 - `endDate` — den sidste dag i et event over flere dage.
 - `startTime`, `endTime` — lokal tid i Aarhus, 24-timers ur: `18:00`. Udelad det, der ikke er annonceret endnu; siden viser "tid følger".

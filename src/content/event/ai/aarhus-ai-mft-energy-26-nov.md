@@ -8,6 +8,7 @@ venue:
   title: 'MFT Energy'
   address: 'Ceresbyen 75, 8000 Aarhus C'
 learnMoreURL: https://www.meetup.com/aarhus-ai/events/316564212/
+linkFor: signup
 ---
 
 Aarhus AI visits MFT Energy at their new office in Ceres Plaza for an evening about algo-trading and the world of energy trading.

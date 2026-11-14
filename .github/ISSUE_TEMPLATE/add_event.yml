@@ -111,6 +111,18 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: linkFor
+    attributes:
+      label: What the link is for
+      description: It names the link on the event's poster. Leave it empty if none fits; the link then says "Event page".
+      options:
+        - Signing up ("Sign up")
+        - Tickets ("Get tickets")
+        - More about the event ("Read more")
+    validations:
+      required: false
+
   - type: textarea
     id: description
     attributes:

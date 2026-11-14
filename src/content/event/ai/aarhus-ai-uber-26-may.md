@@ -8,6 +8,7 @@ venue:
   title: 'Uber'
   address: 'Carl Blochs Gade 89, 8000 Aarhus'
 learnMoreURL: https://www.meetup.com/Aarhus-AI/events/
+linkFor: signup
 ---
 
 Aarhus AI meetup hosted at Uber's Aarhus office. Program details to be announced.

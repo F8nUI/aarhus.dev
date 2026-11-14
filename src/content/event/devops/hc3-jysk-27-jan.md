@@ -8,6 +8,7 @@ venue:
   title: 'JYSK A/S'
   address: 'Sødalsparken 18, 8220 Brabrand'
 learnMoreURL: https://www.eventbrite.dk/e/hc3-jysk-tickets-1999471292460
+linkFor: tickets
 ---
 
 Den 27. januar 2027 er HC3 inviteret indenfor på JYSKs hovedkvarter i Brabrand.

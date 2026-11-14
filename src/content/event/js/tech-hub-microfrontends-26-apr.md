@@ -9,6 +9,7 @@ venue:
   title: 'Bankdata'
   address: 'Hedeager 44, Aarhus N'
 learnMoreURL: https://www.meetup.com/techhubaarhus/events/
+linkFor: signup
 ---
 
 How do independent frontend apps work together seamlessly? Niclas Skødt Gleesborg, Senior Software Developer at Bankdata, explores how microfrontends become more powerful when they connect — covering collaboration techniques, shared components, and common data strategies.

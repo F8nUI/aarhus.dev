@@ -34,6 +34,9 @@ const events = defineCollection({
       })
       .optional(),
     learnMoreURL: z.url(),
+    // What the link is for; it names the poster's link: "Sign up", "Get tickets",
+    // "Read more". Left out, the link says "Event page".
+    linkFor: z.enum(['signup', 'tickets', 'info']).optional(),
     // Feature the event at the top of the list until it has ended.
     highlight: z.boolean().optional(),
   }),
