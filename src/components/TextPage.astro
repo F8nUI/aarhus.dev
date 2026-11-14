@@ -22,7 +22,9 @@ const { title, description, website } = Astro.props
       )
     }
   </header>
+  <slot name="lead" />
   <div class="prose">
     <slot />
   </div>
+  <slot name="after" />
 </article>

@@ -1,6 +1,10 @@
 ---
+// About: what the site is (src/content/about.md, Danish in da/), the numbers, how to
+// follow along and add an event, and every community with its next event.
 import Layout from '@layouts/Layout.astro'
 import TextPage from '@components/TextPage.astro'
+import Communities from '@components/about/Communities.astro'
+import Numbers from '@components/about/Numbers.astro'
 import { getEntry, render } from 'astro:content'
 import { langOf } from '@lib/i18n'
 
@@ -13,6 +17,8 @@ const { title, description } = entry.data
 
 <Layout metadata={{ title, description }}>
   <TextPage {title} {description}>
+    <Numbers slot="lead" />
     <Content />
+    <Communities slot="after" />
   </TextPage>
 </Layout>

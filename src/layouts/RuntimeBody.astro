@@ -27,13 +27,14 @@ const script = `(function (whenTags, relativeLabel) {
     counter.textContent = Object.keys(seen).length
   })
 
-  // the topic links: how many of each topic's events are still to come, "(3)"; none dims it
+  // the topic links: how many of each topic's events are still to come, "(3)" (or just
+  // "3" where marked data-bare: the About page); none dims it
   document.querySelectorAll('[data-ends]').forEach(function (link) {
     var n = (link.dataset.ends || '').split(' ').filter(function (t) {
       return t && Date.parse(t) >= now
     }).length
     var count = link.querySelector('[data-upcoming]')
-    if (count) count.textContent = '(' + n + ')'
+    if (count) count.textContent = count.hasAttribute('data-bare') ? n : '(' + n + ')'
     link.classList.toggle('is-empty', n === 0)
   })
 

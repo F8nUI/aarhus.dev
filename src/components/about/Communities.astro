@@ -1,0 +1,129 @@
+---
+// The About page's directory: every community and organizer, A–Z, with the topics of
+// its events and its next one. Which event is next is decided on the visit: each one
+// still to come at build time is rendered and tagged by RuntimeBody, and only the
+// first one still to come shows; with none, "Nothing announced yet".
+import { getCollection } from 'astro:content'
+import { getEvents } from '@lib/event'
+import { boardDate, eventAttrs } from '@lib/format'
+import { langOf, localPath, t } from '@lib/i18n'
+import { topicColor, topicName } from '@lib/topics'
+
+const lang = langOf(Astro.url)
+const w = t(lang)
+const buildTime = Date.now()
+const events = await getEvents()
+const organizers = (await getCollection('organizers'))
+  .map((organizer) => {
+    const theirs = events.filter((e) => e.organizer.id === organizer.id)
+    return {
+      id: organizer.id,
+      name: organizer.data.name,
+      topics: [...new Set(theirs.map((e) => e.topic))].sort((a, b) =>
+        topicName(a, lang).localeCompare(topicName(b, lang), lang),
+      ),
+      upcoming: theirs.filter((e) => e.end.valueOf() >= buildTime),
+    }
+  })
+  .sort((a, b) => a.name.localeCompare(b.name, lang, { sensitivity: 'base' }))
+---
+
+<section class="cm">
+  <div class="prose"><h2>{w.communitiesTitle}</h2></div>
+  <ul class="cm-list">
+    {
+      organizers.map((o) => (
+        <li class="cm-item" data-scope>
+          <span class="cm-top">
+            <a class="cm-name" href={localPath(lang, `/organizer/${o.id}`)}>
+              {o.name}
+            </a>
+            <span class="cm-topics">
+              {o.topics.map((topic) => (
+                <span class="cm-topic">
+                  <span class="dot" style={`--dot: ${topicColor(topic)}`} aria-hidden="true" />
+                  {topicName(topic, lang)}
+                </span>
+              ))}
+            </span>
+          </span>
+          <span class="cm-next">
+            {o.upcoming.map((event) => (
+              <a class="cm-event" href={localPath(lang, event.url)} {...eventAttrs(event)}>
+                <span class="cm-date">{boardDate(event, lang)}</span> {event.data.title}
+              </a>
+            ))}
+            <span class="cm-none" data-empty="upcoming">
+              {w.nothingAnnounced}
+            </span>
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style is:global>
+  .site {
+    /* the same space above as the prose's own sections (its heading is a first child there, which drops it) */
+    .cm {
+      margin-top: 2.5rem;
+    }
+    .cm-list {
+      margin-top: 0.5rem;
+    }
+    .cm-item {
+      display: grid;
+      gap: 0.2rem;
+      margin-inline: calc(-1 * var(--hang));
+      padding: 0.7rem var(--hang);
+      border-top: 1px solid var(--color-border);
+    }
+    .cm-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.2rem 1.5rem;
+    }
+    .cm-name {
+      font-weight: 700;
+      color: var(--title);
+      text-decoration: none;
+    }
+    .cm-name:hover {
+      text-decoration: underline;
+    }
+    .cm-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.2rem 1.25ch;
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+    }
+    .cm-topic {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6ch;
+    }
+    .cm-next {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+    }
+    /* the next one still to come, only */
+    .cm-event[data-when~='past'],
+    .cm-event[data-when~='upcoming'] ~ .cm-event {
+      display: none;
+    }
+    .cm-event {
+      text-decoration: none;
+    }
+    .cm-event:hover {
+      text-decoration: underline;
+    }
+    .cm-date {
+      white-space: pre;
+      color: var(--color-text);
+    }
+  }
+</style>

@@ -72,6 +72,13 @@ const en = {
   knowOfOne: 'Know of one?',
   pastEvents: 'Past events',
 
+  // the About page (src/components/about/)
+  aboutUpcoming: 'events coming up',
+  aboutCommunities: 'communities',
+  aboutTopics: 'topics',
+  communitiesTitle: 'The communities',
+  nothingAnnounced: 'Nothing announced yet',
+
   // a row and its status (Row.astro, Status.astro)
   tba: 'TBA',
   venueTba: 'Venue TBA',
@@ -155,6 +162,12 @@ const da: typeof en = {
   nothingComingUp: 'Intet på vej endnu.',
   knowOfOne: 'Kender du et?',
   pastEvents: 'Tidligere events',
+
+  aboutUpcoming: 'kommende events',
+  aboutCommunities: 'fællesskaber',
+  aboutTopics: 'emner',
+  communitiesTitle: 'Fællesskaberne',
+  nothingAnnounced: 'Intet annonceret endnu',
 
   tba: 'TBA',
   venueTba: 'Sted følger',

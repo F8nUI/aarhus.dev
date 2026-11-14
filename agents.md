@@ -19,7 +19,7 @@ src/
 ├── content/
 │   ├── event/<topic>/   # events; the folder name is the topic
 │   ├── organizer/       # community profiles
-│   ├── about.md         # About page text
+│   ├── about.md         # About page text (its numbers and community list come from components/about/)
 │   ├── add-event.md     # Add Event page text — the contributor guide
 │   └── da/              # the Danish About and Add Event texts
 ├── components/
@@ -31,6 +31,7 @@ src/
 │   ├── EventPage.astro        # an event page: its poster laid out wide (sign-up and calendar links in it), description
 │   ├── event/                 # the event page's small parts: calendar links, the edit line
 │   ├── OrganizerEvents.astro  # an organizer's events, coming up and past
+│   ├── about/                 # the About page's numbers and its list of every community with its next event
 │   └── TextPage.astro         # about, add event, organizer text
 ├── layouts/
 │   ├── Layout.astro           # every page: head, header (logo, page title, language switch, subscribe + add-event icons, topics), footer (about line, two link groups, theme switch)
@@ -86,7 +87,8 @@ What's past, today or next week depends on when someone looks, so the browser de
 - `/<topic>/<event>` — event page
 - `/past/`, `/past/<topic>` — past events
 - `/organizer/<id>` — organizer page
-- `/about`, `/add-event` — static pages
+- `/about` — what the site is, live numbers, how to follow and add events, every community with its next event
+- `/add-event` — the contributor guide
 - `/calendar.ics` — every event, as a calendar to subscribe to
 - `/rss.xml` — every upcoming event, as an RSS feed (`src/lib/rss.ts`); linked in the footer
 - `/da/…` — every page above (not the feeds) in Danish: `/da/`, `/da/<topic>`, `/da/<topic>/<event>`, `/da/past/…`, `/da/organizer/<id>`, `/da/about`, `/da/add-event`
