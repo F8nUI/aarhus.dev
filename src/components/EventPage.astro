@@ -5,6 +5,7 @@
 // marks its topic.
 import type { ADEvent } from '@lib/event'
 import { eventAttrs } from '@lib/format'
+import { langOf, t } from '@lib/i18n'
 import CalendarLinks from './event/CalendarLinks.astro'
 import EventEdit from './event/EventEdit.astro'
 import { eventFacts } from './event/facts'
@@ -16,6 +17,7 @@ interface Props {
 
 const { event } = Astro.props
 const f = eventFacts(event)
+const w = t(langOf(Astro.url))
 ---
 
 <article class="ev" {...eventAttrs(event)}>
@@ -24,7 +26,7 @@ const f = eventFacts(event)
       <CalendarLinks facts={f} slot="actions" />
     </FeaturedPoster>
   </div>
-  <p class="ev-ended">This event has ended.</p>
+  <p class="ev-ended">{w.hasEnded}</p>
   <div class="prose ev-body">
     <slot />
   </div>

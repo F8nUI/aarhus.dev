@@ -1,6 +1,8 @@
-// Formatting and small helpers for the components: date parts in Aarhus time, the
-// attributes the browser re-tags on every visit, and the featured posters' colors.
+// Formatting and small helpers for the components: date parts in Aarhus time (in
+// English or Danish), the attributes the browser re-tags on every visit, and the
+// featured posters' colors.
 import type { ADEvent } from '@lib/event'
+import { t, type Lang } from '@lib/i18n'
 import { topicColor } from '@lib/topics'
 import { relativeLabel, whenTags } from './when'
 
@@ -21,8 +23,8 @@ export function eventAttrs(event: ADEvent) {
 }
 
 /** Relative label at build time: put it in a `<span data-rel>` and RuntimeBody keeps it current. */
-export function relativeAtBuild(event: ADEvent): string {
-  return relativeLabel(event.start.valueOf(), event.end.valueOf(), Date.now())
+export function relativeAtBuild(event: ADEvent, lang: Lang = 'en'): string {
+  return relativeLabel(event.start.valueOf(), event.end.valueOf(), Date.now(), lang)
 }
 
 // --- Dates, in Aarhus time ---------------------------------------------------
@@ -30,26 +32,50 @@ export function relativeAtBuild(event: ADEvent): string {
 const part = (d: Date, options: Intl.DateTimeFormatOptions, locale = 'en-GB') =>
   d.toLocaleString(locale, { timeZone: CPH, ...options })
 
+// Danish names are spelled out rather than taken from Intl, which abbreviates them
+// unevenly ("tors.", "nov.") and would throw the board's date column out of line.
+const DA_WEEKDAYS: Record<string, string> = {
+  Mon: 'man',
+  Tue: 'tir',
+  Wed: 'ons',
+  Thu: 'tor',
+  Fri: 'fre',
+  Sat: 'lør',
+  Sun: 'søn',
+}
+const DA_MONTHS = 'januar februar marts april maj juni juli august september oktober november december'.split(' ')
+const monthIndex = (d: Date) => Number(part(d, { month: 'numeric' })) - 1
+
 /** "19" */
 export const dayNumber = (d: Date) => part(d, { day: 'numeric' })
-/** "Thu" */
-export const weekdayShort = (d: Date) => part(d, { weekday: 'short' })
-/** "Nov" */
-export const monthShort = (d: Date) => part(d, { month: 'short' }).replace('Sept', 'Sep')
-/** "November" */
-export const monthLong = (d: Date) => part(d, { month: 'long' })
+/** "Thu"; "tor" */
+export const weekdayShort = (d: Date, lang: Lang = 'en') =>
+  lang === 'da' ? DA_WEEKDAYS[part(d, { weekday: 'short' })] : part(d, { weekday: 'short' })
+/** "Nov"; "nov" */
+export const monthShort = (d: Date, lang: Lang = 'en') =>
+  lang === 'da' ? DA_MONTHS[monthIndex(d)].slice(0, 3) : part(d, { month: 'short' }).replace('Sept', 'Sep')
+/** "November"; "november" */
+export const monthLong = (d: Date, lang: Lang = 'en') =>
+  lang === 'da' ? DA_MONTHS[monthIndex(d)] : part(d, { month: 'long' })
 /** "2026" */
 export const yearOf = (d: Date) => part(d, { year: 'numeric' })
 /** "December", or "January 2027" when it isn't this year: a board section's heading. */
-export const monthTitle = (d: Date) =>
-  yearOf(d) === yearOf(new Date()) ? monthLong(d) : `${monthLong(d)} ${yearOf(d)}`
+export function monthTitle(d: Date, lang: Lang = 'en'): string {
+  const month = monthLong(d, lang)
+  const title = month.charAt(0).toUpperCase() + month.slice(1)
+  return yearOf(d) === yearOf(new Date()) ? title : `${title} ${yearOf(d)}`
+}
 
 const FIGURE_SPACE = ' '
 
-/** "Thu 19 Nov", with single-digit days padded so the month column lines up: "Fri  4 Dec". */
-export function boardDate(event: ADEvent): string {
+/**
+ * "Thu 19 Nov", with single-digit days padded so the month column lines up: "Fri  4 Dec".
+ * Danish: "tor 19. nov".
+ */
+export function boardDate(event: ADEvent, lang: Lang = 'en'): string {
   const d = event.start
-  return `${weekdayShort(d)} ${dayNumber(d).padStart(2, FIGURE_SPACE)} ${monthShort(d)}`
+  const day = dayNumber(d).padStart(2, FIGURE_SPACE)
+  return `${weekdayShort(d, lang)} ${lang === 'da' ? `${day}.` : day} ${monthShort(d, lang)}`
 }
 
 /** The value for `<time datetime>`: the exact start, or just the day when the time isn't announced. */
@@ -58,18 +84,18 @@ export function machineDate(event: ADEvent): string {
   return event.start.toLocaleDateString('en-CA', { timeZone: CPH })
 }
 
-/** "17:00–19:00", "from 17:00", or "" when the time isn't announced. */
-export function timeRange(event: ADEvent): string {
+/** "17:00–19:00", "from 17:00" ("fra 17:00"), or "" when the time isn't announced. */
+export function timeRange(event: ADEvent, lang: Lang = 'en'): string {
   const { startTime, endTime } = event.data
   if (startTime && endTime) return `${startTime}–${endTime}`
-  if (startTime) return `from ${startTime}`
+  if (startTime) return t(lang).fromTime(startTime)
   return ''
 }
 
 /** "Tonight" for an evening start, "Today" otherwise: the status while an event is later today. */
-export function todayWord(event: ADEvent): string {
-  const t = event.data.startTime
-  return t && t >= '17:00' ? 'Tonight' : 'Today'
+export function todayWord(event: ADEvent, lang: Lang = 'en'): string {
+  const start = event.data.startTime
+  return start && start >= '17:00' ? t(lang).tonight : t(lang).todayStatus
 }
 
 // --- Lists -----------------------------------------------------------------

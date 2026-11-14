@@ -1,20 +1,22 @@
 ---
 import Layout from '@layouts/Layout.astro'
 import Board from '@components/Board.astro'
-import { getEvents, getTopics } from '@lib/event'
+import { getEvents } from '@lib/event'
+import { langOf, t } from '@lib/i18n'
+import { topicPaths } from '@lib/paths'
 import { topicEvents } from '@lib/topics'
 
-export async function getStaticPaths() {
-  return (await getTopics()).map((topic) => ({ params: { topic } }))
-}
+export const getStaticPaths = topicPaths
+// no props: the topic comes from the address (src/pages/da/ renders this page as it is)
+interface Props {}
 
 const { topic } = Astro.params
-const metadata = {
-  title: `Past ${topicEvents(topic)} in Aarhus`,
-  description: `Past ${topicEvents(topic)} in Aarhus, Denmark`,
-}
+const lang = langOf(Astro.url)
+const w = t(lang)
+const what = topicEvents(topic, lang)
+const metadata = { title: w.pastTopicTitle(what), description: w.pastTopicDescription(what) }
 ---
 
-<Layout {metadata} {topic} heading={`past ${topicEvents(topic)} in Aarhus`}>
+<Layout {metadata} {topic} heading={w.pastTopicHeading(what)}>
   <Board events={await getEvents(topic)} {topic} past={true} />
 </Layout>

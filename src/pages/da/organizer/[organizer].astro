@@ -1,0 +1,10 @@
+---
+// The Danish /da/organizer/<organizer>: the same page, in Danish from its address
+// (src/lib/i18n.ts). The organizer's description stays in the language it was written in.
+import Page from '../../organizer/[organizer].astro'
+import { organizerPaths } from '@lib/paths'
+
+export const getStaticPaths = organizerPaths
+---
+
+<Page {...Astro.props} />

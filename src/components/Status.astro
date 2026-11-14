@@ -4,6 +4,7 @@
 // root's data-when picks which one shows, so it stays right on every visit.
 import type { ADEvent } from '@lib/event'
 import { relativeAtBuild, todayWord } from '@lib/format'
+import { langOf, t } from '@lib/i18n'
 
 interface Props {
   event: ADEvent
@@ -11,11 +12,13 @@ interface Props {
 }
 
 const { event, class: className } = Astro.props
+const lang = langOf(Astro.url)
+const w = t(lang)
 ---
 
 <span class:list={['status', className]}>
-  <span class="st-now"><span class="st-lamp" aria-hidden="true"></span>Now</span>
-  <span class="st-today">{todayWord(event)}</span>
-  <span class="st-ended">Ended</span>
-  <span class="st-rel" data-rel>{relativeAtBuild(event)}</span>
+  <span class="st-now"><span class="st-lamp" aria-hidden="true"></span>{w.now}</span>
+  <span class="st-today">{todayWord(event, lang)}</span>
+  <span class="st-ended">{w.ended}</span>
+  <span class="st-rel" data-rel>{relativeAtBuild(event, lang)}</span>
 </span>

@@ -2,6 +2,7 @@
 // Add to calendar: the event as an .ics file (Apple Calendar, Outlook and the rest), and
 // Google Calendar. White buttons in one row under the poster's sign-up button (the
 // event page puts them in FeaturedPoster's `actions` slot); gone once the event is over.
+import { langOf, t } from '@lib/i18n'
 import type { EventFacts } from './facts'
 
 interface Props {
@@ -9,11 +10,12 @@ interface Props {
 }
 
 const { facts } = Astro.props
+const w = t(langOf(Astro.url))
 ---
 
 <p class="cal-links">
-  <a href={facts.ics.href} download={facts.ics.file}>Add to calendar (.ics)</a>
-  <a href={facts.google}>Google Calendar</a>
+  <a href={facts.ics.href} download={facts.ics.file}>{w.addToCalendar}</a>
+  <a href={facts.google}>{w.googleCalendar}</a>
 </p>
 
 <style is:global>

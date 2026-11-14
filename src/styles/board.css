@@ -6,6 +6,11 @@
   /* --hang (in site.css): how far backgrounds hang outside the text edge. */
   /* Space between the big blocks: head event, today, this week, next week, later. */
   --gap: 2.5rem;
+  /* The day's width in a row's date: "Thu 19 Nov"; a character more in Danish, "tor 19. nov". */
+  --day-w: 6em;
+  &:lang(da) {
+    --day-w: 6.6em;
+  }
 
   /* No past events: no link to them. */
   .tt-board:not(:has([data-when~='past'])) .tt-past {
@@ -51,13 +56,14 @@
   .cols,
   .row {
     display: grid;
-    /* in em, not ch: the same widths whichever font a row is set in (0.6em is one mono character) */
-    grid-template-columns: 10.2em 7.2em minmax(0, 1fr) 12em 7.8em;
+    /* in em, not ch: the same widths whichever font a row is set in (0.6em is one mono
+       character). The first column is the date: day, a gap, and the time (3em). */
+    grid-template-columns: calc(var(--day-w) + 4.2em) 7.2em minmax(0, 1fr) 12em 7.8em;
     column-gap: 1.2em;
   }
   .when {
     display: grid;
-    grid-template-columns: 6em 3em;
+    grid-template-columns: var(--day-w) 3em;
     column-gap: 1.2em;
     align-content: start;
   }
@@ -361,7 +367,7 @@
       display: none;
     }
     .row {
-      grid-template-columns: 10.2em 0.55rem minmax(0, 1fr) auto;
+      grid-template-columns: calc(var(--day-w) + 4.2em) 0.55rem minmax(0, 1fr) auto;
       grid-template-areas: 'when topic main status';
       column-gap: 0.9em;
     }
@@ -422,7 +428,7 @@
       row-gap: 0.2rem;
     }
     .row .when {
-      grid-template-columns: 6em 3em;
+      grid-template-columns: var(--day-w) 3em;
       column-gap: 0.9em;
       font-size: 0.875rem;
       color: var(--color-text-muted);

@@ -1,0 +1,9 @@
+---
+// The Danish /da/past/<topic>: the same page, in Danish from its address (src/lib/i18n.ts).
+import Page from '../../past/[topic].astro'
+import { topicPaths } from '@lib/paths'
+
+export const getStaticPaths = topicPaths
+---
+
+<Page />

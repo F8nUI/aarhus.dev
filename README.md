@@ -26,11 +26,12 @@ src/
 │   ├── event/<topic>/   # one Markdown file per event; the folder is its topic
 │   ├── organizer/       # one file per community or company
 │   ├── about.md         # text of the About page
-│   └── add-event.md     # text of the Add Event page
+│   ├── add-event.md     # text of the Add Event page
+│   └── da/              # the same two texts in Danish
 ├── components/          # the board, its rows, featured posters, event and text pages
 ├── layouts/             # the page frame, and the scripts that keep lists current
-├── lib/                 # loading events, dates, calendar files, topic names and colors
-├── pages/               # routes
+├── lib/                 # loading events, dates, calendar files, topic names and colors, the English and Danish interface text
+├── pages/               # routes; da/ is the Danish site at /da/
 └── styles/              # color tokens, the frame, the board
 ```
 

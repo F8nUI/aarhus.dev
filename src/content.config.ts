@@ -39,8 +39,9 @@ const events = defineCollection({
   }),
 })
 
+// About and Add event; their Danish versions in da/ (src/lib/i18n.ts)
 const pages = defineCollection({
-  loader: glob({ pattern: ['*.md'], base: 'src/content' }),
+  loader: glob({ pattern: ['*.md', 'da/*.md'], base: 'src/content' }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),

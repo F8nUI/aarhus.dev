@@ -20,7 +20,8 @@ src/
 │   ├── event/<topic>/   # events; the folder name is the topic
 │   ├── organizer/       # community profiles
 │   ├── about.md         # About page text
-│   └── add-event.md     # Add Event page text — the contributor guide
+│   ├── add-event.md     # Add Event page text — the contributor guide
+│   └── da/              # the Danish About and Add Event texts
 ├── components/
 │   ├── Board.astro            # the event lists: today, tomorrow, this/next week, a section per month; the archive
 │   ├── Row.astro              # one row on the board
@@ -32,17 +33,19 @@ src/
 │   ├── OrganizerEvents.astro  # an organizer's events, coming up and past
 │   └── TextPage.astro         # about, add event, organizer text
 ├── layouts/
-│   ├── Layout.astro           # every page: head, header (logo, page title, subscribe + add-event icons, topics), footer (about line, two link groups, theme switch)
-│   ├── RuntimeHead.astro      # before paint: theme, the root's .js class, the clock (?now=), the section CSS
-│   └── RuntimeBody.astro      # after parsing: tags events for the visitor's clock, counts, the phone topic switch, theme switch
+│   ├── Layout.astro           # every page: head, header (logo, page title, language switch, subscribe + add-event icons, topics), footer (about line, two link groups, theme switch)
+│   ├── RuntimeHead.astro      # before paint: the Danish home for who chose Danish, theme, the root's .js class, the clock (?now=), the section CSS
+│   └── RuntimeBody.astro      # after parsing: tags events for the visitor's clock, counts, the phone topic switch, remembers the language, theme switch
 ├── lib/
 │   ├── event.ts               # getEvents, getTopics, date formatting (Europe/Copenhagen)
 │   ├── topics.ts              # per topic folder: display name, color (white text on it), what to call its events
 │   ├── when.ts                # past / now / today / tomorrow / week …, and "in 5 days"
-│   ├── format.ts              # date parts, row and poster helpers
+│   ├── format.ts              # date parts (English and Danish), row and poster helpers
+│   ├── i18n.ts                # the two languages: which a page is in, its links, every interface string in both
+│   ├── paths.ts               # the pages each dynamic route builds, shared with the Danish ones
 │   ├── calendar.ts            # /calendar.ics and add-to-calendar links
 │   └── rss.ts                 # /rss.xml
-├── pages/                     # routes (below)
+├── pages/                     # routes (below); da/ wraps each page for its Danish address
 └── styles/
     ├── global.css             # Tailwind, color tokens: a printed timetable in light, a night departure board (navy, amber) in dark
     ├── site.css               # the page frame, text pages, prose
@@ -55,7 +58,7 @@ Schema: `src/content.config.ts` (Zod, from `astro/zod`).
 
 - **Events**: `src/content/event/<topic>/<name>.md`. `startTime`, `endTime` and `venue` are optional — leave them out until announced; the site shows "TBA". Times are Aarhus local time, 24-hour. `highlight: true` features the event beside the board until it has ended.
 - **Organizers**: `src/content/organizer/<id>.md`; events reference them by id.
-- **Pages**: `src/content/about.md`, `src/content/add-event.md`.
+- **Pages**: `src/content/about.md`, `src/content/add-event.md`, and their Danish versions in `src/content/da/` (ids `da/about`, `da/add-event`). Change both languages together.
 
 Files starting with `_` are ignored by the loaders.
 
@@ -86,6 +89,9 @@ What's past, today or next week depends on when someone looks, so the browser de
 - `/about`, `/add-event` — static pages
 - `/calendar.ics` — every event, as a calendar to subscribe to
 - `/rss.xml` — every upcoming event, as an RSS feed (`src/lib/rss.ts`); linked in the footer
+- `/da/…` — every page above (not the feeds) in Danish: `/da/`, `/da/<topic>`, `/da/<topic>/<event>`, `/da/past/…`, `/da/organizer/<id>`, `/da/about`, `/da/add-event`
+
+**Languages.** English at `/…`, Danish at `/da/…`. Each file in `src/pages/da/` is a few lines that render the English page; every component reads the language from the address (`langOf(Astro.url)` in `src/lib/i18n.ts`) and takes its words from `t(lang)`, so a new piece of interface text goes into both `en` and `da` there (`da` is typed against `en`, so a missing one fails `astro check`). Links inside the site go through `localPath(lang, path)` to stay in the language. Dates come in both from `src/lib/format.ts`, "in 5 days" / "om 5 dage" from `src/lib/when.ts`, Danish topic names from `da` in `src/lib/topics.ts`. Event and organizer descriptions are shown as written, in either language. The DA/EN switch in the header links to the same page in the other language and remembers the choice; only a visit to the bare `aarhus.dev/` follows it (to `/da/`), so a link to an English page still opens in English. The feeds stay English.
 
 ## Commands
 

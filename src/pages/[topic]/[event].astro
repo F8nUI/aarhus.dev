@@ -1,25 +1,19 @@
 ---
 import Layout from '@layouts/Layout.astro'
 import EventPage from '@components/EventPage.astro'
-import { getCollection, render } from 'astro:content'
-import { formatLong, parseEvent } from '@lib/event'
+import { render } from 'astro:content'
+import { formatLong, type ADEvent } from '@lib/event'
+import { langOf } from '@lib/i18n'
+import { eventPaths } from '@lib/paths'
 
-export async function getStaticPaths() {
-  const events = await getCollection('events')
-  return Promise.all(
-    events.map(async (entry) => {
-      const event = await parseEvent(entry)
-      return { params: { topic: event.topic, event: entry.id.split('/')[1] }, props: { event } }
-    }),
-  )
-}
+export const getStaticPaths = eventPaths
 
-const { event } = Astro.props
+const { event } = Astro.props as { event: ADEvent }
 const { title, subtitle, venue } = event.data
 const { Content } = await render(event)
 const metadata = {
   title,
-  description: subtitle || `${title} – ${venue?.title ?? 'Aarhus'}, ${formatLong(event).date}`,
+  description: subtitle || `${title} – ${venue?.title ?? 'Aarhus'}, ${formatLong(event, langOf(Astro.url)).date}`,
 }
 ---
 

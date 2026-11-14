@@ -3,6 +3,7 @@
 // The title link covers the whole row; the organizer link sits above it.
 import type { ADEvent } from '@lib/event'
 import { boardDate, eventAttrs, machineDate, townOutsideAarhus } from '@lib/format'
+import { langOf, localPath, t } from '@lib/i18n'
 import { topicColor, topicName } from '@lib/topics'
 import Status from './Status.astro'
 
@@ -13,24 +14,26 @@ interface Props {
 const { event } = Astro.props
 const { title, subtitle, venue, startTime } = event.data
 const town = townOutsideAarhus(event)
+const lang = langOf(Astro.url)
+const w = t(lang)
 ---
 
 <li class="row" {...eventAttrs(event)}>
   <time class="when" datetime={machineDate(event)}>
-    <span class="when-day">{boardDate(event)}</span>
-    <span class:list={['when-time', { tba: !startTime }]}>{startTime ?? 'TBA'}</span>
+    <span class="when-day">{boardDate(event, lang)}</span>
+    <span class:list={['when-time', { tba: !startTime }]}>{startTime ?? w.tba}</span>
   </time>
   <span class="topic">
     <span class="dot" style={`--dot: ${topicColor(event.topic)}`} aria-hidden="true"></span>
-    <span class="topic-name">{topicName(event.topic)}</span>
+    <span class="topic-name">{topicName(event.topic, lang)}</span>
   </span>
   <div class="main">
-    <a class="title" href={event.url}
+    <a class="title" href={localPath(lang, event.url)}
       ><span class="title-text">{title}</span>{subtitle && <span class="sub"><span class="sr">, </span>{subtitle}</span>}</a
     >
-    <a class="org" href={`/organizer/${event.organizer.id}`}>{event.organizer.data.name}</a>
+    <a class="org" href={localPath(lang, `/organizer/${event.organizer.id}`)}>{event.organizer.data.name}</a>
     <span class:list={['venue', { tba: !venue }]}>
-      <span class="venue-name">{venue?.title ?? 'Venue TBA'}</span>{
+      <span class="venue-name">{venue?.title ?? w.venueTba}</span>{
         town && (
           <span class="town">
             <span class="sr">, </span>

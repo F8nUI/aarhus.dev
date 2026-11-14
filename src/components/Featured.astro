@@ -8,6 +8,7 @@
 // Across pages it carries on where it was: which poster, how far its timer had run and
 // whether it was paused, kept for the tab's visit (sessionStorage).
 import type { ADEvent } from '@lib/event'
+import { langOf, t } from '@lib/i18n'
 import FeaturedPoster from './FeaturedPoster.astro'
 
 interface Props {
@@ -16,11 +17,12 @@ interface Props {
 
 const { events } = Astro.props
 const nav = events.length > 1
+const w = t(langOf(Astro.url))
 ---
 
 {
   events.length > 0 && (
-    <section class="fx" aria-roledescription="carousel" aria-label="Featured events" data-fx>
+    <section class="fx" aria-roledescription="carousel" aria-label={w.featured} data-fx>
       <div class="fx-slides" aria-live="off" data-fx-slides>
         {events.map((event) => (
           <FeaturedPoster event={event} nav={nav} />
@@ -115,7 +117,7 @@ const nav = events.length > 1
           var setPaused = function (paused) {
             root.classList.toggle('is-paused', paused)
             root.querySelectorAll('[data-fx-toggle]').forEach(function (toggle) {
-              toggle.setAttribute('aria-label', paused ? 'Play' : 'Pause')
+              toggle.setAttribute('aria-label', paused ? toggle.dataset.labelPlay : toggle.dataset.labelPause)
             })
           }
 

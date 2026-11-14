@@ -53,6 +53,8 @@ learnMoreURL: https://www.meetup.com/rust-aarhus/events/316938696/
 What the event is about, in a few short paragraphs. Markdown works.
 ```
 
+Write the text in English or Danish: both versions of the site show it as written.
+
 ## Fields
 
 Required:
@@ -68,9 +70,9 @@ Optional:
 - `endDate` — the last day of a multi-day event.
 - `startTime`, `endTime` — Aarhus local time, 24-hour: `18:00`. Leave out what isn't announced yet; the site shows "time TBA".
 - `venue` — `title` and `address`. Leave it out until it's announced; the site shows "venue TBA".
-- `highlight: true` — feature the event at the top of the list until it has ended. When several are coming up, the soonest one is shown.
+- `highlight: true` — feature the event as a poster beside the list (above it on phones, on the home page) until it has ended. When several are coming up, they take turns, soonest first.
 
-The folder is the event's topic: everything in `rust/` is listed at [aarhus.dev/rust](/rust). A new topic shows its folder name and a grey dot until it gets a display name and a color in [`src/lib/topics.ts`](https://github.com/f8nui/aarhus.dev/blob/main/src/lib/topics.ts). Pick a color dark enough for white text on it (at least 4.5:1): event posters use it as their background. If "<name> events" reads oddly, give the topic an `events` phrase too, such as `'dev conferences'`.
+The folder is the event's topic: everything in `rust/` is listed at [aarhus.dev/rust](/rust). A new topic shows its folder name and a grey dot until it gets a display name and a color in [`src/lib/topics.ts`](https://github.com/f8nui/aarhus.dev/blob/main/src/lib/topics.ts). Pick a color dark enough for white text on it (at least 4.5:1): event posters use it as their background. If "<name> events" reads oddly, give the topic an `events` phrase too, such as `'dev conferences'`. Its Danish name and phrase go in `da`, where they differ from the English name and "<name>-events".
 
 ## Adding an organizer
 

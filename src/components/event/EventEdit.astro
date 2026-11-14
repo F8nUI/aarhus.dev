@@ -1,5 +1,6 @@
 ---
 // The foot of an event page: where to fix it.
+import { langOf, t } from '@lib/i18n'
 import type { EventFacts } from './facts'
 
 interface Props {
@@ -7,10 +8,11 @@ interface Props {
 }
 
 const { facts } = Astro.props
+const w = t(langOf(Astro.url))
 ---
 
 <p class="ev-fix">
-  Something wrong or missing? <a href={facts.edit}>Edit on GitHub</a>
+  {w.fixPrompt} <a href={facts.edit}>{w.fixLink}</a>
 </p>
 
 <style is:global>

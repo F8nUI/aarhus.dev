@@ -1,4 +1,5 @@
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content'
+import type { Lang } from './i18n'
 
 export type ADEvent = CollectionEntry<'events'> & {
   topic: string
@@ -46,11 +47,12 @@ export function formatShort(event: ADEvent): string {
   return event.data.startTime ? `${date} · ${event.data.startTime}` : date
 }
 
-/** "Tuesday 18 August 2026" and "17:00 – 19:00" — the event page. */
-export function formatLong(event: ADEvent): { date: string; time: string } {
+/** "Tuesday 18 August 2026" and "17:00 – 19:00"; in Danish "tirsdag den 18. august 2026". */
+export function formatLong(event: ADEvent, lang: Lang = 'en'): { date: string; time: string } {
   const { startTime, endTime } = event.data
+  const da = lang === 'da'
   const day = (d: Date) =>
-    d.toLocaleDateString('en-GB', {
+    d.toLocaleDateString(da ? 'da-DK' : 'en-GB', {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
@@ -62,9 +64,9 @@ export function formatLong(event: ADEvent): { date: string; time: string } {
   const endDay = day(event.end)
   const date = startDay === endDay ? startDay : `${startDay} – ${endDay}`
 
-  let time = 'time TBA'
+  let time = da ? 'tid følger' : 'time TBA'
   if (startTime && endTime) time = `${startTime} – ${endTime}`
-  else if (startTime) time = `from ${startTime}`
+  else if (startTime) time = `${da ? 'fra' : 'from'} ${startTime}`
 
   return { date, time }
 }

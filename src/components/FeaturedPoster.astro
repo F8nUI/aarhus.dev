@@ -22,6 +22,7 @@ import {
   weekdayShort,
   yearOf,
 } from '@lib/format'
+import { langOf, localPath, t } from '@lib/i18n'
 import { topicName } from '@lib/topics'
 
 interface Props {
@@ -34,7 +35,9 @@ interface Props {
 
 const { event, nav = false, page = false } = Astro.props
 const { title, subtitle, venue, learnMoreURL, endTime } = event.data
-const time = timeRange(event)
+const lang = langOf(Astro.url)
+const w = t(lang)
+const time = timeRange(event, lang)
 const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.start)}`
 ---
 
@@ -48,24 +51,31 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
 >
   <div class="sp-strip">
     <span class="sp-label">
-      <span class="sp-up" data-rel>{relativeAtBuild(event)}</span>
-      <span class="sp-now"><span class="sp-lamp" aria-hidden="true"></span>Now{endTime && ` · until ${endTime}`}</span>
+      <span class="sp-up" data-rel>{relativeAtBuild(event, lang)}</span>
+      <span class="sp-now"><span class="sp-lamp" aria-hidden="true"></span>{w.now}{endTime && ` · ${w.untilTime(endTime)}`}</span>
     </span>
     {
       nav && (
         <span class="sp-nav" hidden data-fx-nav>
-          <button class="sp-navbtn" type="button" aria-label="Previous featured event" data-fx-prev>
+          <button class="sp-navbtn" type="button" aria-label={w.previousFeatured} data-fx-prev>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
               <path d="M15 4l-8 8 8 8" />
             </svg>
           </button>
           <span class="sp-count" data-fx-count />
-          <button class="sp-navbtn" type="button" aria-label="Next featured event" data-fx-next>
+          <button class="sp-navbtn" type="button" aria-label={w.nextFeatured} data-fx-next>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
               <path d="M9 4l8 8-8 8" />
             </svg>
           </button>
-          <button class="sp-navbtn sp-toggle" type="button" aria-label="Pause" data-fx-toggle>
+          <button
+            class="sp-navbtn sp-toggle"
+            type="button"
+            aria-label={w.pause}
+            data-fx-toggle
+            data-label-pause={w.pause}
+            data-label-play={w.play}
+          >
             <svg class="i-pause" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <rect x="4" y="3" width="6" height="18" />
               <rect x="14" y="3" width="6" height="18" />
@@ -82,22 +92,22 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
 
   <div class="sp-body">
     <hgroup class="sp-head">
-      <p class="sp-topic"><a href={`/${event.topic}`}>{topicName(event.topic)}</a></p>
-      {page ? <h1 class="sp-title">{title}</h1> : <h2 class="sp-title"><a href={event.url}>{title}</a></h2>}
+      <p class="sp-topic"><a href={localPath(lang, `/${event.topic}`)}>{topicName(event.topic, lang)}</a></p>
+      {page ? <h1 class="sp-title">{title}</h1> : <h2 class="sp-title"><a href={localPath(lang, event.url)}>{title}</a></h2>}
       {subtitle && <p class="sp-sub">{subtitle}</p>}
     </hgroup>
 
     <time class="sp-when" datetime={machineDate(event)}>
       <span class="sp-day">{dayNumber(event.start)}</span>
       <span class="sp-lines">
-        <span>{weekdayShort(event.start)} {monthShort(event.start)}{year}</span>
-        <span class:list={{ tba: !time }}>{time || 'Time TBA'}</span>
+        <span>{weekdayShort(event.start, lang)} {monthShort(event.start, lang)}{year}</span>
+        <span class:list={{ tba: !time }}>{time || w.timeTba}</span>
       </span>
     </time>
 
     <dl class="sp-facts">
       <div>
-        <dt>Where</dt>
+        <dt>{w.where}</dt>
         <dd>
           {
             venue ? (
@@ -108,22 +118,22 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
                 </a>
               </>
             ) : (
-              <span class="sp-name">Venue TBA</span>
+              <span class="sp-name">{w.venueTba}</span>
             )
           }
         </dd>
       </div>
       <div>
-        <dt>Organizer</dt>
-        <dd><a class="sp-name" href={`/organizer/${event.organizer.id}`}>{event.organizer.data.name}</a></dd>
+        <dt>{w.organizer}</dt>
+        <dd><a class="sp-name" href={localPath(lang, `/organizer/${event.organizer.id}`)}>{event.organizer.data.name}</a></dd>
       </div>
     </dl>
 
     <div class="sp-actions">
       <a class="sp-signup" href={learnMoreURL}>
-        <span class="sp-live">Sign up&nbsp;→</span>
-        <span class="sp-past">Event page&nbsp;→</span>
-        <span class="sp-host">on {linkHost(learnMoreURL)}</span>
+        <span class="sp-live">{w.signUp}&nbsp;→</span>
+        <span class="sp-past">{w.eventPage}&nbsp;→</span>
+        <span class="sp-host">{w.onHost(linkHost(learnMoreURL))}</span>
       </a>
       <slot name="actions" />
     </div>

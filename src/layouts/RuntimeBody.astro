@@ -1,17 +1,19 @@
 ---
 // Runs once the page is parsed: re-tags every event item for the current
 // (or overridden) time, keeps relative labels and counts current, keeps --head-h
-// at the header's height, and wires the topics' switch and every `.theme-toggle` button.
+// at the header's height, and wires the topics' switch, the language switch (it
+// remembers the choice, for RuntimeHead) and every `.theme-toggle` button.
 import { relativeLabel, whenTags } from '@lib/when'
 
 const script = `(function (whenTags, relativeLabel) {
   var now = window.aarhusNow()
+  var lang = document.documentElement.lang
   document.querySelectorAll('[data-start][data-end]').forEach(function (el) {
     var start = Date.parse(el.dataset.start)
     var end = Date.parse(el.dataset.end)
     el.dataset.when = whenTags(start, end, now)
     el.querySelectorAll('[data-rel]').forEach(function (label) {
-      label.textContent = relativeLabel(start, end, now)
+      label.textContent = relativeLabel(start, end, now, lang)
     })
   })
   // <span data-count="past"> → how many distinct events in its board are tagged "past"
@@ -52,6 +54,13 @@ const script = `(function (whenTags, relativeLabel) {
       var open = button.getAttribute('aria-expanded') === 'true'
       button.setAttribute('aria-expanded', open ? 'false' : 'true')
     })
+  })
+
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest && e.target.closest('[data-lang]')
+    if (link) {
+      try { localStorage.setItem('lang', link.dataset.lang) } catch (err) {}
+    }
   })
 
   document.addEventListener('click', function (e) {
