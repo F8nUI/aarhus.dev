@@ -1,409 +1,57 @@
 ---
-// An event as a ticket: board-style fields (When, Status, Where, Organizer) on the
-// left; on a perforated stub to the right, the calendar links beside the first row and
-// the sign-up button filling the cell beside the second, so the rows' rule runs
-// straight across and every cell has the same padding. The whole
-// head of the page, title to ticket, is set in the display face; the description
-// below is in the site's mono.
-import { formatLong, type ADEvent } from '@lib/event'
-import { googleCalendarUrl, icsFileName, icsHref } from '@lib/calendar'
-import { editUrl, eventAttrs, linkHost, machineDate, mapUrl, timeRange } from '@lib/format'
-import { topicColor, topicName } from '@lib/topics'
-import Status from './Status.astro'
+// An event's page: the event's poster laid out wide across the page in its topic's
+// color (title, date, where, who, sign-up), a note once it has ended, the calendar
+// links, the description, and where to fix it. The header's topic row marks its topic.
+import type { ADEvent } from '@lib/event'
+import { eventAttrs } from '@lib/format'
+import CalendarLinks from './event/CalendarLinks.astro'
+import EventEdit from './event/EventEdit.astro'
+import { eventFacts } from './event/facts'
+import FeaturedPoster from './FeaturedPoster.astro'
 
 interface Props {
   event: ADEvent
 }
 
 const { event } = Astro.props
-const { title, subtitle, venue, learnMoreURL } = event.data
-const when = formatLong(event)
-const time = timeRange(event)
-const map = mapUrl(event)
-const host = linkHost(learnMoreURL)
-const organizer = event.organizer
+const f = eventFacts(event)
 ---
 
 <article class="ev" {...eventAttrs(event)}>
-  <a class="ev-back" href={`/${event.topic}`}>
-    <span class="dot" style={`--dot: ${topicColor(event.topic)}`} aria-hidden="true"></span>
-    All {topicName(event.topic)} events
-  </a>
-
-  <header class="ev-head">
-    <h1 class="ev-title">{title}</h1>
-    {subtitle && <p class="ev-sub">{subtitle}</p>}
-  </header>
-
-  <p class="ev-ended">This event has ended.</p>
-
-  <div class="ticket">
-    <dl class="fields">
-      <div class="field f-when">
-        <dt>When</dt>
-        <dd>
-          <time class="f-date" datetime={machineDate(event)}>{when.date}</time>
-          <span class:list={['f-time', { tba: !time }]}>{time || 'Time TBA'}</span>
-        </dd>
-      </div>
-      <div class="field f-status">
-        <dt>Status</dt>
-        <dd><Status event={event} class="status-lg" /></dd>
-      </div>
-      <div class="field f-where">
-        <dt>Where</dt>
-        <dd>
-          {
-            venue ? (
-              <>
-                <span class="f-venue">{venue.title}</span>
-                <a class="f-map" href={map}>
-                  {venue.address}
-                </a>
-              </>
-            ) : (
-              <>
-                <span class="f-venue tba">Venue TBA</span>
-                <span class="f-note">Not announced yet</span>
-              </>
-            )
-          }
-        </dd>
-      </div>
-      <div class="field f-org">
-        <dt>Organizer</dt>
-        <dd>
-          <a class="f-venue" href={`/organizer/${organizer.id}`}>{organizer.data.name}</a>
-        </dd>
-      </div>
-    </dl>
-
-    <ul class="stub stub-cal">
-      <li><a href={icsHref(event)} download={icsFileName(event)}>Add to calendar (.ics)</a></li>
-      <li><a href={googleCalendarUrl(event)}>Google Calendar</a></li>
-    </ul>
-    <a class="stub btn" href={learnMoreURL}>
-      <span class="btn-live">Sign up&nbsp;→</span>
-      <span class="btn-past">Event page&nbsp;→</span>
-      <span class="btn-host">on {host}</span>
-    </a>
+  <div class="ev-band">
+    <FeaturedPoster event={event} page />
   </div>
-
+  <p class="ev-ended">This event has ended.</p>
+  <CalendarLinks facts={f} />
   <div class="prose ev-body">
     <slot />
   </div>
-
-  <p class="ev-edit">
-    Something wrong or missing? <a href={editUrl(event)}>Edit on GitHub</a>
-  </p>
+  <EventEdit facts={f} />
 </article>
 
 <style is:global>
   .site {
-    .ev {
-      max-width: 60rem;
+    .ev-band {
+      margin-inline: calc(-1 * var(--hang));
     }
-    /*
-     * One face for the head of the page: values at one size, then secondary lines, then
-     * labels; two weights: bold for labels, values and links, regular for what's secondary.
-     */
-    .ev-back,
-    .ev-head,
-    .ev-ended,
-    .ticket {
-      --ev-value: 1.625rem;
-      --ev-second: 1.0625rem;
-      --ev-label: 0.875rem;
-      font-family: var(--font-display);
-      font-variant-numeric: lining-nums tabular-nums;
-    }
-    .ev-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-size: var(--ev-label);
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--color-text-muted);
-      text-decoration: none;
-    }
-    .ev-back:hover {
-      text-decoration: underline;
-    }
-    .ev-head {
-      margin-top: 1rem;
-    }
-    .ev-title {
-      max-width: 22ch;
-      font-family: var(--font-display);
-      font-size: clamp(2.75rem, 7.5vw, 5rem);
-      font-weight: 800;
-      line-height: 0.92;
-      letter-spacing: 0.005em;
-      text-wrap: balance;
-      color: var(--title);
-    }
-    .ev-sub {
-      margin-top: 0.6rem;
-      font-size: var(--ev-value);
-      font-weight: 700;
-      line-height: 1.1;
-      color: var(--color-text-muted);
-    }
-
     .ev-ended {
       display: none;
-      margin: 1.5rem calc(-1 * var(--hang)) 0;
+      margin: 1rem calc(-1 * var(--hang)) 0;
       padding: 0.6rem calc(var(--hang) - 1px);
       border: 1px solid var(--color-border);
       background: var(--color-bg-subtle);
-      font-size: var(--ev-second);
-      font-weight: 800;
+      font-family: var(--font-display);
+      font-size: 1.0625rem;
+      font-weight: 700;
     }
     .ev[data-when~='past'] .ev-ended {
       display: block;
     }
-
-    /* ---------- the ticket: one grid, so the fields and the stub share their rows ---------- */
-    .ticket {
-      --notch: 0.75rem;
-      --stub: 19rem;
-      /* every cell's padding: fields, calendar links, the sign-up cell. The ticket starts on
-         the outer edge and its cells pad back to the text edge (less its border). */
-      --cell: 1rem calc(var(--hang) - 1.5px);
-      position: relative;
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) var(--stub);
-      margin: 2rem calc(-1 * var(--hang)) 0;
-      background: var(--ticket-bg);
-      border: 1.5px solid var(--ticket-edge);
+    .ev .cal-links {
+      margin-top: 1rem;
     }
-    .fields {
-      display: contents;
-    }
-    .field {
-      padding: var(--cell);
-      min-width: 0;
-    }
-    .field:nth-child(odd) {
-      border-right: 1px solid var(--color-border);
-    }
-    .field:nth-child(n + 3) {
-      border-top: 1px solid var(--color-border);
-    }
-    .field dt {
-      margin-bottom: 0.45rem;
-      font-size: var(--ev-label);
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--color-text-muted);
-    }
-    .field dd {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.3rem;
-    }
-    .f-date,
-    .f-time,
-    .f-venue,
-    .status-lg {
-      font-size: var(--ev-value);
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: 0.01em;
-      color: var(--title);
-    }
-    .f-time.tba,
-    .f-venue.tba {
-      color: var(--color-text-muted);
-    }
-    a.f-venue {
-      text-decoration: underline;
-    }
-    .f-map {
-      font-size: var(--ev-second);
-      font-weight: 400;
-      line-height: 1.25;
-      color: var(--color-text-muted);
-    }
-    .f-map:hover {
-      color: var(--accent-text);
-    }
-    .f-note {
-      font-size: var(--ev-second);
-      font-weight: 400;
-      color: var(--color-text-muted);
-    }
-    .f-status .status {
-      color: var(--title);
-    }
-    .ev[data-when~='past'] .st-ended {
-      display: inline;
-      margin-right: 1ch;
-    }
-    .ev[data-when~='past'] .f-status .st-rel {
-      font-size: var(--ev-second);
-      color: var(--color-text-muted);
-    }
-
-    /* ---------- the stub, behind a perforation: calendar links by the first row, the sign-up cell by the second ---------- */
-    .stub {
-      grid-column: 3;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      padding: var(--cell);
-      border-left: 2px dashed var(--color-border);
-    }
-    .stub-cal {
-      grid-row: 1;
-      gap: 0.35rem;
-      font-size: var(--ev-second);
-      font-weight: 800;
-    }
-    /* the notches, at both ends of the perforation */
-    .ticket::before,
-    .ticket::after {
-      content: '';
-      position: absolute;
-      left: calc(100% - var(--stub) + 1px - var(--notch));
-      width: calc(2 * var(--notch));
-      height: calc(2 * var(--notch));
-      border-radius: 50%;
-      background: var(--color-bg);
-      border: 1.5px solid var(--ticket-edge);
-    }
-    .ticket::before {
-      top: calc(-1 * var(--notch) - 1.5px);
-      clip-path: inset(50% 0 0 0);
-    }
-    .ticket::after {
-      bottom: calc(-1 * var(--notch) - 1.5px);
-      clip-path: inset(0 0 50% 0);
-    }
-    /* the sign-up button is the whole cell: flat, the same padding as every other cell */
-    .btn {
-      grid-row: 2;
-      background: var(--signup-bg);
-      color: #fff;
-      font-size: 1.25rem;
-      font-weight: 800;
-      line-height: 1.15;
-      text-decoration: none;
-      overflow-wrap: anywhere;
-    }
-    .btn:hover {
-      color: #fff;
-      background: var(--signup-hover);
-    }
-    .btn-past {
-      display: none;
-    }
-    .ev[data-when~='past'] .btn {
-      background: transparent;
-      color: var(--color-text);
-      border-top: 1px solid var(--color-border);
-    }
-    .ev[data-when~='past'] .btn:hover {
-      background: var(--color-bg-subtle);
-    }
-    .ev[data-when~='past'] .btn-live {
-      display: none;
-    }
-    .ev[data-when~='past'] .btn-past {
-      display: inline;
-    }
-    /* where the button goes: its second line, smaller, regular and faded */
-    .btn-host {
-      display: block;
-      margin-top: 0.3rem;
-      font-size: var(--ev-label);
-      font-weight: 400;
-      line-height: 1.25;
-      opacity: 0.85;
-    }
-
     .ev-body {
       margin-top: 2.5rem;
-    }
-    .ev-edit {
-      max-width: calc(68ch + 2 * var(--hang));
-      margin: 2.5rem calc(-1 * var(--hang)) 0;
-      padding: 0.9rem var(--hang) 0;
-      border-top: 1px solid var(--color-border);
-      font-size: 0.8125rem;
-      color: var(--color-text-muted);
-    }
-
-    /* ---------- tablets: the stub below the fields, perforated across ---------- */
-    @media (max-width: 48rem) {
-      .ticket {
-        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-      }
-      .stub {
-        grid-column: 1 / -1;
-        grid-row: auto;
-        border-left: 0;
-      }
-      .stub-cal {
-        position: relative;
-        border-top: 2px dashed var(--color-border);
-      }
-      .ticket::before,
-      .ticket::after {
-        content: none;
-      }
-      .stub-cal::before,
-      .stub-cal::after {
-        content: '';
-        position: absolute;
-        top: calc(-1 * var(--notch) - 1px);
-        width: calc(2 * var(--notch));
-        height: calc(2 * var(--notch));
-        border-radius: 50%;
-        background: var(--color-bg);
-        border: 1.5px solid var(--ticket-edge);
-      }
-      .stub-cal::before {
-        left: calc(-1 * var(--notch) - 1.5px);
-        clip-path: inset(0 0 0 50%);
-      }
-      .stub-cal::after {
-        right: calc(-1 * var(--notch) - 1.5px);
-        clip-path: inset(0 50% 0 0);
-      }
-    }
-
-    /* ---------- phones: edge to edge, so no side borders and no notches at the screen's edge ---------- */
-    @media (max-width: 40rem) {
-      .ticket {
-        --cell: 1rem var(--hang);
-        border-inline-width: 0;
-      }
-      .stub-cal::before,
-      .stub-cal::after {
-        content: none;
-      }
-    }
-
-    /* ---------- phones: one field per line ---------- */
-    @media (max-width: 30rem) {
-      .ticket {
-        --cell: 0.85rem var(--hang);
-        grid-template-columns: minmax(0, 1fr);
-      }
-      .field:nth-child(odd) {
-        border-right: 0;
-      }
-      .field:nth-child(n + 2) {
-        border-top: 1px solid var(--color-border);
-      }
-      .ev-title {
-        font-size: 2.75rem;
-      }
     }
   }
 </style>

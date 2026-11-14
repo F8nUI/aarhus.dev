@@ -126,25 +126,12 @@ export const editUrl = (event: ADEvent) =>
 
 // --- Featured posters --------------------------------------------------------
 
-/** Black or white, whichever has more contrast on the given color. */
-export function inkOn(hex: string): string {
-  const m = /^#([0-9a-f]{6})$/i.exec(hex)
-  if (!m) return 'var(--color-bg)'
-  const n = parseInt(m[1], 16)
-  const channel = (c: number) => {
-    const s = c / 255
-    return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
-  }
-  const lum = 0.2126 * channel((n >> 16) & 255) + 0.7152 * channel((n >> 8) & 255) + 0.0722 * channel(n & 255)
-  const onBlack = (lum + 0.05) / 0.05
-  const onWhite = 1.05 / (lum + 0.05)
-  return onBlack >= onWhite ? '#000' : '#fff'
-}
-
-/** Inline style that gives an element its topic color (--p) and the ink for it (--p-on). */
+/**
+ * Inline style that gives an element its topic color (--p) and the ink on it (--p-on):
+ * always white; the topic colors are chosen dark enough for it (src/lib/topics.ts).
+ */
 export function topicStyle(topic: string): string {
-  const color = topicColor(topic)
-  return `--p: ${color}; --p-on: ${inkOn(color)}`
+  return `--p: ${topicColor(topic)}; --p-on: #fff`
 }
 
 /**

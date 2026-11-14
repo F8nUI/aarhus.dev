@@ -27,20 +27,22 @@ interface Props {
   event: ADEvent
   /** Previous / count / next / pause in the top row, for a stack of several. */
   nav?: boolean
+  /** On the event's own page: the title is the page's heading, not a link to it. */
+  page?: boolean
 }
 
-const { event, nav = false } = Astro.props
+const { event, nav = false, page = false } = Astro.props
 const { title, subtitle, venue, learnMoreURL, endTime } = event.data
 const time = timeRange(event)
 const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.start)}`
 ---
 
 <article
-  class:list={['sp', `fit-${titleFit(title)}`]}
+  class:list={['sp', `fit-${titleFit(title)}`, { 'is-page': page }]}
   style={topicStyle(event.topic)}
-  role="group"
-  aria-roledescription="slide"
-  aria-label={title}
+  role={page ? undefined : 'group'}
+  aria-roledescription={page ? undefined : 'slide'}
+  aria-label={page ? undefined : title}
   {...eventAttrs(event)}
 >
   <div class="sp-strip">
@@ -80,7 +82,7 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
   <div class="sp-body">
     <hgroup class="sp-head">
       <p class="sp-topic"><a href={`/${event.topic}`}>{topicName(event.topic)}</a></p>
-      <h2 class="sp-title"><a href={event.url}>{title}</a></h2>
+      {page ? <h1 class="sp-title">{title}</h1> : <h2 class="sp-title"><a href={event.url}>{title}</a></h2>}
       {subtitle && <p class="sp-sub">{subtitle}</p>}
     </hgroup>
 
@@ -118,7 +120,8 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
 
     <p class="sp-actions">
       <a class="sp-signup" href={learnMoreURL}>
-        <span>Sign up&nbsp;→</span>
+        <span class="sp-live">Sign up&nbsp;→</span>
+        <span class="sp-past">Event page&nbsp;→</span>
         <span class="sp-host">on {linkHost(learnMoreURL)}</span>
       </a>
     </p>
@@ -239,15 +242,15 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       display: none;
     }
     /* the timer: the top row's rule fills while the poster is shown (Featured.astro runs it) */
+    /* grows by width, not by a GPU transform: pausing it (on hover) then holds exactly
+       what's on screen instead of snapping back to the page's slightly older time */
     .sp-progress {
       position: absolute;
       left: 0;
-      right: 0;
       bottom: calc(-1 * var(--rule));
+      width: 0;
       height: var(--rule);
       background: currentColor;
-      transform: scaleX(0);
-      transform-origin: left;
     }
 
     /* ---------- body: posters in a stack share the tallest one's height; the button keeps to the foot ---------- */
@@ -394,6 +397,14 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       text-decoration: none;
       overflow-wrap: anywhere;
     }
+    /* an event that has ended (on its own page): the button points to the organizer's page */
+    .sp-past,
+    .sp[data-when~='past'] .sp-live {
+      display: none;
+    }
+    .sp[data-when~='past'] .sp-past {
+      display: inline;
+    }
     .sp .sp-signup:hover {
       color: var(--p);
       text-decoration: underline;
@@ -495,6 +506,10 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       }
       .sp-address {
         display: none;
+      }
+      /* on the event's own page the address stays */
+      .sp.is-page .sp-address {
+        display: block;
       }
       .sp .sp-signup {
         padding: 0.65rem 0.9rem;

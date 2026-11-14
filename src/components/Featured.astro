@@ -300,7 +300,8 @@ const nav = events.length > 1
       .fx.is-carousel .sp-strip {
         border-bottom-color: currentColor;
       }
-      .sp-toggle {
+      /* specific enough to win over the poster's own button styles, whichever loads last */
+      .fx .sp-navbtn.sp-toggle {
         display: none;
       }
       .fx.is-carousel .fx-slides > .sp.is-current {
@@ -319,10 +320,10 @@ const nav = events.length > 1
   /* both ends named: see cursor-blink in src/styles/site.css */
   @keyframes fill-up {
     from {
-      transform: scaleX(0);
+      width: 0;
     }
     to {
-      transform: scaleX(1);
+      width: 100%;
     }
   }
 </style>

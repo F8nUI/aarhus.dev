@@ -23,9 +23,9 @@ How it fits together:
 
 - `src/content.config.ts` — the schema every event and organizer file is checked against.
 - `src/lib/event.ts` — loads events and formats their dates (always Aarhus time).
-- `src/lib/topics.ts` — display name and color per topic folder.
+- `src/lib/topics.ts` — per topic folder: display name, color, and optionally what to call its events ("dev conferences").
 - `src/components/Board.astro` — the event lists: today, tomorrow, this week, next week, then a section per month, with highlighted events as posters beside them (`Featured.astro`). The build renders the rows; a small script sorts them into the right section by the visitor's clock (`src/layouts/RuntimeBody.astro`), so the lists stay right between deploys.
-- `src/components/EventPage.astro` — an event's page.
+- `src/components/EventPage.astro` — an event's page: the event's poster laid out wide, then its description.
 
 ## Code style
 

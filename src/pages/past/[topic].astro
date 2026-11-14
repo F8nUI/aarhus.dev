@@ -2,7 +2,7 @@
 import Layout from '@layouts/Layout.astro'
 import Board from '@components/Board.astro'
 import { getEvents, getTopics } from '@lib/event'
-import { topicName } from '@lib/topics'
+import { topicEvents } from '@lib/topics'
 
 export async function getStaticPaths() {
   return (await getTopics()).map((topic) => ({ params: { topic } }))
@@ -10,11 +10,11 @@ export async function getStaticPaths() {
 
 const { topic } = Astro.params
 const metadata = {
-  title: `Past ${topicName(topic)} Events`,
-  description: `Past ${topicName(topic)} tech events and meetups in Aarhus, Denmark`,
+  title: `Past ${topicEvents(topic)} in Aarhus`,
+  description: `Past ${topicEvents(topic)} in Aarhus, Denmark`,
 }
 ---
 
-<Layout {metadata} {topic} heading={`past ${topicName(topic)} events in Aarhus`}>
+<Layout {metadata} {topic} heading={`past ${topicEvents(topic)} in Aarhus`}>
   <Board events={await getEvents(topic)} {topic} past={true} />
 </Layout>

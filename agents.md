@@ -26,8 +26,9 @@ src/
 │   ├── Row.astro              # one row on the board
 │   ├── Status.astro           # a row's status: NOW, TONIGHT, IN 6 DAYS
 │   ├── Featured.astro         # highlighted events beside the board, one at a time: controls, timer, swipe
-│   ├── FeaturedPoster.astro   # one highlighted event as a poster in its topic's color
-│   ├── EventPage.astro        # an event page: title, ticket (when, where, sign up), description
+│   ├── FeaturedPoster.astro   # an event as a poster in its topic's color (also the event page's head)
+│   ├── EventPage.astro        # an event page: its poster laid out wide, calendar links, description
+│   ├── event/                 # the event page's small parts: calendar links, the edit line
 │   ├── OrganizerEvents.astro  # an organizer's events, coming up and past
 │   └── TextPage.astro         # about, add event, organizer text
 ├── layouts/
@@ -36,7 +37,7 @@ src/
 │   └── RuntimeBody.astro      # after parsing: tags events for the visitor's clock, counts, theme switch
 ├── lib/
 │   ├── event.ts               # getEvents, getTopics, date formatting (Europe/Copenhagen)
-│   ├── topics.ts              # display name + color per topic folder
+│   ├── topics.ts              # per topic folder: display name, color (white text on it), what to call its events
 │   ├── when.ts                # past / now / today / tomorrow / week …, and "in 5 days"
 │   ├── format.ts              # date parts, row and poster helpers
 │   └── calendar.ts            # /calendar.ics and add-to-calendar links
@@ -67,6 +68,8 @@ What's past, today or next week depends on when someone looks, so the browser de
 - Without JavaScript the page shows the state at build time.
 
 **Featured events.** Every event with `highlight: true` that hasn't ended, from every topic, is drawn as a poster (`Featured.astro`), soonest first, on every list page (home, topics, past), beside the board on wide screens and above it on narrow ones. They take turns every 7 seconds; hovering, keyboard focus or the pause button holds them, and with reduced motion they only change when asked. Moving between pages, the carousel carries on where it was (poster, timer, pause), kept in `sessionStorage` for the tab's visit.
+
+**Topic counts.** Each topic link in the header shows how many of its events are still to come, "(3)", and a topic with none is dimmed. The links carry their events' end times (`data-ends`) and `RuntimeBody` counts them on every visit.
 
 **Checking a moment.** `?now=2026-11-19T17:30` (Aarhus time) makes the site pretend it's then, for the rest of the tab's visit; `?now=` goes back to the real time.
 

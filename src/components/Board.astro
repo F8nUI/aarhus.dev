@@ -10,7 +10,7 @@
 // Styles: src/styles/board.css.
 import { getEvents, type ADEvent } from '@lib/event'
 import { eventAttrs, featuredEvents, groupBy, monthTitle } from '@lib/format'
-import { topicName } from '@lib/topics'
+import { topicEvents } from '@lib/topics'
 import Featured from './Featured.astro'
 import Row from './Row.astro'
 
@@ -30,7 +30,8 @@ const ended = events.filter((e) => e.end.valueOf() < buildTime)
 
 const featured = featuredEvents(await getEvents())
 
-const name = topic ? topicName(topic) : undefined
+// "Swift events", "dev conferences", or just "events" on the all-topic lists
+const what = topic ? topicEvents(topic) : 'events'
 const pastHref = topic ? `/past/${topic}` : '/past'
 const upcomingHref = topic ? `/${topic}` : '/'
 
@@ -51,9 +52,9 @@ const archiveMonths = groupBy([...events].reverse(), (e) => monthTitle(e.start))
     past ? (
       <div class="tt-board" data-scope>
         <div class="archive-head">
-          <h2 class="archive-title">{name ? `Past ${name} events` : 'Past events'}</h2>
+          <h2 class="archive-title">Past {what}</h2>
           <a class="archive-back" href={upcomingHref}>
-            Upcoming {name ? `${name} ` : ''}events&nbsp;→
+            Upcoming {what}&nbsp;→
           </a>
         </div>
         <div class="cols" aria-hidden="true">
@@ -143,7 +144,7 @@ const archiveMonths = groupBy([...events].reverse(), (e) => monthTitle(e.start))
           ))}
 
           <div class="empty" data-empty="upcoming">
-            <p>No {name ? `${name} ` : ''}events on the board yet.</p>
+            <p>No {what} on the board yet.</p>
             <p class="empty-sub">
               Know of one coming up? <a href="/add-event">Add an event</a>
             </p>
@@ -151,7 +152,7 @@ const archiveMonths = groupBy([...events].reverse(), (e) => monthTitle(e.start))
 
           <p class="tt-end">
             <a class="tt-past" href={pastHref}>
-              Past {name ? `${name} ` : ''}events (<span data-count="past">{ended.length}</span>)
+              Past {what} (<span data-count="past">{ended.length}</span>)
             </a>
           </p>
 

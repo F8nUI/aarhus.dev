@@ -23,12 +23,7 @@
   --accent: #f5a524;
   --accent-text: #a64f00;
   --focus: #c25e00;
-  --ticket-bg: #ffffff;
-  --ticket-edge: #17140f;
   --board-bg: #15110a;
-  /* the sign-up cell: white on burnt orange, in both themes */
-  --signup-bg: #a64f00;
-  --signup-hover: #8a4100;
 }
 
 :root[data-theme='dark'] {
@@ -43,8 +38,6 @@
   --prose: #edd4a2;
   --accent-text: #ffc65e;
   --focus: #ffd27f;
-  --ticket-bg: #15110a;
-  --ticket-edge: #5a4520;
   --board-bg: #17120a;
 }
 
@@ -61,8 +54,6 @@
     --prose: #edd4a2;
     --accent-text: #ffc65e;
     --focus: #ffd27f;
-    --ticket-bg: #15110a;
-    --ticket-edge: #5a4520;
     --board-bg: #17120a;
   }
 }

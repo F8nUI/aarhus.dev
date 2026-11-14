@@ -7,7 +7,7 @@ import '../styles/site.css'
 import '../styles/board.css'
 import Analytics from '@vercel/analytics/astro'
 import { calendarFeed } from '@lib/calendar'
-import { getTopics } from '@lib/event'
+import { getEvents, getTopics } from '@lib/event'
 import { topicColor, topicName } from '@lib/topics'
 import RuntimeBody from './RuntimeBody.astro'
 import RuntimeHead from './RuntimeHead.astro'
@@ -16,7 +16,7 @@ interface Props {
   metadata?: { title?: string; description?: string }
   /** The topic the page belongs to: it's marked as the current one in the topic links. */
   topic?: string
-  /** The list pages' title, shown beside the logo as the page's h1: "Rust events in Aarhus". */
+  /** The list pages' title, shown beside the logo as the page's h1: "Rust events in Aarhus", "Dev conferences in Aarhus". */
   heading?: string
 }
 
@@ -30,6 +30,11 @@ const pageTitle = metadata?.title ? `${metadata.title} – ${siteName}` : siteTi
 const pageDescription = metadata?.description || defaultDescription
 
 const topics = (await getTopics()).sort((a, b) => topicName(a).localeCompare(topicName(b)))
+// Each topic link carries the end times of its events still to come at build time;
+// RuntimeBody counts those still to come on the visit and fills in "(3)".
+const buildTime = Date.now()
+const upcoming = (await getEvents()).filter((e) => e.end.valueOf() >= buildTime)
+const ends = (t?: string) => upcoming.filter((e) => !t || e.topic === t).map((e) => e.end.toISOString())
 // "All topics" is the current one only on the all-topic lists (home and /past), not on text pages.
 const onAllList = !topic && /^\/(past\/?)?$/.test(Astro.url.pathname)
 ---
@@ -72,12 +77,14 @@ const onAllList = !topic && /^\/(past\/?)?$/.test(Astro.url.pathname)
           </span>
         </div>
         <nav class="lines" aria-label="Topics">
-          <a href="/" aria-current={onAllList ? 'true' : undefined}>All topics</a>
+          <a href="/" aria-current={onAllList ? 'true' : undefined} data-ends={ends().join(' ')}>
+            <span class="topic-label">All topics</span> <span class="count" data-upcoming>({ends().length})</span>
+          </a>
           {
             topics.map((t) => (
-              <a href={`/${t}`} aria-current={t === topic ? 'true' : undefined}>
+              <a href={`/${t}`} aria-current={t === topic ? 'true' : undefined} data-ends={ends(t).join(' ')}>
                 <span class="dot" style={`--dot: ${topicColor(t)}`} aria-hidden="true" />
-                {topicName(t)}
+                <span class="topic-label">{topicName(t)}</span> <span class="count" data-upcoming>({ends(t).length})</span>
               </a>
             ))
           }

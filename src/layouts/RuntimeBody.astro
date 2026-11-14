@@ -25,6 +25,16 @@ const script = `(function (whenTags, relativeLabel) {
     counter.textContent = Object.keys(seen).length
   })
 
+  // the topic links: how many of each topic's events are still to come, "(3)"; none dims it
+  document.querySelectorAll('[data-ends]').forEach(function (link) {
+    var n = (link.dataset.ends || '').split(' ').filter(function (t) {
+      return t && Date.parse(t) >= now
+    }).length
+    var count = link.querySelector('[data-upcoming]')
+    if (count) count.textContent = '(' + n + ')'
+    link.classList.toggle('is-empty', n === 0)
+  })
+
   // --head-h: the header's height, for what sticks below it on desktop (the header can
   // grow a line when the topics wrap)
   var head = document.querySelector('.head')
