@@ -5,6 +5,9 @@
 // site around them is translated. The About and Add event texts have Danish versions
 // in src/content/da/. Dates: src/lib/format.ts; "in 5 days": src/lib/when.ts; topic
 // names: src/lib/topics.ts.
+// The Danish follows what Danish libraries, universities and tech unions write (see
+// RESEARCH.md, G): "arrangement(er)" for events, "Tilmeld dig", "Bestil billet",
+// "Arrangør", and dates like "tors. 19. nov.".
 
 export type Lang = 'en' | 'da'
 
@@ -131,46 +134,46 @@ const en = {
 }
 
 const da: typeof en = {
-  siteTitle: 'Udvikler-events og tech-meetups i Aarhus – aarhus.dev',
+  siteTitle: 'Tech-meetups og arrangementer for udviklere i Aarhus – aarhus.dev',
   siteDescription:
-    'En kalender over udvikler-events og tech-meetups i Aarhus. Find Swift, Rust, JavaScript, Ruby og mange flere fællesskaber.',
+    'En kalender over tech-meetups og arrangementer for udviklere i Aarhus. Find Swift, Rust, JavaScript, Ruby og mange flere fællesskaber.',
   tagline: 'tech-meetups i Aarhus',
   subscribe: 'Abonnér på kalenderen',
-  addAnEvent: 'Tilføj et event',
+  addAnEvent: 'Tilføj et arrangement',
   topics: 'Emner',
   allTopics: 'Alle emner',
-  footAbout: 'er en fællesskabsdrevet kalender over tech-events i Aarhus.',
+  footAbout: 'er en fællesskabsdrevet kalender over tech-arrangementer i Aarhus.',
   footSite: 'Siden',
   footFollow: 'Følg med',
   about: 'Om',
-  addEvent: 'Tilføj event',
+  addEvent: 'Tilføj arrangement',
   subscribeLink: 'Abonnér på kalenderen',
   calendarUrl: 'Kalender-URL (.ics)',
   calendarUrlHint: 'Kalenderens webadresse, til apps der beder om en URL',
   rssFeed: 'RSS-feed',
-  rssHint: 'Alle kommende events, til din feedlæser',
-  rssName: 'aarhus.dev: kommende events',
+  rssHint: 'Alle kommende arrangementer, til din feedlæser',
+  rssName: 'aarhus.dev: kommende arrangementer',
   themeSwitch: 'Skift mellem lyst og mørkt',
 
-  events: 'events',
+  events: 'arrangementer',
   today: 'I dag',
   tomorrow: 'I morgen',
   thisWeek: 'Denne uge',
   nextWeek: 'Næste uge',
-  cols: { day: 'Dag', time: 'Tid', topic: 'Emne', event: 'Event', venue: 'Sted', status: 'Status' },
+  cols: { day: 'Dag', time: 'Tid', topic: 'Emne', event: 'Arrangement', venue: 'Sted', status: 'Status' },
   pastOf: (what) => `Tidligere ${what}`,
   upcomingOf: (what) => `Kommende ${what}`,
   archiveEmpty: 'Intet i arkivet endnu.',
-  archiveEmptyHint: 'Events flytter hertil dagen efter, de er slut.',
+  archiveEmptyHint: 'Arrangementer flytter hertil dagen efter, de er slut.',
   seeUpcoming: 'Se, hvad der er på vej',
   boardEmpty: (what) => `Ingen ${what} på tavlen endnu.`,
   boardEmptyHint: 'Kender du et, der er på vej?',
   comingUp: 'Kommende',
   nothingComingUp: 'Intet på vej endnu.',
   knowOfOne: 'Kender du et?',
-  pastEvents: 'Tidligere events',
+  pastEvents: 'Tidligere arrangementer',
 
-  aboutUpcoming: 'kommende events',
+  aboutUpcoming: 'kommende arrangementer',
   aboutCommunities: 'fællesskaber',
   aboutTopics: 'emner',
   communitiesTitle: 'Fællesskaberne',
@@ -186,36 +189,36 @@ const da: typeof en = {
   fromTime: (time) => `fra ${time}`,
   untilTime: (time) => `til ${time}`,
 
-  featured: 'Fremhævede events',
-  previousFeatured: 'Forrige fremhævede event',
-  nextFeatured: 'Næste fremhævede event',
+  featured: 'Fremhævede arrangementer',
+  previousFeatured: 'Forrige fremhævede arrangement',
+  nextFeatured: 'Næste fremhævede arrangement',
   pause: 'Pause',
   play: 'Afspil',
   where: 'Hvor',
   organizer: 'Arrangør',
-  linkFor: { signup: 'Tilmeld dig', tickets: 'Billetter', info: 'Læs mere' },
-  eventPage: 'Eventside',
+  linkFor: { signup: 'Tilmeld dig', tickets: 'Bestil billet', info: 'Læs mere' },
+  eventPage: 'Se arrangementet',
   learnMore: 'Læs mere',
   onHost: (host) => `på ${host}`,
 
-  hasEnded: 'Dette event er slut.',
+  hasEnded: 'Dette arrangement er slut.',
   addToCalendar: 'Tilføj til kalender (.ics)',
   googleCalendar: 'Google Kalender',
   fixPrompt: 'Er der noget galt, eller mangler der noget?',
   fixLink: 'Ret det på GitHub',
 
   notFoundTitle: 'Siden findes ikke',
-  notFoundText: 'Der er ingen side på denne adresse. Eventet kan være flyttet, eller der er en tastefejl i linket.',
+  notFoundText: 'Der er ingen side på denne adresse. Arrangementet kan være flyttet, eller der er en tastefejl i linket.',
 
   inAarhus: (what) => `${what} i Aarhus`,
   topicDescription: (what) => `${what} i Aarhus: hvad der er på vej, med datoer, steder og tilmelding`,
-  pastTitle: 'Tidligere events',
-  pastDescription: 'Tidligere tech-events og meetups i Aarhus',
-  pastHeading: 'tidligere events i Aarhus',
+  pastTitle: 'Tidligere arrangementer',
+  pastDescription: 'Tidligere tech-arrangementer og meetups i Aarhus',
+  pastHeading: 'tidligere arrangementer i Aarhus',
   pastTopicTitle: (what) => `Tidligere ${what} i Aarhus`,
   pastTopicDescription: (what) => `Tidligere ${what} i Aarhus`,
   pastTopicHeading: (what) => `tidligere ${what} i Aarhus`,
-  organizerDescription: (name) => `Tech-events fra ${name} i Aarhus: hvad der er på vej, og hvad der har været`,
+  organizerDescription: (name) => `Tech-arrangementer fra ${name} i Aarhus: hvad der er på vej, og hvad der har været`,
 }
 
 const WORDS: Record<Lang, typeof en> = { en, da }

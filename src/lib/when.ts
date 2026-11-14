@@ -33,7 +33,7 @@ export function whenTags(start: number, end: number, now: number): string {
 /**
  * "happening now", "today", "tomorrow", "in 5 days", "in 3 weeks", "2 months ago"; in
  * Danish ('da') "i gang nu", "i dag", "i morgen", "om 5 dage", "om 3 uger", "for 2
- * måneder siden". Self-contained: RuntimeBody ships it to the browser as it is.
+ * mdr. siden". Self-contained: RuntimeBody ships it to the browser as it is.
  */
 export function relativeLabel(start: number, end: number, now: number, lang?: string): string {
   const da = lang === 'da'
@@ -46,9 +46,10 @@ export function relativeLabel(start: number, end: number, now: number, lang?: st
   const n = Math.abs(days)
   const count = n < 14 ? n : n < 60 ? Math.round(n / 7) : Math.round(n / 30)
   const unit = n < 14 ? 0 : n < 60 ? 1 : 2
-  // [one, many] of day, week, month
+  // [one, many] of day, week, month; Danish past months as "mdr.", so "for 5 mdr.
+  // siden" fits a phone's status column the way "5 months ago" does
   const units = da
-    ? [['dag', 'dage'], ['uge', 'uger'], ['måned', 'måneder']]
+    ? [['dag', 'dage'], ['uge', 'uger'], days > 0 ? ['måned', 'måneder'] : ['md.', 'mdr.']]
     : [['day', 'days'], ['week', 'weeks'], ['month', 'months']]
   const phrase = count + ' ' + units[unit][count === 1 ? 0 : 1]
   if (days > 0) return (da ? 'om ' : 'in ') + phrase

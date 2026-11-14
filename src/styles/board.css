@@ -6,10 +6,10 @@
   /* --hang (in site.css): how far backgrounds hang outside the text edge. */
   /* Space between the big blocks: head event, today, this week, next week, later. */
   --gap: 2.5rem;
-  /* The day's width in a row's date: "Thu 19 Nov"; a character more in Danish, "tor 19. nov". */
+  /* The day's width in a row's date: "Thu 19 Nov"; in Danish "tirs. 19. nov." (14 characters). */
   --day-w: 6em;
   &:lang(da) {
-    --day-w: 6.6em;
+    --day-w: 8.4em;
   }
 
   /* No past events: no link to them. */
@@ -420,10 +420,11 @@
    */
   @container board (max-width: 38rem) {
     .row {
-      grid-template-columns: auto 0.55rem minmax(0, 1fr) auto;
+      /* the status takes the rest of the line, right-aligned (Status: justify-self end) */
+      grid-template-columns: auto 0.55rem minmax(0, 1fr);
       grid-template-areas:
-        'when topic . status'
-        'main main main main';
+        'when topic status'
+        'main main main';
       column-gap: 0.9em;
       row-gap: 0.2rem;
     }

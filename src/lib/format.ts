@@ -32,28 +32,30 @@ export function relativeAtBuild(event: ADEvent, lang: Lang = 'en'): string {
 const part = (d: Date, options: Intl.DateTimeFormatOptions, locale = 'en-GB') =>
   d.toLocaleString(locale, { timeZone: CPH, ...options })
 
-// Danish names are spelled out rather than taken from Intl, which abbreviates them
-// unevenly ("tors.", "nov.") and would throw the board's date column out of line.
+// Danish names are spelled out here, in the standard Danish abbreviations ("tors.",
+// "nov."; "maj" is whole), rather than taken from Intl, whose data can differ between
+// the machines that build the site.
 const DA_WEEKDAYS: Record<string, string> = {
-  Mon: 'man',
-  Tue: 'tir',
-  Wed: 'ons',
-  Thu: 'tor',
-  Fri: 'fre',
-  Sat: 'lør',
-  Sun: 'søn',
+  Mon: 'man.',
+  Tue: 'tirs.',
+  Wed: 'ons.',
+  Thu: 'tors.',
+  Fri: 'fre.',
+  Sat: 'lør.',
+  Sun: 'søn.',
 }
 const DA_MONTHS = 'januar februar marts april maj juni juli august september oktober november december'.split(' ')
+const daMonthShort = (month: string) => (month.length > 3 ? `${month.slice(0, 3)}.` : month)
 const monthIndex = (d: Date) => Number(part(d, { month: 'numeric' })) - 1
 
 /** "19" */
 export const dayNumber = (d: Date) => part(d, { day: 'numeric' })
-/** "Thu"; "tor" */
+/** "Thu"; "tors." */
 export const weekdayShort = (d: Date, lang: Lang = 'en') =>
   lang === 'da' ? DA_WEEKDAYS[part(d, { weekday: 'short' })] : part(d, { weekday: 'short' })
-/** "Nov"; "nov" */
+/** "Nov"; "nov.", "maj" */
 export const monthShort = (d: Date, lang: Lang = 'en') =>
-  lang === 'da' ? DA_MONTHS[monthIndex(d)].slice(0, 3) : part(d, { month: 'short' }).replace('Sept', 'Sep')
+  lang === 'da' ? daMonthShort(DA_MONTHS[monthIndex(d)]) : part(d, { month: 'short' }).replace('Sept', 'Sep')
 /** "November"; "november" */
 export const monthLong = (d: Date, lang: Lang = 'en') =>
   lang === 'da' ? DA_MONTHS[monthIndex(d)] : part(d, { month: 'long' })
@@ -70,12 +72,14 @@ const FIGURE_SPACE = ' '
 
 /**
  * "Thu 19 Nov", with single-digit days padded so the month column lines up: "Fri  4 Dec".
- * Danish: "tor 19. nov".
+ * Danish: "tors. 19. nov.", the weekday padded to the longest ("tirs.") so the day
+ * numbers line up too: "man.  19. nov.".
  */
 export function boardDate(event: ADEvent, lang: Lang = 'en'): string {
   const d = event.start
   const day = dayNumber(d).padStart(2, FIGURE_SPACE)
-  return `${weekdayShort(d, lang)} ${lang === 'da' ? `${day}.` : day} ${monthShort(d, lang)}`
+  if (lang === 'da') return `${weekdayShort(d, lang).padEnd(5, FIGURE_SPACE)} ${day}. ${monthShort(d, lang)}`
+  return `${weekdayShort(d, lang)} ${day} ${monthShort(d, lang)}`
 }
 
 /** The value for `<time datetime>`: the exact start, or just the day when the time isn't announced. */

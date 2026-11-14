@@ -3,7 +3,7 @@
 // "Conference events"): it names the topic's page ("Dev conferences in Aarhus") and
 // its archive ("Past dev conferences").
 // `da` holds the Danish name and events phrase, where they differ from the English
-// name and "<name>-events" (src/lib/i18n.ts).
+// name and "<name>-arrangementer" (src/lib/i18n.ts).
 // A folder without an entry still works: it shows its folder name and a neutral dot.
 // Every color is dark enough for white text on it (at least 4.5:1): in light, the
 // featured posters set their title, date and details in white on the topic's color.
@@ -27,13 +27,13 @@ const TOPICS: Record<string, Topic> = {
   python: { name: 'Python', color: '#3776ab' },
   ruby: { name: 'Ruby', color: '#cc342d' },
   rust: { name: 'Rust', color: '#9d6849' },
-  security: { name: 'Security', color: '#018639', da: { name: 'Sikkerhed', events: 'sikkerhedsevents' } },
+  security: { name: 'Security', color: '#018639', da: { name: 'Sikkerhed', events: 'sikkerhedsarrangementer' } },
   swift: { name: 'Swift', color: '#d93921' },
 }
 
-/** What to call the topic's events, mid-sentence: "Swift events", "dev conferences"; "Swift-events" in Danish. */
+/** What to call the topic's events, mid-sentence: "Swift events", "dev conferences"; "Swift-arrangementer" in Danish. */
 export function topicEvents(topic: string, lang: Lang = 'en'): string {
-  if (lang === 'da') return TOPICS[topic]?.da?.events ?? `${topicName(topic, lang)}-events`
+  if (lang === 'da') return TOPICS[topic]?.da?.events ?? `${topicName(topic, lang)}-arrangementer`
   return TOPICS[topic]?.events ?? `${topicName(topic)} events`
 }
 
