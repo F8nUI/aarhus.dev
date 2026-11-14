@@ -235,7 +235,7 @@
     --accent-text: var(--board-bright);
     --focus: var(--board-bright);
     margin-inline: calc(-1 * var(--hang));
-    padding: 1rem var(--hang) 0.5rem;
+    padding: 0.875rem var(--hang) 0.5rem;
     background: var(--board-bg);
     color: var(--board-lit);
     box-shadow: inset 0 0 0 1px var(--board-edge);
@@ -244,21 +244,27 @@
     display: none;
   }
 
-  /* ---------- section and board headings: one size, one rhythm ---------- */
+  /*
+   * ---------- section and board headings: one size, one rhythm ----------
+   * Trimmed to their capitals and baseline, so the space above the letters (from the
+   * rule, or the board's top) equals the space below them (to the first row's rule).
+   */
   .board-head,
   .sect-head {
+    --head-space: 0.875rem;
     font-family: var(--font-display);
     font-size: 2.25rem;
     font-weight: 800;
     line-height: 1;
     letter-spacing: 0.01em;
+    text-box: trim-both cap alphabetic;
   }
   .board-head {
-    padding-bottom: 0.5rem;
+    padding-bottom: var(--head-space);
     color: var(--board-lit);
   }
   .sect-head {
-    padding: 0.75rem 0 0.5rem;
+    padding-block: var(--head-space);
     border-top: 2px solid var(--ink);
   }
   /*
@@ -419,8 +425,14 @@
   }
 }
 
+/* every step named: see cursor-blink in site.css */
 @keyframes blink {
-  50% {
+  0%,
+  49.99% {
+    opacity: 1;
+  }
+  50%,
+  100% {
     opacity: 0.25;
   }
 }

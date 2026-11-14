@@ -256,7 +256,11 @@ const nav = events.length > 1
     }
   }
 
+  /* both ends named: see cursor-blink in src/styles/site.css */
   @keyframes fill-up {
+    from {
+      transform: scaleX(0);
+    }
     to {
       transform: scaleX(1);
     }

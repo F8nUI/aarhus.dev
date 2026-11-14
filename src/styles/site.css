@@ -350,8 +350,19 @@
   }
 }
 
+/*
+ * Every step is named. With only "50%" given, the start and end come from the
+ * element's style, and Safari re-reads them whenever that style changes (hovering
+ * the logo recolors the cursor) from the value the animation has at that moment;
+ * caught at opacity 0, every step became 0 and the blinking stopped.
+ */
 @keyframes cursor-blink {
-  50% {
+  0%,
+  49.99% {
+    opacity: 1;
+  }
+  50%,
+  100% {
     opacity: 0;
   }
 }
