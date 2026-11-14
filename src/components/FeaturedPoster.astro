@@ -265,11 +265,16 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
-    .sp-topic a {
+    /* the topic and the title link without an underline: pointing at them fades them a little */
+    .sp-topic a,
+    .sp-title a {
       text-decoration: none;
+      transition: opacity 0.15s ease;
     }
-    .sp-topic a:hover {
-      text-decoration: underline;
+    .sp .sp-topic a:hover,
+    .sp .sp-title a:hover {
+      text-decoration: none;
+      opacity: 0.72;
     }
     .sp-title {
       font-weight: 800;
@@ -278,14 +283,6 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
       text-transform: uppercase;
       text-wrap: balance;
       overflow-wrap: break-word;
-    }
-    .sp-title a {
-      text-decoration: none;
-    }
-    .sp-title a:hover {
-      text-decoration: underline;
-      text-decoration-thickness: 0.05em;
-      text-underline-offset: 0.08em;
     }
     /* the title fills about the same block, short or long */
     .fit-xs .sp-title {
