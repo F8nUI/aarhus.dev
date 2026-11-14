@@ -46,10 +46,10 @@ const w = t(langOf(Astro.url))
             slide.querySelector('[data-fx-count]').textContent = k + 1 + ' / ' + live.length
             slide.querySelector('[data-fx-nav]').hidden = false
           })
-          // Every poster's place-and-organizer block and button as tall as the tallest
-          // one's: with the title's row taking the spare height, the date, place,
-          // organizer and button then sit at the same height on each. Again whenever
-          // the stack changes size (a new width rewraps an address).
+          // Every poster's organizer block and link as tall as the tallest one's: with
+          // the title's row taking the spare height, the date, organizer and link then
+          // sit at the same height on each. Again whenever the stack changes size (a
+          // new width rewraps a long organizer name).
           var level = function () {
             ;['.sp-facts', '.sp-actions'].forEach(function (part) {
               var blocks = live.map(function (slide) {

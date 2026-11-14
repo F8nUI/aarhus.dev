@@ -101,6 +101,8 @@ const en = {
   /** The event's link, by what it's for (the event's `linkFor`); without one, eventPage. */
   linkFor: { signup: 'Sign up', tickets: 'Get tickets', info: 'Read more' },
   eventPage: 'Event page',
+  /** A featured poster's link to the event's page on this site. */
+  learnMore: 'Learn more',
   onHost: (host: string) => `on ${host}`,
 
   // an event's page (EventPage.astro and event/)
@@ -189,6 +191,7 @@ const da: typeof en = {
   organizer: 'Arrangør',
   linkFor: { signup: 'Tilmeld dig', tickets: 'Billetter', info: 'Læs mere' },
   eventPage: 'Eventside',
+  learnMore: 'Læs mere',
   onHost: (host) => `på ${host}`,
 
   hasEnded: 'Dette event er slut.',

@@ -67,7 +67,7 @@ Required:
 
 Optional:
 
-- `linkFor` — what the link is for, which names it on the event's poster: `signup` ("Sign up"), `tickets` ("Get tickets") or `info` ("Read more"). Leave it out and the link says "Event page".
+- `linkFor` — what the link is for, which names it on the event's page: `signup` ("Sign up"), `tickets` ("Get tickets") or `info` ("Read more"). Leave it out and the link says "Event page".
 - `subtitle` — a line under the title, such as `Morning Meetup`.
 - `endDate` — the last day of a multi-day event.
 - `startTime`, `endTime` — Aarhus local time, 24-hour: `18:00`. Leave out what isn't announced yet; the site shows "time TBA".

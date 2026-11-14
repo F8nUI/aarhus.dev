@@ -1,9 +1,11 @@
 ---
 // One featured event as a portrait poster in its topic's color, in both themes: the
 // title stacked in the board's display face (it links to the event page), the date as
-// one big day number with weekday, month and time beside it, then place, organizer and
-// its link, named by what it's for: "Sign up", "Get tickets", "Read more", or "Event
-// page" (on the event's page, the `actions` slot adds the calendar links under it). Its top row says when ("in 6 days", "now · until 16:30");
+// one big day number with weekday, month and time beside it, then the organizer and a
+// "Learn more" link to the event's page. On that page (`page`) it also shows where, and
+// its link goes out to the organizer's, named by what it's for ("Sign up", "Get
+// tickets", "Read more", or "Event page"), with the `actions` slot adding the calendar
+// links under it. Its top row says when ("in 6 days", "now · until 16:30");
 // Featured.astro stacks them beside the board and, with `nav`, puts the controls at
 // that row's right end.
 // Laid out wide (above the board on narrow screens, and on the event's page), the date,
@@ -26,6 +28,7 @@ import {
 } from '@lib/format'
 import { langOf, localPath, t } from '@lib/i18n'
 import { topicName } from '@lib/topics'
+import LinkArrow from './LinkArrow.astro'
 
 interface Props {
   event: ADEvent
@@ -108,23 +111,25 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
     </time>
 
     <dl class="sp-facts">
-      <div>
-        <dt>{w.where}</dt>
-        <dd>
-          {
-            venue ? (
-              <>
-                <span class="sp-name">{venue.title}</span>
-                <a class="sp-address" href={mapUrl(event)}>
-                  {venue.address}
-                </a>
-              </>
-            ) : (
-              <span class="sp-name">{w.venueTba}</span>
-            )
-          }
-        </dd>
-      </div>
+      {
+        page && (
+          <div>
+            <dt>{w.where}</dt>
+            <dd>
+              {venue ? (
+                <>
+                  <span class="sp-name">{venue.title}</span>
+                  <a class="sp-address" href={mapUrl(event)}>
+                    {venue.address}
+                  </a>
+                </>
+              ) : (
+                <span class="sp-name">{w.venueTba}</span>
+              )}
+            </dd>
+          </div>
+        )
+      }
       <div>
         <dt>{w.organizer}</dt>
         <dd><a class="sp-name" href={localPath(lang, `/organizer/${event.organizer.id}`)}>{event.organizer.data.name}</a></dd>
@@ -132,11 +137,23 @@ const year = yearOf(event.start) === yearOf(new Date()) ? '' : ` ${yearOf(event.
     </dl>
 
     <div class="sp-actions">
-      <a class="sp-signup" href={learnMoreURL}>
-        <span class="sp-go"><span class="sp-live">{linkFor ? w.linkFor[linkFor] : w.eventPage}</span><span class="sp-past">{w.eventPage}</span></span> <span
-          class="sp-host">{w.onHost(linkHost(learnMoreURL))}</span
-        ><svg class="sp-arrow" viewBox="0 0 24 18" aria-hidden="true"><path d="M2 9h18.5M14 2.5 20.5 9 14 15.5" /></svg>
-      </a>
+      {
+        page ? (
+          <a class="sp-signup" href={learnMoreURL}>
+            <span class="sp-go">
+              <span class="sp-live">{linkFor ? w.linkFor[linkFor] : w.eventPage}</span>
+              <span class="sp-past">{w.eventPage}</span>
+            </span>{' '}
+            <span class="sp-host">{w.onHost(linkHost(learnMoreURL))}</span>
+            <LinkArrow />
+          </a>
+        ) : (
+          <a class="sp-signup" href={localPath(lang, event.url)}>
+            <span class="sp-go">{w.learnMore}</span>
+            <LinkArrow />
+          </a>
+        )
+      }
       <slot name="actions" />
     </div>
   </div>
