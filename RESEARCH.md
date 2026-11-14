@@ -163,3 +163,70 @@ Checked and English, inactive or out of scope: ANUG, Tech Hub Aarhus, CoderGirls
 Laravel Aarhus, Code&Share, CyberSkills, Coding Pirates (children), Den Agile Madklub (social dinners), Dansk IT's
 OffDig (public-sector digitalisation). Not verified: IDA's listings (they render with JavaScript), the language of
 V2 Security's talks, PROSA's exact address (38K or 38M), whether Open Space's talks still run.
+
+## G. Danish wording for the interface (2026-11-14)
+
+What Danish sites call events, and how they word the parts around them, to choose the
+Danish text in `src/lib/i18n.ts`. These are 31 sources, read in their Danish versions
+on 2026-11-14 with the exact labels quoted. Six could not be read (JavaScript-only, a
+CAPTCHA or a bot check) and are marked unknown.
+
+### The word for "events"
+
+| Group | Word for the items | Section heading |
+|---|---|---|
+| Libraries (Aarhus/Dokk1, Copenhagen, Odense, Aalborg) | **arrangement(er)**, all five | "Det sker" at all five, as nav label or page title |
+| Universities (AU, KU, DTU, ITU, SDU) | **arrangementer**, all five | "Kalender" (KU, ITU, SDU) |
+| City and culture (VisitAarhus, KultuNaut, ARoS, Musikhuset) | mixed: events, arrangementer, begivenheder | "Kalender", "Det sker" |
+| Tech unions and associations (PROSA, IDA, Dansk IT, DI Digital) | **arrangementer** | "Arrangementer og kurser" and similar |
+| Tech industry and startups (IT-Branchen, INCUBA, Ingeniøren) | **events** | "Events" |
+| Platforms (Billetto; Facebook, Google Calendar) | Billetto: events; Facebook and Google: **begivenhed** | — |
+
+- **Den Danske Ordbog:** an *arrangement* (intetkøn) is "(offentlig) aktivitet eller begivenhed som nogen har forberedt og er ansvarlig for", which fits a meetup exactly. A *begivenhed* (fælleskøn) is "noget der sker … især noget vigtigt". An *event* (en/et) is "stort anlagt kulturelt arrangement, ofte bevidst iscenesat", i.e. something big and staged.
+- **Begivenhed** shows up mostly as calendar-software language (Google's "Opret en begivenhed", Facebook-begivenhed), and for ceremonies (SDU's "Begivenheder og priser").
+- **Many sites mix words.** Even "arrangementer" sites slip into "events" ("sociale events", IDA's "Studieevents"), and KultuNaut shows "arrangementer" and "events" on the same page.
+- Meetup has no Danish interface, and Eventbrite.dk's is "English (DK)", so the platforms our events link to don't settle it.
+
+### The other labels
+
+- **Sign-up:** "Tilmeld", "Tilmeld dig", "Tilmeld dig nu", "Tilmelding".
+- **Tickets:** "Køb billet", "Bestil billet", "Hent billetter" (for a free event), "Find billetter". No site uses plain "Billetter" as a button.
+- **Read more:** "Læs mere", "Se mere".
+- **Past:** "Tidligere arrangementer", "Afholdte arrangementer", a status badge "Afholdt", "Arrangementsarkiv".
+- **Upcoming:** "Kommende arrangementer".
+- **Place:** "Sted" is the most common. "Hvor"/"Hvornår" pairs appear at DTU, ITU, IDA, INCUBA and Odense. "Lokation" and "Placering" are rarer.
+- **Organizer:** "Arrangør" (KU, DTU, IDA, Billetto). Libraries say "I samarbejde med".
+- **Adding an event:** "Opret et nyt arrangement i kalenderen" (KultuNaut), "Anmod om oprettelse af event" (DTU), "Opret en begivenhed" (Facebook, Google).
+- **Dates:** no single convention. Examples: "Søn. 15. nov." (Dokk1), "Lør. 14. nov. 2026" (KultuNaut), "17. nov. 2026, kl. 8.15-9.00" (KU), "Torsdag d. 19. november 2026, kl. 13:00-14:00" (Dansk IT), "17.11.2026" (ARoS). Short weekdays carry a full stop and often a capital.
+
+### Sources
+
+| Site | Word used | Notable phrases | URL |
+|---|---|---|---|
+| Aarhus Bibliotekerne | nav "Det sker", title "Arrangementer" | "Bestil billet", "Sted", "Du behøver ikke tilmelde dig" | aakb.dk/arrangementer |
+| Dokk1 | "Arrangementer" → page "Det sker" | "Se mere", "Søn. 15. nov. \| 12:00 - 15:00" | dokk1.dk/det-sker |
+| Københavns Biblioteker | "Det sker" → "Aktiviteter", "Kommende arrangementer" | listings rendered by JavaScript, unknown | bibliotek.kk.dk/aktiviteter |
+| Odense Bibliotekerne | "Det sker", item "Arrangement" | "Tid", "Sted", "Hvornår", "Hvor" | odensebib.dk |
+| Aalborg Bibliotekerne | "Arrangementer" → "Det sker" | "Hent billetter", "Tilmeldingsfrist" | aalborgbibliotekerne.dk/det-sker |
+| Aarhus Universitet | "Arrangementer", "Afholdte arrangementer" | "Tidspunkt", "Sted", "Tilføj til kalender" | au.dk/kalender |
+| Københavns Universitet | "Arrangementer", "Kalender", "Tidligere arrangementer" | "Tid:", "Sted:", "Arrangør:" | kalender.ku.dk |
+| DTU | "Arrangementer" | "Tilmeld", "Hvornår", "Hvor", "Arrangør", "Anmod om oprettelse af event" | dtu.dk/kalender |
+| ITU | "Arrangementer"; footer "Events" → "Kalender" | "Hvornår", "Hvor" | itu.dk |
+| SDU | "Kalender … kommende arrangementer", "Begivenheder og priser" | calendar behind a CAPTCHA, unknown | sdu.dk/da |
+| VisitAarhus | "Kalender", "Det sker i Aarhusregionen", "Begivenheder", "et event" | — | visitaarhus.dk/det-sker-i-aarhusregionen |
+| KultuNaut | "arrangementer" and "events" on one page | "Opret et nyt arrangement i kalenderen", "Lør. 14. nov. 2026" | kultunaut.dk |
+| ARoS | "Kalender", "Det sker på ARoS", "Kommende arrangementer" | "Køb billet", "Placering" | aros.dk/kalender |
+| Musikhuset Aarhus | "Se kalender", "Se kommende events" | detail pages JavaScript-only, unknown | musikhusetaarhus.dk |
+| PROSA | "Arrangementer", "sociale events" | "Tilmeld", "Sted", "Læs mere" | prosa.dk/arrangementer |
+| IT-Branchen | "Events", "Tidligere events" | "TILMELD DIG HER" | itb.dk/events |
+| Dansk IT | "Arrangementer", "Kommende arrangementer" | "Dato og sted", "Torsdag d. 19. november 2026, kl. 13:00-14:00" | dit.dk |
+| IDA | "Arrangementer & kurser", item "Arrangement" | "Tilmeld dig nu", "Arrangør", "Afholdt" | ida.dk/arrangementer-og-kurser |
+| DI Digital | "Arrangementer og webinarer" | "Tilmelding", "Afholdt", "gratis billet" | danskindustri.dk/brancher/di-digital/arrangementer |
+| INCUBA | "Events" | "Hvornår:", "Hvor:", "Tilmeld" | incuba.dk/community/events |
+| Ingeniøren / Version2 | "Events", "Kalender" | — | event.ing.dk |
+| Coding Pirates | "Det sker", "Begivenheder", "nationale events" | read through a summary only | codingpirates.dk |
+| Billetto | "events", one badge "Populær begivenhed" | "Find billetter", "Arrangør" | billetto.dk |
+| Facebook (help) | "Facebook-begivenhed" | — | facebook.com/help/210413455658361 |
+| Google Kalender (help) | "Opret en begivenhed" | — | support.google.com/calendar/answer/72143?hl=da |
+| Den Danske Ordbog | definitions above | — | ordnet.dk/ddo |
+| Unread or not applicable | Meetup (no Danish interface), Eventbrite.dk (English interface; help behind a bot check), Retskrivningsordbogen (JavaScript only), aarhus.dk (no events section), Digital Hub Denmark (English only) | — | — |
